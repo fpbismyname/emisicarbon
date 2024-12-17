@@ -5,5 +5,5 @@ controller = Blueprint("controller-api", __name__)
 def get_data():
     return jsonify({
         "status" : 200,
-        "message": "Welcome to the API"
+        "message": "Example response"
     })
