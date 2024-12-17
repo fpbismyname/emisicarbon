@@ -1,8 +1,9 @@
-from flask import Flask
 from .extensions import *
+from flask import Flask
 from app.routes.api import router as api
 from app.routes.web import router as web
 from config import DevConfig
+from app.models import model
 import click
 import os
 
@@ -14,10 +15,7 @@ def create_app(config = DevConfig):
     app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{config.MYSQL_USER}:{config.MYSQL_PASSWORD}@{config.MYSQL_HOST}:{config.MYSQL_PORT}/{config.MYSQL_DATABASE}"
     
     db.init_app(app)
-    migrate_app.init_app(app, db)
-    
-    from app.models.model import MigrationModel
-    MigrationModel()
+    migrate_app.init_app(app, db)   
     
     @app.cli.command("db-refresh")
     def db__refresh():

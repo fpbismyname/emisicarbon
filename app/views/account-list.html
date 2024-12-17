@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Emisi Carbon</title>
+  </head>
+  <body>
+    <div>
+      <div class="header">
+        <h1>Account list</h1>
+        <ul>
+          <li><a href="/">Back</a></li>
+        </ul>
+      </div>
+      <div class="table">
+        <table border="2">
+          <tr>
+            <th>No</th>
+            <th>Username</th>
+            <th>Email</th>
+          </tr>
+          {% if datas.data %}
+          {% for dt in datas.data %}
+          <tr>
+            <td>{{ dt.id }}</td>
+            <td>{{ dt.username }}</td>
+            <td>{{ dt.email }}</td>
+          </tr>
+          {% endfor %}
+          {% else %}
+          <tr>
+            <td colspan="3">No data...</td>
+          </tr>
+          {% endif %}
+        </table>
+      </div>
+    </div>
+  </body>
+</html>
