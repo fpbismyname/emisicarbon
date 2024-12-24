@@ -3,7 +3,7 @@ from flask import Flask
 from app.routes.api_route import router as api
 from app.routes.web_route import router as web
 from config import DevConfig
-from app.models import *
+from app import models
 import click
 import os
 
