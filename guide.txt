@@ -3,3 +3,7 @@ flask --app run run --debug
 
 # Running App without debug mode
 flask --app run run
+
+# Git History
+- git add .; git commit -m "update 1.0.1 : Structuring Flask Framework Development"; git push -u origin main
+- git add .; git commit -m "update 1.0.2 : Create secure login & register API"; git push -u origin main
