@@ -1,0 +1,64 @@
+{
+    "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "workbench.iconTheme": "material-icon-theme",
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/*.pyc": true,
+        "**/*.pyo": true
+    },
+    "editor.fontLigatures": true,
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "[html]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "terminal.external.linuxExec": "kitty",
+    "[php]": {
+        "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+    },
+    "[javascriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "editor.fontFamily": "fira code",
+    "terminal.integrated.fontFamily": "monospace",
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "chatgpt.lang": "en",
+    "[css]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "editor.lineHeight": 3,
+    "explorer.confirmPasteNative": false,
+    "explorer.confirmDelete": false,
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "css.lint.unknownAtRules": "ignore",
+    "workbench.colorTheme": "Visual Studio 2019 Dark",
+    "editor.fontWeight": "600",
+    "terminal.integrated.fontWeight": "normal",
+    "chat.editor.fontWeight": "bold",
+    "editor.stickyScroll.enabled": false,
+    "editor.minimap.showSlider": "always",
+    "editor.minimap.size": "fill",
+    "editor.fontSize": 12,
+    "[blade]": {
+        "editor.defaultFormatter": "shufo.vscode-blade-formatter"
+    },
+    "editor.cursorSmoothCaretAnimation": "on",
+    "workbench.list.smoothScrolling": true,
+    "editor.smoothScrolling": true,
+    "editor.cursorBlinking": "expand",
+    "terminal.integrated.smoothScrolling": true,
+    "files.autoSaveDelay": 500,
+    "files.autoSave": "afterDelay",
+    "editor.unicodeHighlight.nonBasicASCII": false
+}
