@@ -1,6 +1,6 @@
 from app import db
 from flask import Blueprint, jsonify, request
-from app.models.model import Account
+from app.models.Account import Account
 
 controller = Blueprint("controller-api", __name__)
 
@@ -45,7 +45,7 @@ def login():
         return jsonify({
             "status" : 200,
             "message": "Login Success",
-            "data" : currentAccount.password
+            "token" : currentAccount.password
         }), 200
     except ZeroDivisionError as err:
         return jsonify({"status": 500, "message": "Internal Server Error"}), 500
