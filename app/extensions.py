@@ -1,4 +1,5 @@
 import flask_jwt_extended as flask_jwt
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 from flask_migrate import Migrate, upgrade, migrate

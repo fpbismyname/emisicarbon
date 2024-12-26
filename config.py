@@ -4,14 +4,14 @@ from datetime import timedelta
 Environment = "development"
 
 class Config():
-    SECRET_KEY = os.getenv('SECRET_KEY') or os.urandom(12).hex()
+    SECRET_KEY = os.getenv('SECRET_KEY') or "EMISI-@CARBON-01"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
 class DevelopmentConfig(Config):
     # Debug Option
     DEBUG = True
     # JWT Token
-    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY') or os.urandom(12).hex()
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY') or "EMISI-@CARBON-01"
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=3)
     # Database Mysql
     DATABASE_ENGINE = "mysql"
