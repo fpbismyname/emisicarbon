@@ -3,7 +3,7 @@ from app.controllers import api_controller
 router = Blueprint("router-api", __name__)
     
 # Create api routes here
-# Base URL
+# Base URL endpoint
 URL = "/emisi-carbon/api/v1"
 
 # Route for register API
