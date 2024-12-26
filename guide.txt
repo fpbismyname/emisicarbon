@@ -1,9 +1,14 @@
+# Enter the Environment Python Dev Folder
+command : .\venv\Scripts\activate
+
 # Running App with debug mode
-flask --app run run --debug
+command : flask --app run run --debug
 
 # Running App without debug mode
-flask --app run run
+command : flask --app run run
 
-# Git History
+# Git Push History
+template command : git add .; git commit -m "update <version> : <message>"; git push -u origin main
 - git add .; git commit -m "update 1.0.1 : Structuring Flask Framework Development"; git push -u origin main
 - git add .; git commit -m "update 1.0.2 : Create secure login & register API"; git push -u origin main
+- git add .; git commit -m "update 1.0.3 : Create secure login & register API v2 & Improve Development web environtment on Database Models and Controller"; git push -u origin main

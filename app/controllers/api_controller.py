@@ -46,7 +46,7 @@ def login():
         return jsonify({
             "status" : 200,
             "message": "Login Success",
-            "access_token" : bearer_token
+            "access_bearer_token" : bearer_token
         }), 200
     except IntegrityError:
         return jsonify({"status": 500, "message": "Internal Server Error"}), 500
