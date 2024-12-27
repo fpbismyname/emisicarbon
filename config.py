@@ -11,7 +11,7 @@ class DevelopmentConfig(Config):
     # Debug Option
     DEBUG = True
     # JWT Token
-    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY') or "EMISI-@CARBON-01"
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY') or Config.SECRET_KEY
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=3)
     # Database Mysql
     DATABASE_ENGINE = "mysql"

@@ -2,6 +2,7 @@ from app.extensions import *
 from app import db, flask_jwt, IntegrityError
 from flask import Blueprint, jsonify, request
 from app.database.models.Users import Users
+from app.database.models.Sources import Sources
 
 controller = Blueprint("controller-api", __name__)
 
@@ -51,23 +52,61 @@ def users(type):
 
 def sources(source_id):
    methods = request.method
+   
+    # Get all the source data
    if methods == "GET" and source_id is None:
-       return jsonify({
-           "GET ALL" : "ALL"
-       })
-   elif methods == "GET" and source_id is not None:
-       return jsonify({
-           "GET ONE" : "ONE"
-       })
+       try:
+            source = Sources.query.all()
+            return jsonify({
+                "status" : 200,
+                "message" : "Get all sources",
+                "sources" : ""
+            }), 200
+       except IntegrityError:
+           return jsonify({
+                "status" : 500,
+                "message" : "Internal Server Error",
+            }), 500
+           
+    # Add one source data
    elif methods == "POST" and source_id is None:
+       data = request.get_json()
+       if not data or "source_name" not in data or "description" not in data:
+           return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"})
+       try:
+            addSource = Sources(source_name=data['source_name'], description=data['description'])
+            db.session.add(addSource)
+            db.session.commit()
+            return jsonify({
+                "status" : 200,
+                "message" : "Get all sources",
+                "sources" : ""
+            }), 200
+       except IntegrityError:
+           return jsonify({
+                "status" : 500,
+                "message" : "Internal Server Error",
+            }), 500
+           
+    # Get one of source data
+   elif methods == "GET" and source_id is not None:
+       source = Sources.query.get_or_404(source_id)
        return jsonify({
-           "POST ONE" : "ONE"
-       })
+           "status" : 200,
+           "message" : "Get one source",
+           "source" : ""
+       }), 200
+       
+    # Update one of source data
    elif methods == "PUT" and source_id is not None:
        return jsonify({
-           "PUT ONE" : "ONE"
-       })
+           "status" : 200,
+           "message" : "Post source successfully",
+       }), 200
+       
+    # Delete one of source data
    elif methods == "DELETE" and source_id is not None:
        return jsonify({
-           "DELETE ONE" : "ONE"
-       })
+           "status" : 200,
+           "message" : "Delete source successfully",
+       }), 200
