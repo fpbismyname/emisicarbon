@@ -10,9 +10,11 @@ controller = Blueprint("controller-api", __name__)
 
 # Controller for Users
 def users(type):
+    
+    # Register Process
     if type == "register":
         data = request.get_json()
-        if not data or "username" not in data or "password" not in data or "email" not in data :
+        if not data or not data['email'] or not data['username'] or not data['password']:
             return jsonify({"status" : 400, "message" : "Invalid Request, please fill the username and password"})
         checkDuplication = Users.query.filter_by(email=data['email']).first()
         if checkDuplication:
@@ -31,10 +33,12 @@ def users(type):
                     "status" : 500,
                     "message": "Internal Server Error !",
             }), 500
-    elif type == "login":
+            
+    # Login Process
+    if type == "login":
         data = request.get_json()
-        if not data or "email" not in data or "password" not in data :
-            return jsonify({"status" : 400, "message" : "Invalid Request, please fill the username and password"})
+        if not data or not data['email'] or not data['password']:
+            return jsonify({"status" : 400, "message" : "Invalid Request, please fill the email and password"})
         currentUsers = Users.query.filter_by(email=data['email']).first()
         if not currentUsers : return jsonify({"status": 404, "message": "Invalid Credentials !"}), 404
         currentUser = currentUsers.to_dict()
@@ -50,37 +54,20 @@ def users(type):
         except IntegrityError:
             return jsonify({"status": 500, "message": "Internal Server Error"}), 500
 
+# SOURCES CONTROLLER
 def sources(source_id):
    methods = request.method
+   sourceID = source_id
    
     # Get all the source data
-   if methods == "GET" and source_id is None:
+   if methods == "GET" and sourceID is None:
        try:
             source = Sources.query.all()
+            sources = [source.to_dict() for source in source]
             return jsonify({
                 "status" : 200,
                 "message" : "Get all sources",
-                "sources" : ""
-            }), 200
-       except IntegrityError:
-           return jsonify({
-                "status" : 500,
-                "message" : "Internal Server Error",
-            }), 500
-           
-    # Add one source data
-   elif methods == "POST" and source_id is None:
-       data = request.get_json()
-       if not data or "source_name" not in data or "description" not in data:
-           return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"})
-       try:
-            addSource = Sources(source_name=data['source_name'], description=data['description'])
-            db.session.add(addSource)
-            db.session.commit()
-            return jsonify({
-                "status" : 200,
-                "message" : "Get all sources",
-                "sources" : ""
+                "sources" : sources
             }), 200
        except IntegrityError:
            return jsonify({
@@ -89,24 +76,77 @@ def sources(source_id):
             }), 500
            
     # Get one of source data
-   elif methods == "GET" and source_id is not None:
-       source = Sources.query.get_or_404(source_id)
-       return jsonify({
-           "status" : 200,
-           "message" : "Get one source",
-           "source" : ""
-       }), 200
+   if methods == "GET" and sourceID is not None:
+       try:
+            oneSource = Sources.query.get(sourceID)
+            if not oneSource:
+                return jsonify({"status": 404, "message": "Source not found !"}), 404
+            return jsonify({
+                "status" : 200,
+                "message" : "One source data found !",
+                "source" : oneSource.to_dict()
+            }), 200
+       except IntegrityError:
+           return jsonify({
+                "status" : 500,
+                "message" : "Internal Server Error",
+            }), 500
        
+    # Add one source data
+   if methods == "POST" and sourceID is None:
+       data = request.get_json()
+       if not data or not data['source_name'] or not data['description']:
+           return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"}),400
+       try:
+            addSource = Sources(source_name=data['source_name'], description=data['description'])
+            db.session.add(addSource)
+            db.session.commit()
+            return jsonify({
+                "status" : 200,
+                "message" : "Add data source successfully",
+            }), 200
+       except IntegrityError:
+           return jsonify({
+                "status" : 500,
+                "message" : "Internal Server Error",
+            }), 500
+           
     # Update one of source data
-   elif methods == "PUT" and source_id is not None:
-       return jsonify({
-           "status" : 200,
-           "message" : "Post source successfully",
-       }), 200
+   if methods == "PUT" and sourceID is not None:
+       data = request.get_json()
+       if not data or not data['source_name'] or not data['description']:
+           return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"}), 400
+       try:
+            source = Sources.query.get(sourceID)
+            if not source:
+                return jsonify({"status": 404, "message": "Source not found !"}),404
+            source.source_name = data['source_name']
+            source.description = data['description']
+            db.session.commit()
+            return jsonify({
+                "status" : 200,
+                "message" : "Update data source successfully",
+            }), 200
+       except IntegrityError:
+           return jsonify({
+                "status" : 500,
+                "message" : "Internal Server Error",
+            }), 500
        
     # Delete one of source data
-   elif methods == "DELETE" and source_id is not None:
-       return jsonify({
-           "status" : 200,
-           "message" : "Delete source successfully",
-       }), 200
+   if methods == "DELETE" and sourceID is not None:
+       try:
+            source = Sources.query.get(sourceID)
+            if not source:
+                return jsonify({"status": 404, "message": "Source not found !"}),404
+            db.session.delete(source)
+            db.session.commit()
+            return jsonify({
+                "status" : 200,
+                "message" : "Delete data source successfully",
+            }), 200
+       except IntegrityError:
+           return jsonify({
+                "status" : 500,
+                "message" : "Internal Server Error",
+            }), 500
