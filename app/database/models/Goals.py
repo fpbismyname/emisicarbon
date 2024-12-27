@@ -10,8 +10,6 @@ class Goals(db.Model):
     status = db.Column(db.Enum('in_progress', 'achieved', 'missed', name='goal_status'), default='in_progress')
     created_at = db.Column(db.TIMESTAMP, default=db.func.current_timestamp())
 
-    user = db.relationship('Users', backref='goals', cascade='all, delete-orphan', single_parent = True)
-
     def to_dict(self):
         return {
             'goal_id': self.goal_id,

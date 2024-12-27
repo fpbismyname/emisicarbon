@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 8ad32d6458b6
+Revision ID: 91251f490395
 Revises: 
-Create Date: 2024-12-27 16:05:41.908526
+Create Date: 2024-12-27 23:12:04.130295
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '8ad32d6458b6'
+revision = '91251f490395'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -38,21 +38,21 @@ def upgrade():
     )
     op.create_table('carbon_factors',
     sa.Column('factor_id', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('source_id', sa.Integer(), nullable=False),
+    sa.Column('source_id', sa.Integer(), nullable=True),
     sa.Column('description', sa.Text(), nullable=True),
     sa.Column('conversion_factor', sa.Numeric(precision=10, scale=4), nullable=False),
     sa.Column('unit', sa.String(length=20), nullable=False),
-    sa.ForeignKeyConstraint(['source_id'], ['sources.source_id'], ),
+    sa.ForeignKeyConstraint(['source_id'], ['sources.source_id'], ondelete='SET NULL'),
     sa.PrimaryKeyConstraint('factor_id')
     )
     op.create_table('emissions',
     sa.Column('emission_id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('source_id', sa.Integer(), nullable=False),
+    sa.Column('source_id', sa.Integer(), nullable=True),
     sa.Column('amount', sa.Numeric(precision=10, scale=2), nullable=False),
     sa.Column('emission_date', sa.Date(), nullable=False),
     sa.Column('report_date', sa.TIMESTAMP(), nullable=True),
-    sa.ForeignKeyConstraint(['source_id'], ['sources.source_id'], ),
+    sa.ForeignKeyConstraint(['source_id'], ['sources.source_id'], ondelete='SET NULL'),
     sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ),
     sa.PrimaryKeyConstraint('emission_id')
     )
@@ -89,11 +89,11 @@ def upgrade():
     op.create_table('activities',
     sa.Column('activity_id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('factor_id', sa.Integer(), nullable=False),
+    sa.Column('factor_id', sa.Integer(), nullable=True),
     sa.Column('amount', sa.Numeric(precision=10, scale=2), nullable=False),
     sa.Column('activity_date', sa.Date(), nullable=False),
     sa.Column('report_date', sa.TIMESTAMP(), nullable=True),
-    sa.ForeignKeyConstraint(['factor_id'], ['carbon_factors.factor_id'], ),
+    sa.ForeignKeyConstraint(['factor_id'], ['carbon_factors.factor_id'], ondelete='SET NULL'),
     sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ),
     sa.PrimaryKeyConstraint('activity_id')
     )
