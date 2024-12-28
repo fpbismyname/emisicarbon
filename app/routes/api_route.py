@@ -31,16 +31,30 @@ def sources(id):
 def emissions(id):
     return api_controller.emissions(emission_id= id)
 
-# Route for CRUD Emisions
+# Route for CRUD Carbon Factors
 @router.route(f"{URL}/carbon-factors", defaults={'id' : None }, methods=[ 'GET', 'POST'])
 @router.route(f"{URL}/carbon-factors/<int:id>", methods=['GET','PUT','DELETE'])
 @jwt_required()
 def carbon_factor(id):
     return api_controller.carbon_factors(carbonFact_id= id)
 
-# Route for CRUD Emisions
+# Route for CRUD Goals
 @router.route(f"{URL}/goals", defaults={'id' : None }, methods=[ 'GET', 'POST'])
 @router.route(f"{URL}/goals/<int:id>", methods=['GET','PUT','DELETE'])
 @jwt_required()
 def goals(id):
     return api_controller.goals(goals_id = id)
+
+# Route for CRUD Offsets
+@router.route(f"{URL}/offsets", defaults={'id' : None }, methods=[ 'GET', 'POST'])
+@router.route(f"{URL}/offsets/<int:id>", methods=['GET','PUT','DELETE'])
+@jwt_required()
+def offsets(id):
+    return api_controller.offsets(offsets_id = id)
+
+# Route for CRUD Reports
+@router.route(f"{URL}/reports", defaults={'id' : None }, methods=[ 'GET', 'POST'])
+@router.route(f"{URL}/reports/<int:id>", methods=['GET','PUT','DELETE'])
+@jwt_required()
+def reports(id):
+    return api_controller.reports(reports_id = id)

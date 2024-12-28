@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 91251f490395
+Revision ID: 0a70ccd1000b
 Revises: 
-Create Date: 2024-12-27 23:12:04.130295
+Create Date: 2024-12-28 20:29:54.249828
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '91251f490395'
+revision = '0a70ccd1000b'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -53,7 +53,7 @@ def upgrade():
     sa.Column('emission_date', sa.Date(), nullable=False),
     sa.Column('report_date', sa.TIMESTAMP(), nullable=True),
     sa.ForeignKeyConstraint(['source_id'], ['sources.source_id'], ondelete='SET NULL'),
-    sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('emission_id')
     )
     op.create_table('goals',
@@ -63,7 +63,7 @@ def upgrade():
     sa.Column('deadline', sa.Date(), nullable=False),
     sa.Column('status', sa.Enum('in_progress', 'achieved', 'missed', name='goal_status'), nullable=True),
     sa.Column('created_at', sa.TIMESTAMP(), nullable=True),
-    sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('goal_id')
     )
     op.create_table('offsets',
@@ -73,7 +73,7 @@ def upgrade():
     sa.Column('offset_amount', sa.Numeric(precision=10, scale=2), nullable=False),
     sa.Column('offset_date', sa.Date(), nullable=False),
     sa.Column('created_at', sa.TIMESTAMP(), nullable=True),
-    sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('offset_id')
     )
     op.create_table('reports',
@@ -83,7 +83,7 @@ def upgrade():
     sa.Column('end_date', sa.Date(), nullable=False),
     sa.Column('total_emission', sa.Numeric(precision=12, scale=2), nullable=False),
     sa.Column('report_generated_at', sa.TIMESTAMP(), nullable=True),
-    sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('report_id')
     )
     op.create_table('activities',
@@ -94,7 +94,7 @@ def upgrade():
     sa.Column('activity_date', sa.Date(), nullable=False),
     sa.Column('report_date', sa.TIMESTAMP(), nullable=True),
     sa.ForeignKeyConstraint(['factor_id'], ['carbon_factors.factor_id'], ondelete='SET NULL'),
-    sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('activity_id')
     )
     # ### end Alembic commands ###

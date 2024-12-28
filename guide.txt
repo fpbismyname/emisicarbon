@@ -12,3 +12,6 @@ template command : git add .; git commit -m "update <version> : <message>"; git 
 - git add .; git commit -m "update 1.0.1 : Structuring Flask Framework Development"; git push -u origin main
 - git add .; git commit -m "update 1.0.2 : Create secure login & register API"; git push -u origin main
 - git add .; git commit -m "update 1.0.3 : Create secure login & register API v2 & Improve Development web environtment on Database Models and Controller"; git push -u origin main
+- git add .; git commit -m "update 1.0.4 : Create CRUD for SOURCE table v1"; git push -u origin main
+- git add .; git commit -m "update 1.0.5 : Create CRUD API v1"; git push -u origin main
+- git add .; git commit -m "update 1.0.6 : Create CRUD API v2 Finished"; git push -u origin main

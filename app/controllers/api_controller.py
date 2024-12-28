@@ -1,4 +1,5 @@
 import json
+from dateutil.parser import parse
 from app.extensions import *
 from app import db, flask_jwt, IntegrityError
 from flask import Blueprint, jsonify, request
@@ -380,7 +381,7 @@ def carbon_factors(carbonFact_id):
            return jsonify({
                 "status" : 500,
                 "message" : "Internal Server Error",
-                "err" : str(err)
+                # "err" : str(err)
             }), 500
            
 # Goals Controller
@@ -488,4 +489,222 @@ def goals(goals_id):
                 "status" : 500,
                 "message" : "Internal Server Error",
                 "err" : str(err)
+            }), 500
+           
+# Offsets Controller
+def offsets(offsets_id):
+   methods = request.method
+   offsetID = offsets_id
+   
+    # Get all the source data
+   if methods == "GET" and offsetID is None:
+       try:
+            offsets = Offsets.query.all()
+            offset = [offsets.to_dict() for offsets in offsets]
+            return jsonify({
+                "status" : 200,
+                "message" : "Get all offsets",
+                "offsets" : offset
+            }), 200
+       except IntegrityError as err:
+           return jsonify({
+                "status" : 500,
+                "message" : "Internal Server Error",
+                # "err" : str(err)
+            }), 500
+           
+    # Get one of source data
+   if methods == "GET" and offsetID is not None:
+       try:
+            oneOffset = Offsets.query.get(offsetID)
+            if not oneOffset:
+                return jsonify({"status": 404, "message": "Offset data not found !"}), 404
+            return jsonify({
+                "status" : 200,
+                "message" : "One goal data found !",
+                "source" : oneOffset.to_dict()
+            }), 200
+       except IntegrityError as err:
+           return jsonify({
+                "status" : 500,
+                "message" : "Internal Server Error",
+                # "err" : str(err)
+            }), 500
+       
+    # Add one source data
+   if methods == "POST" and offsetID is None:
+       data = request.get_json()
+       if not data or not data['user_id'] or not data['project_name'] or not data['offset_amount'] or not data['offset_date']:
+           return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"}),400
+       try:
+            addOffset = Offsets(
+                user_id=data['user_id'],
+                project_name=data['project_name'],
+                offset_amount=data['offset_amount'],
+                offset_date=data['offset_date']
+            )
+            db.session.add(addOffset)
+            db.session.commit()
+            return jsonify({
+                "status" : 200,
+                "message" : "Add offset data successfully",
+            }), 200
+       except IntegrityError as err:
+           return jsonify({
+                "status" : 500,
+                "message" : "Internal Server Error",
+                # "err" : str(err)
+            }), 500
+           
+    # Update one of source data
+   if methods == "PUT" and offsetID is not None:
+       data = request.get_json()
+       if not data or not data['user_id'] or not data['project_name'] or not data['offset_amount'] or not data['offset_date']:
+           return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"}),400
+       try:
+            offset = Offsets.query.get(offsetID)
+            if not offset:
+                return jsonify({"status": 404, "message": "Offset data not found !"}),404
+            offset.user_id= data['user_id']
+            offset.project_name= data['project_name']
+            offset.offset_amount=data['offset_amount']
+            offset.offset_date=data['offset_date']
+            db.session.commit()
+            return jsonify({
+                "status" : 200,
+                "message" : "Update offset data successfully",
+            }), 200
+       except IntegrityError as err:
+           return jsonify({
+                "status" : 500,
+                "message" : "Internal Server Error",
+                # "err" : str(err)
+            }), 500
+       
+    # Delete one of source data
+   if methods == "DELETE" and offsetID is not None:
+       try:
+            offset = Offsets.query.get(offsetID)
+            if not offset:
+                return jsonify({"status": 404, "message": "Carbon factor not found !"}),404
+            db.session.delete(offset)
+            db.session.commit() 
+            return jsonify({
+                "status" : 200,
+                "message" : "Delete offset data successfully",
+            }), 200
+       except IntegrityError as err:
+           return jsonify({
+                "status" : 500,
+                "message" : "Internal Server Error",
+                # "err" : str(err)
+            }), 500
+           
+# Reports Controller
+def reports(reports_id):
+   methods = request.method
+   reportID = reports_id
+   
+    # Get all the source data
+   if methods == "GET" and reportID is None:
+       try:
+            reports = Reports.query.all()
+            report = [reports.to_dict() for reports in reports]
+            return jsonify({
+                "status" : 200,
+                "message" : "Get all offsets",
+                "reports" : report
+            }), 200
+       except IntegrityError as err:
+           return jsonify({
+                "status" : 500,
+                "message" : "Internal Server Error",
+                # "err" : str(err)
+            }), 500
+           
+    # Get one of source data
+   if methods == "GET" and reportID is not None:
+       try:
+            oneReport = Reports.query.get(reportID)
+            if not oneReport:
+                return jsonify({"status": 404, "message": "Report data not found !"}), 404
+            return jsonify({
+                "status" : 200,
+                "message" : "One goal data found !",
+                "source" : oneReport.to_dict()
+            }), 200
+       except IntegrityError as err:
+           return jsonify({
+                "status" : 500,
+                "message" : "Internal Server Error",
+                # "err" : str(err)
+            }), 500
+       
+    # Add one source data
+   if methods == "POST" and reportID is None:
+       data = request.get_json()
+       if not data or not data['user_id'] or not data['start_date'] or not data['end_date'] or not data['total_emission']:
+           return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"}),400
+       try:
+            addReport = Reports(
+                user_id=data['user_id'],
+                start_date=data['start_date'],
+                end_date=data['end_date'],
+                total_emission=data['total_emission']
+            )
+            db.session.add(addReport)
+            db.session.commit()
+            return jsonify({
+                "status" : 200,
+                "message" : "Add Report data successfully",
+            }), 200
+       except IntegrityError as err:
+           return jsonify({
+                "status" : 500,
+                "message" : "Internal Server Error",
+                # "err" : str(err)
+            }), 500
+           
+    # Update one of source data
+   if methods == "PUT" and reportID is not None:
+       data = request.get_json()
+       if not data or not data['user_id'] or not data['start_date'] or not data['end_date'] or not data['total_emission']:
+           return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"}),400
+       try:
+            report = Reports.query.get(reportID)
+            if not report:
+                return jsonify({"status": 404, "message": "Report data not found !"}),404
+            report.user_id= data['user_id']
+            report.start_date= data['start_date']
+            report.end_date=data['end_date']
+            report.total_emission=data['total_emission']
+            db.session.commit()
+            return jsonify({
+                "status" : 200,
+                "message" : "Update report data successfully",
+            }), 200
+       except IntegrityError as err:
+           return jsonify({
+                "status" : 500,
+                "message" : "Internal Server Error",
+                # "err" : str(err)
+            }), 500
+       
+    # Delete one of source data
+   if methods == "DELETE" and reportID is not None:
+       try:
+            report = Reports.query.get(reportID)
+            if not report:
+                return jsonify({"status": 404, "message": "Report data not found !"}),404
+            db.session.delete(report)
+            db.session.commit() 
+            return jsonify({
+                "status" : 200,
+                "message" : "Delete report data successfully",
+            }), 200
+       except IntegrityError as err:
+           return jsonify({
+                "status" : 500,
+                "message" : "Internal Server Error",
+                # "err" : str(err)
             }), 500
