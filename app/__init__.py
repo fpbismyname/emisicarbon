@@ -1,4 +1,5 @@
 from .extensions import *
+from app.database.seeders.seeder import seed
 from flask import Flask
 from app.routes.api_route import api
 from app.routes.web_route import web
@@ -39,4 +40,7 @@ def create_app(config = Environment):
         migrate()
         upgrade()
         click.echo(" > Recreate All Database's Succeeded...")
+        seed()
+        click.echo(" > Seed all data Succeeded...")
+        
     return app

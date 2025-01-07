@@ -1,0 +1,31 @@
+<div
+class="navbar navbar-expand p-3 justify-content-between align-middle"
+>
+<a class="navbar-brand" href="/"><i class="bi bi-clouds me-2"></i>Emisi Karbon</a>
+<form action="/logout" method="POST">
+  <div class="dropdown-center">
+    <a
+      type="button"
+      class="text-dark"
+      role="button"
+      data-bs-toggle="dropdown"
+      data-bs-display="static"
+      aria-expanded="false"
+    >
+      <i class="bi bi-person-circle fs-3"></i>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end">
+      <li class="dropdown-header">
+        {{ account.username }} | {{ account.role }}
+      </li>
+      <li>
+        <form action="/logout" , method="POST">
+          <button class="btn btn-sm btn-outline-danger dropdown-item">
+            Logout
+          </button>
+        </form>
+      </li>
+    </ul>
+  </div>
+</form>
+</div>

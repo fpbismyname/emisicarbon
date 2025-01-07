@@ -7,7 +7,7 @@ controller = Blueprint("controller-web", __name__)
 url = "http://127.0.0.1:5000/emisi-carbon/api/v1"
     
 # Create Method for controll the routes
-# Homepage
+# LoginPage
 def login_page():
     if request.method == "POST" :
         try:
@@ -22,12 +22,12 @@ def login_page():
             res_data = response.json()
             
             if response.status_code == 200:
-                user_id = decode_token(res_data['bearer_token'])
-                resp = make_response(redirect(url_for('router-web.dashboard')))
-                resp.set_cookie('access_token_cookie', str(res_data['bearer_token']))
-                resp.set_cookie('role', str(res_data['role']))
-                resp.set_cookie('id_user', str(user_id['sub']))
-                return resp
+                userToken = decode_token(res_data['bearer_token'])
+                session['id_user'] = userToken['sub']
+                session['username'] = userToken['username']
+                session['role'] = res_data['role']
+                session['access_token_cookie'] = res_data['bearer_token']
+                return redirect(url_for('router-web.dashboard'))
             elif response.status_code == 400:
                 flash(res_data['message'], "danger")
                 return redirect(url_for('router-web.login'))
@@ -38,6 +38,7 @@ def login_page():
             return {"error" : "Error"}
     return render_template("auth/login.html")
 
+# RegisterPage
 def register_page():
     if request.method == "POST" :
         try:
@@ -65,7 +66,15 @@ def register_page():
         except ZeroDivisionError:
             return {"error" : "Error"}
     return render_template("auth/register.html")
-
+    
+# Logout
+def logout_page():
+    session.clear()
+    return redirect(url_for('router-web.login'))
 
 def dashboard_page():
-    return render_template("page/dashboard.html")
+    account = {
+        "username" : session.get('username'),
+        "role" : session.get('role')
+    }
+    return render_template("page/dashboard.html",account=account)

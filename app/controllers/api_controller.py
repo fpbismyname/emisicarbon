@@ -55,7 +55,8 @@ def users(type):
             user_id = str(currentUser['user_id'])
             addional_claims= {
                 'username': currentUser['username'],
-                'role' : currentUser['role']
+                'role' : currentUser['role'],
+                'password' : currentUser['password_hash'] 
             }
             bearer_token = flask_jwt.create_access_token(identity=user_id, additional_claims=addional_claims)
             return jsonify({

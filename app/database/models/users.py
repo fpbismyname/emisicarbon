@@ -9,7 +9,7 @@ class Users(db.Model):
     role = db.Column(db.Enum('admin', 'company', 'user', name='user_role'), default="user")
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     
-    def set_password(self, password):
+    def set_password(self, password: str) -> str:
         self.password_hash = bcrypt.generate_password_hash(password)
         
     def check_password(hashed_password, password):
