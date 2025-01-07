@@ -1,5 +1,3 @@
-import json
-from dateutil.parser import parse
 from app.extensions import *
 from app import db, flask_jwt, IntegrityError
 from flask import Blueprint, jsonify, request
@@ -22,13 +20,15 @@ def users(type):
     # Register Process
     if type == "register":
         data = request.get_json()
-        if not data or not data['email'] or not data['username'] or not data['password']:
-            return jsonify({"status" : 400, "message" : "Invalid Request, please fill the username and password"})
-        checkDuplication = Users.query.filter_by(email=data['email']).first()
-        if checkDuplication:
+        if not data or not data['email'] or not data['username'] or not data['password'] or not data['role']:
+            return jsonify({"status" : 400, "message" : "Please fill the username and password"}), 400
+        checkDuplicationEmail = Users.query.filter_by(email=data['email']).first()
+        checkDuplicationUsername = Users.query.filter_by(username=data['username']).first()
+        
+        if checkDuplicationEmail or checkDuplicationUsername:
             return jsonify({"status" : 409, "message" : "Account already exists"}), 409
         try:
-            newUsers = Users(username=data['username'], email=data['email'])
+            newUsers = Users(username=data['username'], email=data['email'], role=data['role']) 
             newUsers.set_password(data['password'])
             db.session.add(newUsers)  
             db.session.commit() 
@@ -46,18 +46,18 @@ def users(type):
     if type == "login":
         data = request.get_json()
         if not data or not data['email'] or not data['password']:
-            return jsonify({"status" : 400, "message" : "Invalid Request, please fill the email and password"})
+            return jsonify({"status" : 400, "message" : "Invalid Request, please fill the email and password"}),400
         currentUsers = Users.query.filter_by(email=data['email']).first()
         if not currentUsers : return jsonify({"status": 404, "message": "Invalid Credentials !"}), 404
         currentUser = currentUsers.to_dict()
         try:
             if not Users.check_password(currentUser['password_hash'], data['password']) : return jsonify({"status":404, "message" : "Invalid Credentials !"}), 404
-            identity_user = {
-                'user_id': currentUser['user_id'],
+            user_id = str(currentUser['user_id'])
+            addional_claims= {
                 'username': currentUser['username'],
                 'role' : currentUser['role']
             }
-            bearer_token = flask_jwt.create_access_token(identity=str(identity_user))
+            bearer_token = flask_jwt.create_access_token(identity=user_id, additional_claims=addional_claims)
             return jsonify({
                 "status" : 200,
                 "role" : currentUser['role'],
@@ -66,6 +66,119 @@ def users(type):
             }), 200 
         except IntegrityError:
             return jsonify({"status": 500, "message": "Internal Server Error"}), 500
+
+# Activities Controller
+def activities(activity_id):
+   methods = request.method
+   activityID = activity_id
+   
+    # Get all the Activities data
+   if methods == "GET" and activityID is None:
+       try:
+            activity = Activities.query.all()
+            activities = [activity.to_dict() for activity in activity]
+            return jsonify({
+                "status" : 200,
+                "message" : "Get all carbon factors",
+                "activities" : activities,
+            }), 200
+       except IntegrityError as err:
+           return jsonify({
+                "status" : 500,
+                "message" : "Internal Server Error",
+                # "err" : str(err)
+            }), 500
+           
+    # Get one of Activities data
+   if methods == "GET" and activityID is not None:
+       try:
+            oneActivity = Activities.query.get(activityID)
+            if not oneActivity:
+                return jsonify({"status": 404, "message": "Emission data not found !"}), 404
+            return jsonify({
+                "status" : 200,
+                "message" : "One emission data found !",
+                "activity" : oneActivity.to_dict()
+            }), 200
+       except IntegrityError as err:
+           return jsonify({
+                "status" : 500,
+                "message" : "Internal Server Error",
+                # "err" : str(err)
+            }), 500
+       
+    # Add one source data
+   if methods == "POST" and activityID is None:
+       data = request.get_json()
+       if not data or not data['user_id'] or not data['factor_id'] or not data['amount'] or not data['activity_date'] or not data['report_date']:
+           return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
+       try:
+            addActivity = Activities(
+                user_id = data['user_id'],
+                factor_id= data['factor_id'],
+                amount= data['amount'],
+                activity_date= data['activity_date'],
+                report_date= data['report_date']
+            )
+            db.session.add(addActivity)
+            db.session.commit()
+            return jsonify({
+                "status" : 200,
+                "message" : "Add carbon factor data successfully",
+                "added_activity" : data
+            }), 200
+       except IntegrityError as err:
+           return jsonify({
+                "status" : 500,
+                "message" : "Internal Server Error",
+                # "err" : str(err)
+            }), 500
+           
+    # Update one of source data
+   if methods == "PUT" and activityID is not None:
+       data = request.get_json()
+       if not data or not data['user_id'] or not data['factor_id'] or not data['amount'] or not data['activity_date'] or not data['report_date']:
+           return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
+       try:
+            activity = Activities.query.get(activityID)
+            if not activity:
+                return jsonify({"status": 404, "message": "Activity not found !"}),404
+            activity.user_id= data['user_id']
+            activity.factor_id= data['factor_id']
+            activity.amount= data['amount']
+            activity.activity_date= data['activity_date']
+            activity.report_date= data['report_date']
+            db.session.commit()
+            return jsonify({
+                "status" : 200,
+                "message" : "Update carbon factor data successfully",
+                "updated_activity" : data
+            }), 200
+       except IntegrityError as err:
+           return jsonify({
+                "status" : 500,
+                "message" : "Internal Server Error",
+                # "err" : str(err)
+            }), 500
+       
+    # Delete one of source data
+   if methods == "DELETE" and activityID is not None:
+       try:
+            activity = Activities.query.get(activityID)
+            if not activity:
+                return jsonify({"status": 404, "message": "Activity not found !"}),404
+            db.session.delete(activity)
+            db.session.commit() 
+            return jsonify({
+                "status" : 200,
+                "message" : "Delete activity data successfully",
+            }), 200
+       except IntegrityError as err:
+           return jsonify({
+                "status" : 500,
+                "message" : "Internal Server Error",
+                # "err" : str(err)
+            }), 500
 
 # Sources Controller
 def sources(source_id):
@@ -117,6 +230,7 @@ def sources(source_id):
             return jsonify({
                 "status" : 200,
                 "message" : "Add data source successfully",
+                "added_source" : data
             }), 200
        except IntegrityError:
            return jsonify({
@@ -139,6 +253,7 @@ def sources(source_id):
             return jsonify({
                 "status" : 200,
                 "message" : "Update data source successfully",
+                "Updated_source" : data
             }), 200
        except IntegrityError:
            return jsonify({
@@ -222,6 +337,7 @@ def emissions(emission_id):
             return jsonify({
                 "status" : 200,
                 "message" : "Add data emission successfully",
+                "added_emission" : data
             }), 200
        except IntegrityError as err:
            return jsonify({
@@ -248,6 +364,7 @@ def emissions(emission_id):
             return jsonify({
                 "status" : 200,
                 "message" : "Update data emission successfully",
+                "updated_emission" : data
             }), 200
        except IntegrityError as err:
            return jsonify({
@@ -332,6 +449,7 @@ def carbon_factors(carbonFact_id):
             return jsonify({
                 "status" : 200,
                 "message" : "Add carbon factor data successfully",
+                "added_carbon_factor" : data
             }), 200
        except IntegrityError as err:
            return jsonify({
@@ -350,13 +468,14 @@ def carbon_factors(carbonFact_id):
             if not carbonFact:
                 return jsonify({"status": 404, "message": "Carbon factor not found !"}),404
             carbonFact.source_id= data['source_id']
-            carbonFact.amount= data['description']
-            carbonFact.emission_date= data['conversion_factor']
-            carbonFact.report_date= data['unit']
+            carbonFact.description= data['description']
+            carbonFact.conversion_factor= data['conversion_factor']
+            carbonFact.unit= data['unit']
             db.session.commit()
             return jsonify({
                 "status" : 200,
                 "message" : "Update carbon factor data successfully",
+                "updated_carbon_factor" : data
             }), 200
        except IntegrityError as err:
            return jsonify({
@@ -440,6 +559,7 @@ def goals(goals_id):
             return jsonify({
                 "status" : 200,
                 "message" : "Add goal data successfully",
+                "added_goal" : data
             }), 200
        except IntegrityError as err:
            return jsonify({
@@ -464,6 +584,7 @@ def goals(goals_id):
             return jsonify({
                 "status" : 200,
                 "message" : "Update goal data successfully",
+                "updated_goal" : data
             }), 200
        except IntegrityError as err:
            return jsonify({
@@ -521,7 +642,7 @@ def offsets(offsets_id):
                 return jsonify({"status": 404, "message": "Offset data not found !"}), 404
             return jsonify({
                 "status" : 200,
-                "message" : "One goal data found !",
+                "message" : "One offset data found !",
                 "source" : oneOffset.to_dict()
             }), 200
        except IntegrityError as err:
@@ -548,6 +669,7 @@ def offsets(offsets_id):
             return jsonify({
                 "status" : 200,
                 "message" : "Add offset data successfully",
+                "added_offset" : data
             }), 200
        except IntegrityError as err:
            return jsonify({
@@ -573,6 +695,7 @@ def offsets(offsets_id):
             return jsonify({
                 "status" : 200,
                 "message" : "Update offset data successfully",
+                "updated_offset" : data
             }), 200
        except IntegrityError as err:
            return jsonify({
@@ -612,7 +735,7 @@ def reports(reports_id):
             report = [reports.to_dict() for reports in reports]
             return jsonify({
                 "status" : 200,
-                "message" : "Get all offsets",
+                "message" : "Get all reports",
                 "reports" : report
             }), 200
        except IntegrityError as err:
@@ -630,7 +753,7 @@ def reports(reports_id):
                 return jsonify({"status": 404, "message": "Report data not found !"}), 404
             return jsonify({
                 "status" : 200,
-                "message" : "One goal data found !",
+                "message" : "One report  data found !",
                 "source" : oneReport.to_dict()
             }), 200
        except IntegrityError as err:
@@ -657,6 +780,7 @@ def reports(reports_id):
             return jsonify({
                 "status" : 200,
                 "message" : "Add Report data successfully",
+                "added_report" : data
             }), 200
        except IntegrityError as err:
            return jsonify({
@@ -682,6 +806,7 @@ def reports(reports_id):
             return jsonify({
                 "status" : 200,
                 "message" : "Update report data successfully",
+                "updated_report" : data
             }), 200
        except IntegrityError as err:
            return jsonify({

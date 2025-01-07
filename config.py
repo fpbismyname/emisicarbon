@@ -13,6 +13,9 @@ class DevelopmentConfig(Config):
     # JWT Token
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY') or Config.SECRET_KEY
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=3)
+    JWT_TOKEN_LOCATION = ['cookies']
+    JWT_COOKIE_SECURE = True
+    JWT_COOKIE_HTTPONLY = True
     # Database Mysql
     DATABASE_ENGINE = "mysql"
     DATABASE_NAME = 'emisi-carbon'

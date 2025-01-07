@@ -1,14 +1,20 @@
-from flask import Blueprint, jsonify
+from app.extensions import *
 from app.controllers import web_controller
-router = Blueprint("router-web", __name__)
+web = Blueprint("router-web", __name__)
     
 # Create web routes here
 
-# Homepage
-@router.route("/", methods=['GET'])
-def home():
-    return web_controller.index_home()
-
-@router.route("/login", methods =['GET'])
+# Login
+@web.route("/login", methods=['GET', 'POST'])
 def login():
-    return web_controller.loginPage()
+    return web_controller.login_page()
+
+# Register
+@web.route("/register", methods=['GET', 'POST'])
+def register():
+    return web_controller.register_page()
+
+# Dashboard
+@web.route("/", methods=['GET'])
+def dashboard():
+    return web_controller.dashboard_page()

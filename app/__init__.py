@@ -1,7 +1,7 @@
 from .extensions import *
 from flask import Flask
-from app.routes.api_route import router as api
-from app.routes.web_route import router as web
+from app.routes.api_route import api
+from app.routes.web_route import web
 from config import Environment, DevelopmentConfig, ProductionConfig
 from app.database import models
 import click
@@ -17,7 +17,11 @@ def create_app(config = Environment):
     db.init_app(app=app)
     migrate_app.init_app(app=app, db=db)
     bcrypt.init_app(app=app)
-    flask_jwt.JWTManager().init_app(app=app)
+
+    jwt = flask_jwt.JWTManager()
+    jwt.init_app(app=app)
+    
+    corsOrigin.init_app(app=app)
     
     @app.cli.command("db-refresh")
     def db__refresh():

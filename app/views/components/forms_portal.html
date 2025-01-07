@@ -1,0 +1,44 @@
+{% macro form_input(type = "login") %} {% if type == "login" %}
+<div class="title">
+  <h1>Login</h1>
+</div>
+<form action="/login" method="POST">
+  <input type="email" name="email" placeholder="Email"
+  class="form-control"/>
+  <input type="password" name="password" placeholder="Password"
+  class="form-control"/>
+  <button type="submit"
+  class="btn btn-primary">Login</button>
+  <div class="desc">
+    <p>Doesn't have any account? <a href="/register">Register</a></p>
+  </div>
+</form>
+{% elif type == "register" %}
+<div class="title">
+  <h1>Register</h1>
+</div>
+<form action="/register" method="POST" class="form-control">
+  <input
+    type="username"
+    name="username"
+    placeholder="Username"
+    class="form-control"
+  />
+  <input type="email" name="email" placeholder="Email" class="form-control" />
+
+  <select name="role" id="role" class="form-select">
+    <option value="user">User</option>
+    <option value="company">Company</option>
+  </select>
+
+  <input type="password" name="password" placeholder="Password" 
+  class="form-control"/>
+
+  <button type="submit"
+  class="btn btn-primary">Login</button>
+
+  <div class="desc">
+    <p>Already have an account? <a href="/login">Login</a></p>
+  </div>
+</form>
+{% endif %} {% endmacro %}

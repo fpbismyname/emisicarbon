@@ -1,6 +1,6 @@
 import os
 import importlib
-from app import bcrypt, db, Enum, datetime
+from app import bcrypt, db, Enum
 
 models = os.path.dirname(__file__)
 
