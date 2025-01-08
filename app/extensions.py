@@ -9,10 +9,11 @@ from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from functools import wraps
 from enum import Enum
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 db = SQLAlchemy()
 migrate_app = Migrate() 
 bcrypt = Bcrypt()
 corsOrigin = CORS()
+jwt = flask_jwt.JWTManager()

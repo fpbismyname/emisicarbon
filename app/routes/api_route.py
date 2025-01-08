@@ -10,12 +10,19 @@ URL = "/emisi-carbon/api/v1"
 # Route for register API
 @api.route(f"{URL}/register", methods=['POST'])
 def register():
-    return api_controller.users(type="register")
+    return api_controller.register_user()
 
 # Route for login API
 @api.route(f"{URL}/login", methods=['POST'])
 def login():
-    return api_controller.users(type="login")
+    return api_controller.login_user()
+
+# Route for CRUD Activities
+@api.route(f"{URL}/users", defaults={'id' : None }, methods=[ 'GET', 'POST'])
+@api.route(f"{URL}/users/<int:id>", methods=['PUT','DELETE'])
+@jwt_required()
+def users(id):
+    return api_controller.users(users_id= id)
 
 # Route for CRUD Activities
 @api.route(f"{URL}/activities", defaults={'id' : None }, methods=[ 'GET', 'POST'])

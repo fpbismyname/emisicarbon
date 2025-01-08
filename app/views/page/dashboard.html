@@ -1,11 +1,23 @@
 {% extends "layouts.html" %} {% block title %} Dashboard {% endblock %} {% block
 content %}
-<div class="container">
-  <div class="row">
-    <div class="col-12">
-     <!-- Navbar -->
-      {% include 'components/navbar.html' %}
-    </div>
+
+<div class="row">
+  <div class="col-12">
+    <!-- Navbar -->
+    {{ Navbar(account) }}
+  </div>
+  <div class="col-12 sticky-top">
+    <!-- Menubar -->
+    {{ Menubar(account.role, account.menu) }}
+  </div>
+  <div class="col-12 bg-white bg-opacity-25 rounded-5 p-4 shadow min-vh-100">
+    <!-- Content -->
+     <div class="container">
+      <div class="row">
+        <div class="col">
+        </div>
+      </div>
+     </div>
   </div>
 </div>
 {% endblock %}

@@ -1,0 +1,17 @@
+{% macro button(href = "/", color = "white", text = "text", active = False, customClass = "") %}
+{% if customClass != "" %}
+    {% if href != "submit" %}
+        <a href="{{ href }}" class="{{ customClass }} {% if active %} fw-bolder border text-light border-2 border-white {% endif %}">{{ text }}</a>
+    {% endif %}
+    {% if href == "submit" %}
+        <button type="submit" class="{{ customClass }} {% if active %} fw-bolder border text-light border-2 border-white {% endif %}">{{ text }}</button>
+    {% endif %}
+{% elif customClass == "" %}
+    {% if href != "submit" %}
+        <a href="{{ href }}" class="bg-{{ color }} text-dark bg-opacity-25 rounded-pill shadow py-2 px-3 link-underline link-underline-opacity-0 {% if active %} fw-bolder border-2 border border-white {% endif %}">{{ text }}</a>
+    {% endif %}
+    {% if href == "submit" %}
+        <button type="submit" class="btn btn-{{ color }} text-dark rounded-pill shadow py-2 px-3 link-underline link-underline-opacity-0 {% if active %} fw-bolder border border-2 border-white {% endif %}">{{ text }}</button>
+    {% endif %}
+{% endif %}
+{% endmacro %}

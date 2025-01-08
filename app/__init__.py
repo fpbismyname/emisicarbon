@@ -18,8 +18,7 @@ def create_app(config = Environment):
     db.init_app(app=app)
     migrate_app.init_app(app=app, db=db)
     bcrypt.init_app(app=app)
-
-    jwt = flask_jwt.JWTManager()
+    
     jwt.init_app(app=app)
     
     corsOrigin.init_app(app=app)

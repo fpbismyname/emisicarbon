@@ -53,7 +53,7 @@ def register_page():
             }
             response = requests.post(url=f"{url}/register", json=payloads, headers=headers)
             res_data = response.json()
-            if response.status_code == 200:
+            if response.status_code == 201:
                 flash(res_data['message'], 'success')
                 return redirect(url_for('router-web.login'))
             elif response.status_code == 400:
@@ -72,9 +72,20 @@ def logout_page():
     session.clear()
     return redirect(url_for('router-web.login'))
 
+# DashboardPage
 def dashboard_page():
     account = {
         "username" : session.get('username'),
-        "role" : session.get('role')
+        "role" : session.get('role'),
+        "menu" : {
+            "dashboard" : True,
+            "activities" : False,
+            "sources" : False,
+            "emissions" : False,
+            "factor_carbons" : False,
+            "goals" : False,
+            "offsets" : False,
+            "reports" : False,
+        }
     }
     return render_template("page/dashboard.html",account=account)

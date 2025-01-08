@@ -15,59 +15,170 @@ controller = Blueprint("controller-api", __name__)
 # Create Method for controll the routes
 
 # Controller for Users
-def users(type):
+
+# Login users controller
+def login_user():
+    data = request.get_json()
+    if not data or not data['email'] or not data['password']:
+        return jsonify({"status" : 400, "message" : "Invalid Request, please fill the email and password"}),400
+    currentUsers = Users.query.filter_by(email=data['email']).first()
+    if not currentUsers : return jsonify({"status": 404, "message": "Invalid Credentials !"}), 404
+    currentUser = currentUsers.to_dict()
+    try:
+        if not Users.check_password(currentUser['password_hash'], data['password']) : 
+            return jsonify({"status":404, "message" : "Invalid Credentials !"}), 404
+        user_id = str(currentUser['user_id'])
+        addional_claims= {
+            'username': currentUser['username'],
+            'role' : currentUser['role'],
+            'password' : currentUser['password_hash'] 
+        }
+        bearer_token = flask_jwt.create_access_token(identity=user_id, additional_claims=addional_claims)
+        return jsonify({
+            "status" : 200,
+            "role" : currentUser['role'],
+            "message": "Login Success",
+            "bearer_token" : bearer_token
+        }), 200 
+    except IntegrityError:
+        return jsonify({"status": 500, "message": "Internal Server Error"}), 500 
+
+# Register users controller
+def register_user():
+    data = request.get_json()
+    if not data or not data['email'] or not data['username'] or not data['password'] or not data['role']:
+        return jsonify({"status" : 400, "message" : "Please fill the username and password"}), 400
+    role = data['role'] if data['role'] != "admin" else "user"
+    checkDuplicationEmail = Users.query.filter_by(email=data['email']).first()
+    checkDuplicationUsername = Users.query.filter_by(username=data['username']).first()
     
-    # Register Process
-    if type == "register":
+    if checkDuplicationEmail or checkDuplicationUsername:
+        return jsonify({"status" : 409, "message" : "Account already exists"}), 409
+    try:
+        newUsers = Users(username=data['username'], email=data['email'], role=role) 
+        newUsers.set_password(data['password'])
+        db.session.add(newUsers)  
+        db.session.commit() 
+        return jsonify({
+            "status" : 201,
+            "message": "Register Success"
+            }), 201
+    except IntegrityError:
+        return jsonify({
+                "status" : 500,
+                "message": "Internal Server Error !",
+        }), 500
+   
+# Activities Controller
+def users(users_id):
+   methods = request.method
+   userID = users_id
+   
+   if methods == "GET" and userID is None:
+       try:
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
+            if token['role'] != 'admin':
+                return jsonify({"status": 403, "message": "Forbidden"}), 403
+            data = request.get_json()
+            if not data or not data['email'] :
+                user = Users.query.all()
+                users = [user.to_dict() for user in user]
+            else :
+                user = Users.query.filter_by(email=data['email'])
+                users = [user.to_dict() for user in user]
+            return jsonify({
+                "status" : 200,
+                "message" : "Get all users",
+                "Accounts" : users,
+            }), 200
+       except IntegrityError as err:
+           return jsonify({
+                "status" : 500,
+                "message" : "Internal Server Error",
+                # "err" : str(err)
+            }), 500
+   if methods == "POST" and userID is None:
         data = request.get_json()
-        if not data or not data['email'] or not data['username'] or not data['password'] or not data['role']:
-            return jsonify({"status" : 400, "message" : "Please fill the username and password"}), 400
-        checkDuplicationEmail = Users.query.filter_by(email=data['email']).first()
-        checkDuplicationUsername = Users.query.filter_by(username=data['username']).first()
-        
-        if checkDuplicationEmail or checkDuplicationUsername:
-            return jsonify({"status" : 409, "message" : "Account already exists"}), 409
+        if not data or not data['username'] or not data['email'] or not data['password'] or not data['role']:
+            return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
         try:
-            newUsers = Users(username=data['username'], email=data['email'], role=data['role']) 
-            newUsers.set_password(data['password'])
-            db.session.add(newUsers)  
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
+            if token['role'] != 'admin':
+                return jsonify({"status": 403, "message": "Forbidden"}), 403
+            checkDuplicationEmail = Users.query.filter_by(email=data['email']).first()
+            checkDuplicationUsername = Users.query.filter_by(username=data['username']).first()
+            if checkDuplicationEmail or checkDuplicationUsername:
+                return jsonify({"status" : 409, "message" : "Account already exists"}), 409
+            user = Users(username=data['username'], email=data['email'], role=data['role'])
+            user.set_password(password=data['password'])
+            db.session.add(user)
+            db.session.commit()
+            return jsonify({
+                "status" : 201,
+                "message" : "Create account successfully !",
+                "Accounts" : data
+            }), 201
+        except IntegrityError as err:
+           return jsonify({
+                "status" : 500,
+                "message" : "Internal Server Error",
+                # "err" : str(err)
+            }), 500   
+   if methods == "PUT" and userID is not None:
+       data = request.get_json()
+       if not data or not data['username'] or not data['email'] or not data['old_password'] or not data['new_password'] or not data['role']:
+            return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
+       try:
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
+            if token['role'] != 'admin':
+                return jsonify({"status": 403, "message": "Forbidden"}), 403
+            user = Users.query.get(userID)
+            if not user:
+                return jsonify({"status": 404, "message": "User not found !"}),404
+            checkOldPassword = Users.check_password(user.password_hash, data['old_password'])
+            if not checkOldPassword : 
+                return jsonify({"status":404, "message" : "old password incorrect !"}), 404
+            newPassword = bcrypt.generate_password_hash(data['new_password'])
+            user.username= data['username']
+            user.email= data['email']
+            user.password_hash= newPassword.decode('utf-8')
+            user.role= data['role']
+            db.session.commit()
+            return jsonify({
+                "status" : 200,
+                "message" : "Edit account data successfully",
+                "edited_account" : data
+            }), 200
+       except IntegrityError as err:
+           return jsonify({
+                "status" : 500,
+                "message" : "Internal Server Error",
+                # "err" : str(err)
+            }), 500
+       
+    # Delete one of source data
+   if methods == "DELETE" and userID is not None:
+       try:
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
+            if token['role'] != 'admin':
+                return jsonify({"status": 403, "message": "Forbidden"}), 403
+            user = Users.query.get(userID)
+            if not user:
+                return jsonify({"status": 404, "message": "Account not found !"}),404
+            db.session.delete(user)
             db.session.commit() 
             return jsonify({
-                "status" : 200,
-                "message": "Register Success"
-                }), 200
-        except IntegrityError:
-            return jsonify({
-                    "status" : 500,
-                    "message": "Internal Server Error !",
+                "status" : 202,
+                "message" : "Delete Account data successfully",
+            }), 202
+       except IntegrityError as err:
+           return jsonify({
+                "status" : 500,
+                "message" : "Internal Server Error",
+                # "err" : str(err)
             }), 500
-            
-    # Login Process
-    if type == "login":
-        data = request.get_json()
-        if not data or not data['email'] or not data['password']:
-            return jsonify({"status" : 400, "message" : "Invalid Request, please fill the email and password"}),400
-        currentUsers = Users.query.filter_by(email=data['email']).first()
-        if not currentUsers : return jsonify({"status": 404, "message": "Invalid Credentials !"}), 404
-        currentUser = currentUsers.to_dict()
-        try:
-            if not Users.check_password(currentUser['password_hash'], data['password']) : return jsonify({"status":404, "message" : "Invalid Credentials !"}), 404
-            user_id = str(currentUser['user_id'])
-            addional_claims= {
-                'username': currentUser['username'],
-                'role' : currentUser['role'],
-                'password' : currentUser['password_hash'] 
-            }
-            bearer_token = flask_jwt.create_access_token(identity=user_id, additional_claims=addional_claims)
-            return jsonify({
-                "status" : 200,
-                "role" : currentUser['role'],
-                "message": "Login Success",
-                "bearer_token" : bearer_token
-            }), 200 
-        except IntegrityError:
-            return jsonify({"status": 500, "message": "Internal Server Error"}), 500
-
+   
+           
 # Activities Controller
 def activities(activity_id):
    methods = request.method
@@ -229,10 +340,10 @@ def sources(source_id):
             db.session.add(addSource)
             db.session.commit()
             return jsonify({
-                "status" : 200,
+                "status" : 201,
                 "message" : "Add data source successfully",
                 "added_source" : data
-            }), 200
+            }), 201
        except IntegrityError:
            return jsonify({
                 "status" : 500,
@@ -271,9 +382,9 @@ def sources(source_id):
             db.session.delete(source)
             db.session.commit()
             return jsonify({
-                "status" : 200,
+                "status" : 202,
                 "message" : "Delete data source successfully",
-            }), 200
+            }), 202
        except IntegrityError:
            return jsonify({
                 "status" : 500,
@@ -336,10 +447,10 @@ def emissions(emission_id):
             db.session.add(addEmissions)
             db.session.commit()
             return jsonify({
-                "status" : 200,
+                "status" : 201,
                 "message" : "Add data emission successfully",
                 "added_emission" : data
-            }), 200
+            }), 201
        except IntegrityError as err:
            return jsonify({
                 "status" : 500,
@@ -383,9 +494,9 @@ def emissions(emission_id):
             db.session.delete(emission)
             db.session.commit()
             return jsonify({
-                "status" : 200,
+                "status" : 202,
                 "message" : "Delete emission data successfully",
-            }), 200
+            }), 202
        except IntegrityError as err:
            return jsonify({
                 "status" : 500,
@@ -448,10 +559,10 @@ def carbon_factors(carbonFact_id):
             db.session.add(addCarbonFact)
             db.session.commit()
             return jsonify({
-                "status" : 200,
+                "status" : 201,
                 "message" : "Add carbon factor data successfully",
                 "added_carbon_factor" : data
-            }), 200
+            }), 201
        except IntegrityError as err:
            return jsonify({
                 "status" : 500,
@@ -494,9 +605,9 @@ def carbon_factors(carbonFact_id):
             db.session.delete(carbonFact)
             db.session.commit() 
             return jsonify({
-                "status" : 200,
+                "status" : 202,
                 "message" : "Delete carbon factor data successfully",
-            }), 200
+            }), 202
        except IntegrityError as err:
            return jsonify({
                 "status" : 500,
@@ -558,10 +669,10 @@ def goals(goals_id):
             db.session.add(addGoal)
             db.session.commit()
             return jsonify({
-                "status" : 200,
+                "status" : 201,
                 "message" : "Add goal data successfully",
                 "added_goal" : data
-            }), 200
+            }), 201
        except IntegrityError as err:
            return jsonify({
                 "status" : 500,
@@ -603,9 +714,9 @@ def goals(goals_id):
             db.session.delete(goal)
             db.session.commit() 
             return jsonify({
-                "status" : 200,
+                "status" : 202,
                 "message" : "Delete goal data successfully",
-            }), 200
+            }), 202
        except IntegrityError as err:
            return jsonify({
                 "status" : 500,
@@ -668,10 +779,10 @@ def offsets(offsets_id):
             db.session.add(addOffset)
             db.session.commit()
             return jsonify({
-                "status" : 200,
+                "status" : 201,
                 "message" : "Add offset data successfully",
                 "added_offset" : data
-            }), 200
+            }), 201
        except IntegrityError as err:
            return jsonify({
                 "status" : 500,
@@ -714,9 +825,9 @@ def offsets(offsets_id):
             db.session.delete(offset)
             db.session.commit() 
             return jsonify({
-                "status" : 200,
+                "status" : 202,
                 "message" : "Delete offset data successfully",
-            }), 200
+            }), 202
        except IntegrityError as err:
            return jsonify({
                 "status" : 500,
@@ -779,10 +890,10 @@ def reports(reports_id):
             db.session.add(addReport)
             db.session.commit()
             return jsonify({
-                "status" : 200,
+                "status" : 201,
                 "message" : "Add Report data successfully",
                 "added_report" : data
-            }), 200
+            }), 201
        except IntegrityError as err:
            return jsonify({
                 "status" : 500,
@@ -825,9 +936,9 @@ def reports(reports_id):
             db.session.delete(report)
             db.session.commit() 
             return jsonify({
-                "status" : 200,
+                "status" : 202,
                 "message" : "Delete report data successfully",
-            }), 200
+            }), 202
        except IntegrityError as err:
            return jsonify({
                 "status" : 500,

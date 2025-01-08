@@ -19,6 +19,7 @@ class Users(db.Model):
         return {
             'user_id': self.user_id,
             'username': self.username,
+            'email': self.email,
             'password_hash': self.password_hash,
             'role' : self.role,
             'created_at' : self.created_at.isoformat()

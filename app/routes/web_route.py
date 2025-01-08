@@ -17,7 +17,7 @@ def register():
 
 # Logout
 @web.route("/logout", methods=['POST'])
-def logout():
+def logout(): 
     return web_controller.logout_page()
 
 # Dashboard
