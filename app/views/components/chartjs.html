@@ -1,12 +1,15 @@
-{% macro chartjs(data) %}
+{% macro totalEmisi(data) %}
 <div class="totalEmisi bg-white rounded-">
-  <h6>Total Emisi CO2</h6>
+  <h4>Total Emisi</h4>
+  {% for emisi in data.emissions %}
+  <h6>{{ emisi['amount'] }}</h6>
+  {% endfor %}
   <canvas id="totalEmisi"></canvas>
 </div>
 {% endmacro %}
 <script>
     const ctx = document.getElementById("totalEmisi").getContext('2d')
     const totalEmisi = new Chart(ctx, {
-        type:
+        type: ""
     })
 </script>

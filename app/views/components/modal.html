@@ -1,0 +1,138 @@
+{% from"components/button.html" import button %} 
+<!-- region modal users -->
+ <!-- Edit users -->
+{% macro modal_edit_users(id, id_modal = "", title = "text", data = "") %}
+<div class="container">
+  <div
+    class="modal fade"
+    id="{{ id_modal }}-{{ id }}"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+    tabindex="-1"
+    aria-labelledby="staticBackdropLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">{{ title }}</h1>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="row gap-2 p-2">
+            <form
+              action="{{ url_for('router-web.users', id= data.user_id) }}"
+              method="POST"
+            >
+            <input type="hidden" name="_method" value="PUT">
+              <div class="col-12">
+                <input
+                  class="form-control"
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  value="{{ data.email }}"
+                />
+              </div>
+              <div class="col-12">
+                <input
+                  class="form-control"
+                  type="text"
+                  name="username"
+                  placeholder="Username"
+                  value="{{ data.username }}"
+                />
+              </div>
+              <div class="col-12">
+                <select name="role" id="role" class="form-select">
+                  <option value="user" {% if data.role=="user" %} selected {% endif %}>User</option>
+                  <option value="company" {% if data.role=="company" %} selected {% endif %}>Company</option>
+                  <option value="admin" {% if data.role=="admin" %} selected {% endif %}>Admin</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <input
+                  class="form-control"
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                />
+              </div>
+                <div class="col p-4">
+                  <div class="row">
+                    <div class="col text-end">
+                      <!-- submit -->
+                      {{ button("submit", "info", "Submit", False, "")}}
+                    </form>
+                      <!-- kembali -->
+                      {{ button("modal", "secondary", "Kembali", False, "",
+                      id_modal~"-"~id) }}
+                    </div>
+                  </div>
+                </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
+<!-- delete users -->
+{% macro modal_delete_users(id, id_modal = "", title = "text", data = "") %}
+<div class="container">
+  <div
+    class="modal fade"
+    id="{{ id_modal }}-{{ id }}"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+    tabindex="-1"
+    aria-labelledby="staticBackdropLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">{{ title }}</h1>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="row gap-2 p-2">
+            <form
+              action="{{ url_for('router-web.users', id= data.user_id) }}"
+              method="POST"
+            > 
+            <input type="hidden" name="_method" value="DELETE">
+              <div class="col-12">
+                <p class="fs-4">Apakah anda yakin ingin menghapus</p>
+                <div class="fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">{{ data.username }}</div>
+              </div>
+                <div class="col p-4">
+                  <div class="row">
+                    <div class="col text-end">
+                      <!-- submit -->
+                      {{ button("submit", "danger", "Delete", False, "")}}
+                    </form>
+                      <!-- kembali -->
+                      {{ button("modal", "secondary", "Kembali", False, "",
+                      id_modal~"-"~id) }}
+                    </div>
+                  </div>
+                </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endmacro %}

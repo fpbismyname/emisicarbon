@@ -1,14 +1,14 @@
 {% from"components/button.html" import button %}
-{% macro Navbar(account) %}
-  <div class="navbar my-3 px-3 rounded-pill shadow bg-white bg-opacity-25">
-    <a class="navbar-brand fw-bold fs-4" href="/"
+{% macro Navbar(data) %}
+  <div class="navbar my-3 px-3 rounded-pill shadow bg-primary">
+    <a class="navbar-brand fw-bold fs-4 text-white" href="/"
       ><i class="bi bi-clouds me-2"></i>Emisi Karbon</a
     >
     <form action="/logout" method="POST">
       <div class="dropdown-center">
         <a
           type="button"
-          class="text-dark"
+          class="text-white"
           role="button"
           data-bs-toggle="dropdown"
           data-bs-display="static"
@@ -20,10 +20,10 @@
           <li>
             <div class="row text-center text-middle px-2">
               <div class="col">
-                <p class="badge text-bg-primary rounded-1">{{ account.username }}</p>
+                <p class="badge text-bg-primary rounded-1">{{ data.username }}</p>
               </div>
               <div class="col">
-                <span class="badge text-bg-warning">{{ account.role }}</span>
+                <span class="badge text-bg-warning">{{ data.role }}</span>
               </div>
             </div>
           </li>
@@ -47,6 +47,7 @@
           {{ button("/goals", "white", "Target Karbon", menu.goals) }}
           {{ button("/offsets", "white", "Offset Emisi", menu.offsets) }}
           {{ button("/reports", "white", "Laporan Emisi", menu.reports) }}
+          {{ button("/users", "white", "Kelola user", menu.users) }}
         </div>
       </div>
 {% endmacro %}

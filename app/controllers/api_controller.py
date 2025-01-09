@@ -79,11 +79,14 @@ def users(users_id):
             token = decode_token(request.headers.get('Authorization').split(" ")[1])
             if token['role'] != 'admin':
                 return jsonify({"status": 403, "message": "Forbidden"}), 403
-            data = request.get_json()
-            if not data or not data['email'] :
+            if not request.get_data():
+                # data = request.get_json()
                 user = Users.query.all()
                 users = [user.to_dict() for user in user]
             else :
+                data = request.get_json()
+                if not data or not data['email']:
+                    return jsonify({"status" : 400, "message" : "Please fill the email"}),400
                 user = Users.query.filter_by(email=data['email'])
                 users = [user.to_dict() for user in user]
             return jsonify({
@@ -126,7 +129,7 @@ def users(users_id):
             }), 500   
    if methods == "PUT" and userID is not None:
        data = request.get_json()
-       if not data or not data['username'] or not data['email'] or not data['old_password'] or not data['new_password'] or not data['role']:
+       if not data or not data['username'] or not data['email'] or not data['role']:
             return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
        try:
             token = decode_token(request.headers.get('Authorization').split(" ")[1])
@@ -135,13 +138,11 @@ def users(users_id):
             user = Users.query.get(userID)
             if not user:
                 return jsonify({"status": 404, "message": "User not found !"}),404
-            checkOldPassword = Users.check_password(user.password_hash, data['old_password'])
-            if not checkOldPassword : 
-                return jsonify({"status":404, "message" : "old password incorrect !"}), 404
-            newPassword = bcrypt.generate_password_hash(data['new_password'])
+            if data['password'] : 
+                newPassword = bcrypt.generate_password_hash(data['password'])
+                user.password_hash= newPassword.decode('utf-8')
             user.username= data['username']
             user.email= data['email']
-            user.password_hash= newPassword.decode('utf-8')
             user.role= data['role']
             db.session.commit()
             return jsonify({

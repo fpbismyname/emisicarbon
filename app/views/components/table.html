@@ -1,0 +1,38 @@
+{% from"components/modal.html" import modal_edit_users %}
+{% from"components/modal.html" import modal_delete_users %}
+{% from"components/button.html" import button %}
+
+{% macro table(data) %}
+<table
+  class="table table-borderless table-hover"
+  style="--bs-table-bg: transparent"
+>
+  <thead class="border-bottom border-dark">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Role</th>
+      <th scope="col">Username</th>
+      <th scope="col">Email</th>
+      <!-- <th scope="col">Password</th> -->
+      <th scope="col">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for data in data.Accounts %}
+    <tr>
+      <td>{{ data.user_id }}</td>
+      <td>{{ data.role }}</td>
+      <td>{{ data.username }}</td>
+      <td>{{ data.email }}</td>
+      <!-- <td>{{ data.password_hash }}</td> -->
+      <td>
+        {{ button("modal", "info", "Edit", False, "", "#editUsers"~"-"~data.user_id) }}
+        {{ button("modal", "danger", "Delete", False, "", "#deleteUsers"~"-"~data.user_id) }}
+      </td>
+      {{ modal_edit_users(data.user_id, "editUsers", data.username + " - Edit Users", data) }}
+      {{ modal_delete_users(data.user_id, "deleteUsers", data.username + " - Delete Users", data) }}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endmacro %}
