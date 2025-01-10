@@ -42,7 +42,7 @@
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "css.lint.unknownAtRules": "ignore",
-    "workbench.colorTheme": "G Dark (Valhalla)",
+    "workbench.colorTheme": "GitHub Light",
     "editor.fontWeight": "600",
     "terminal.integrated.fontWeight": "normal",
     "chat.editor.fontWeight": "bold",

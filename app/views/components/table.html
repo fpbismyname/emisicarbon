@@ -1,38 +1,89 @@
-{% from"components/modal.html" import modal_edit_users %}
-{% from"components/modal.html" import modal_delete_users %}
+{% from"components/modal.html" import modal_add, modal_edit, modal_delete %}
 {% from"components/button.html" import button %}
-
-{% macro table(data) %}
-<table
-  class="table table-borderless table-hover"
-  style="--bs-table-bg: transparent"
->
-  <thead class="border-bottom border-dark">
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Role</th>
-      <th scope="col">Username</th>
-      <th scope="col">Email</th>
-      <!-- <th scope="col">Password</th> -->
-      <th scope="col">Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for data in data.Accounts %}
-    <tr>
-      <td>{{ data.user_id }}</td>
-      <td>{{ data.role }}</td>
-      <td>{{ data.username }}</td>
-      <td>{{ data.email }}</td>
-      <!-- <td>{{ data.password_hash }}</td> -->
-      <td>
-        {{ button("modal", "info", "Edit", False, "", "#editUsers"~"-"~data.user_id) }}
-        {{ button("modal", "danger", "Delete", False, "", "#deleteUsers"~"-"~data.user_id) }}
-      </td>
-      {{ modal_edit_users(data.user_id, "editUsers", data.username + " - Edit Users", data) }}
-      {{ modal_delete_users(data.user_id, "deleteUsers", data.username + " - Delete Users", data) }}
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+{% macro table(data=[]) %}
+<div class="row">
+  <div class="col">
+    {% if data['menu']['users'] %}
+    <p class="fs-4"><i class="bi bi-person-fill me-2"></i>Kelola users</p>
+    {% elif data['menu']['activities'] %}
+    <p class="fs-4"><i class="bi bi-person-fill me-2"></i>Kelola activities</p>
+    {% endif %}
+  </div>
+  <div class="col-auto">
+    {% if data['menu']['users'] %}
+    {{ button("modal", "primary", "Tambah users", False, "", "addUsers") }}
+    {{ modal_add("", "addUsers", "Tambah users Baru", "", data) }}
+    {% elif data['menu']['activities'] %}
+    {{ button("modal", "primary", "Tambah aktivitas", False, "", "addActivities") }}
+    {{ modal_add("", "addActivities", "Tambah aktivitas Baru", "", data) }}
+    {% endif %}
+  </div>
+</div>
+<div class="row">
+  <div class="col-12">
+    <table
+      class="table table-borderless table-hover"
+      style="--bs-table-bg: transparent"
+    >
+      <thead class="border-bottom border-dark">
+      {% if data['menu']['users'] %}
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Role</th>
+          <th scope="col">Username</th>
+          <th scope="col">Email</th>
+          <th scope="col">Action</th>
+        </tr>
+      {% elif data['menu']['activities'] %}
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">User</th>
+          <th scope="col">Factor</th>
+          <th scope="col">Total emisi</th>
+          <th scope="col">Tanggal Aktivitas</th>
+          <th scope="col">Tanggal Laporan</th>
+          <th scope="col">Action</th>
+        </tr>
+      {% endif %}
+      </thead>
+      <tbody>  
+        <!--Table user -->
+        {% if data['menu']['users'] %}
+          {% for dt in data['datas']['accounts'] %} 
+          <tr>
+            <td>{{ loop.index }}</td>  
+            <td>{{ dt.role }}</td>
+            <td>{{ dt.username }}</td>  
+            <td>{{ dt.email }}</td>
+            <td>
+              {{ button("modal", "info", "Edit", False, "", "editUsers"~"-"~dt.user_id) }}
+              {{ button("modal", "danger", "Delete", False, "", "deleteUsers"~"-"~dt.user_id) }}
+            </td>
+            {{ modal_edit(dt.user_id, "editUsers", dt.username ~ " - Edit user", dt, data) }}
+            {{ modal_delete(dt.user_id, "deleteUsers", dt.username ~ " - Delete user", dt, data) }}
+          </tr>
+          {% endfor %}  
+        <!-- Table activity -->
+        {% elif data['menu']['activities'] %}
+          {% for dt in data['datas']['activities'] %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ dt.user_id}}</td>
+            <td>{{ dt.factor_id }}</td>
+            <td>{{ dt.amount }}</td> 
+            <td>{{ dt.activity_date }}</td> 
+            <td>{{ dt.report_date }}</td>
+            <td>
+              {{ button("modal", "info", "Edit", False, "", "editActivity"~"-"~dt.activity_id) }}
+              {{ button("modal", "danger", "Delete", False, "", "deleteActivity"~"-"~dt.activity_id) }}
+            </td> 
+            {{ modal_edit(dt.activity_id, "editActivity", dt.factor_id ~ " - Edit Users", dt, data) }}
+            {{ modal_delete(dt.activity_id, "deleteActivity", dt.factor_id ~ " - Delete Users", dt, data) }}
+          </tr>
+          {% endfor %}
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
 {% endmacro %}

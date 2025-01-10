@@ -1,7 +1,139 @@
 {% from"components/button.html" import button %} 
-<!-- region modal users -->
- <!-- Edit users -->
-{% macro modal_edit_users(id, id_modal = "", title = "text", data = "") %}
+<!-- Add modal -->
+{% macro modal_add(id, id_modal = "", title = "text", dt = [], data = []) %}
+<div class="container">
+  <div
+    class="modal fade"
+    id="{{ id_modal }}"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+    tabindex="-1"
+    aria-labelledby="staticBackdropLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">{{ title }}</h1>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="row p-2">
+            <form
+            action="
+            {% if data['menu']['users'] %}
+            {{ url_for('router-web.users') }}
+            {% endif %}
+            {% if data['menu']['activities'] %}
+            {{ url_for('router-web.activities') }}
+            {% endif %}"
+            method="POST"
+            >
+            <div class="col-12">
+              <input type="hidden" name="_method" value="POST">
+            </div>
+            {% if data['menu']['users'] %}
+              <div class="col-12 mb-2">
+                <input
+                  class="form-control"
+                  type="email"
+                  name="email"  
+                  placeholder="Email baru"
+                />
+              </div>
+              <div class="col-12 mb-2">
+                <input
+                  class="form-control"
+                  type="text"
+                  name="username"
+                  placeholder="Username baru"
+                />
+              </div>
+              <div class="col-12 mb-2">
+                <select name="role" id="role" class="form-select">
+                  <option value="user" {% if data['role']=="user" %} selected {% endif %}>User</option>
+                  <option value="company" {% if data['role']=="company" %} selected {% endif %}>Company</option>
+                  <option value="admin" {% if data['role']=="admin" %} selected {% endif %}>Admin</option>
+                </select>
+              </div>
+              <div class="col-12 mb-2">
+                <input
+                  class="form-control"
+                  type="password"
+                  name="password"
+                  placeholder="Password baru"
+                />
+              </div>
+              <div class="col p-4">
+                <div class="row">
+                  <div class="col text-end">
+                    <!-- submit -->
+                    {{ button("submit", "info", "Submit", False, "")}}
+                    <!-- kembali -->
+                    {{ button("modal", "secondary", "Kembali", False, "", id_modal) }}
+                  </div>
+                </div>
+              </div>
+            {% elif data['menu']['activities'] %}
+              <div class="col-12 mb-2">
+                <input
+                  class="form-control"
+                  type="hidden"
+                  name="user_id"
+                  value="{{ data['user_id'] }}"
+                />
+              </div>
+              <div class="col-12 mb-2">
+                <input
+                  class="form-control"
+                  type="text"
+                  name="factor_id"
+                  placeholder="Faktor"
+                />
+              </div>
+              <div class="col-12 mb-2">
+                <input
+                  class="form-control"
+                  type="text"
+                  name="amount"
+                  placeholder="Total Emisi"
+                />
+              </div>
+              <div class="col-12 mb-2">
+                <input
+                  class="form-control"
+                  type="date"
+                  name="activity_date"
+                  placeholder="Tanggal Aktivitas"
+                />
+              </div>
+              <div class="col p-4">
+                <div class="row">
+                  <div class="col text-end">
+                    <!-- submit -->
+                    {{ button("submit", "info", "Submit", False, "")}}
+                    <!-- kembali -->
+                    {{ button("modal", "secondary", "Kembali", False, "", id_modal) }}
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
+<!-- Edit Modal -->
+{% macro modal_edit(id, id_modal = "", title = "text", dt=[], data = []) %}
 <div class="container">
   <div
     class="modal fade"
@@ -24,57 +156,113 @@
           ></button>
         </div>
         <div class="modal-body">
-          <div class="row gap-2 p-2">
-            <form
-              action="{{ url_for('router-web.users', id= data.user_id) }}"
-              method="POST"
+          <div class="row p-2">
+          <form
+            action="
+            {% if data['menu']['users'] %}
+            {{ url_for('router-web.users', id= id) }}
+            {% endif %}
+            {% if data['menu']['activities'] %}
+            {{ url_for('router-web.activities', id= id) }}
+            {% endif %}"
+            method="POST"
             >
-            <input type="hidden" name="_method" value="PUT">
-              <div class="col-12">
+            <div class="col-12">
+              <input type="hidden" name="_method" value="PUT">
+            </div>
+            {% if data['menu']['users'] %}
+              <div class="col-12 mb-2">
                 <input
                   class="form-control"
                   type="email"
-                  name="email"
-                  placeholder="Email"
-                  value="{{ data.email }}"
-                />
-              </div>
-              <div class="col-12">
+                  name="email"  
+                  placeholder="Email baru"
+                  value="{{ dt['email'] }}"
+                  />
+                </div>
+              <div class="col-12 mb-2">
                 <input
                   class="form-control"
                   type="text"
                   name="username"
-                  placeholder="Username"
-                  value="{{ data.username }}"
+                  placeholder="Username baru"
+                  value="{{ dt['username'] }}"
                 />
               </div>
-              <div class="col-12">
+              <div class="col-12 mb-2">
                 <select name="role" id="role" class="form-select">
-                  <option value="user" {% if data.role=="user" %} selected {% endif %}>User</option>
-                  <option value="company" {% if data.role=="company" %} selected {% endif %}>Company</option>
-                  <option value="admin" {% if data.role=="admin" %} selected {% endif %}>Admin</option>
+                  <option value="user" {% if data['role']=="user" %} selected {% endif %}>User</option>
+                  <option value="company" {% if data['role']=="company" %} selected {% endif %}>Company</option>
+                  <option value="admin" {% if data['role']=="admin" %} selected {% endif %}>Admin</option>
                 </select>
               </div>
-              <div class="col-12">
+              <div class="col-12 mb-2">
                 <input
                   class="form-control"
                   type="password"
                   name="password"
-                  placeholder="Password"
+                  placeholder="Password baru"
                 />
               </div>
-                <div class="col p-4">
-                  <div class="row">
-                    <div class="col text-end">
-                      <!-- submit -->
-                      {{ button("submit", "info", "Submit", False, "")}}
-                    </form>
-                      <!-- kembali -->
-                      {{ button("modal", "secondary", "Kembali", False, "",
-                      id_modal~"-"~id) }}
-                    </div>
+              <div class="col p-4">
+                <div class="row">
+                  <div class="col text-end">
+                    <!-- submit -->
+                    {{ button("submit", "info", "Submit", False, "")}}
+                    <!-- kembali -->
+                    {{ button("modal", "secondary", "Kembali", False, "", id_modal) }}
                   </div>
                 </div>
+              </div>
+            {% endif %}
+            {% if data['menu']['activities'] %}
+            <div class="col-12 mb-2">
+              <input
+                class="form-control"
+                type="hidden"
+                name="user_id"
+                value="{{ dt['user_id'] }}"
+              />
+            </div>
+            <div class="col-12 mb-2">
+              <input
+                class="form-control"
+                type="text"
+                name="factor_id"
+                placeholder="Faktor"
+                value="{{ dt['factor_id'] }}"
+              />
+            </div>
+            <div class="col-12 mb-2">
+              <input
+                class="form-control"
+                type="text"
+                name="amount"
+                placeholder="Total Emisi"
+                value="{{ dt['amount'] }}"
+              />
+            </div>
+            <div class="col-12 mb-2">
+              <input
+                class="form-control"
+                type="date"
+                name="activity_date"
+                placeholder="Tanggal Aktivitas"
+                value="{{ dt['activity_date'] }}"
+              />
+            </div>
+            <div class="col p-4">
+              <div class="row">
+                <div class="col text-end">
+                  <!-- submit -->
+                  {{ button("submit", "info", "Submit", False, "")}}
+                  <!-- kembali -->
+                  {{ button("modal", "secondary", "Kembali", False, "", id_modal) }}
+                </div>
+              </div>
+            </div>
+            {% endif %}
+          </form>
           </div>
         </div>
       </div>
@@ -84,7 +272,7 @@
 {% endmacro %}
 
 <!-- delete users -->
-{% macro modal_delete_users(id, id_modal = "", title = "text", data = "") %}
+{% macro modal_delete(id, id_modal = "", title = "text", dt=[], data = []) %}
 <div class="container">
   <div
     class="modal fade"
@@ -109,14 +297,26 @@
         <div class="modal-body">
           <div class="row gap-2 p-2">
             <form
-              action="{{ url_for('router-web.users', id= data.user_id) }}"
-              method="POST"
+            action="
+            {% if data['menu']['users'] %}
+            {{ url_for('router-web.users', id= id) }}
+            {% elif data['menu']['activities'] %}
+            {{ url_for('router-web.activities', id=id) }}
+            {% endif %}"
+            method="POST"
             > 
             <input type="hidden" name="_method" value="DELETE">
+            {% if data['menu']['users'] %}
               <div class="col-12">
                 <p class="fs-4">Apakah anda yakin ingin menghapus</p>
-                <div class="fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">{{ data.username }}</div>
+                <div class="fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">{{ dt['username'] }}</div>
               </div>
+            {% elif data['menu']['activities'] %}
+              <div class="col-12">
+                <p class="fs-4">Apakah anda yakin ingin menghapus</p>
+                <div class="fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">{{ dt['activity_id'] }}</div>
+              </div>
+            {% endif %}
                 <div class="col p-4">
                   <div class="row">
                     <div class="col text-end">
@@ -124,8 +324,7 @@
                       {{ button("submit", "danger", "Delete", False, "")}}
                     </form>
                       <!-- kembali -->
-                      {{ button("modal", "secondary", "Kembali", False, "",
-                      id_modal~"-"~id) }}
+                      {{ button("modal", "secondary", "Kembali", False, "",id_modal~"-"~id) }}
                     </div>
                   </div>
                 </div>

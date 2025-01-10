@@ -31,12 +31,19 @@ def dashboard():
 # endregion
 
 # region Kelola user
-@web.route("/users", defaults={ "id" : None }, methods=['GET'])
+@web.route("/users", defaults={ "id" : None }, methods=['GET', 'POST'])
 @web.route("/users/<int:id>", methods=['POST'])
 @access_token
 @adminOnly
 def users(id):
     return web_controller.users_page(user_id=id)
+# endregion
 
-
+# region Kelola user
+@web.route("/activities", defaults={ "id" : None }, methods=['GET', 'POST'])
+@web.route("/activities/<int:id>", methods=['POST'])
+@access_token
+@adminOnly
+def activities(id):
+    return web_controller.activities_page(id=id)
 # endregion

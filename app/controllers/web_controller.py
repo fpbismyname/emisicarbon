@@ -116,11 +116,36 @@ def users_page(user_id):
     # methods
     if methods is None and userId is None:
         return users_get()
+    if methods == "POST" and userId is None:
+        return users_add()
     if methods == "PUT" and userId is not None:
         return users_edit(userId)
     if methods == "DELETE" and userId is not None:
         return users_delete(userId)
-    
+# region users add
+def users_add():
+    # region fetch api
+    headers = {
+                'Content-Type': 'application/json',
+                'Authorization' : f"Bearer {session.get('access_token_cookie')}"
+            }
+    payloads = {
+                "username": request.form.get("username"),
+                "role": request.form.get("role"),
+                "email": request.form.get("email"),
+                "password": request.form.get("password"),
+            }
+    response = requests.post(url=f"{url}/users", headers=headers, json=payloads)
+    res_data = response.json()
+    # Response Data
+    if response.status_code == 201:
+        flash(res_data['message'], "success")
+    else : 
+        flash(res_data['message'], "danger")
+        
+    return redirect(url_for("router-web.users"))
+    # endregion
+# endregion
 # region user get
 def users_get():
     # region fetch api
@@ -129,10 +154,12 @@ def users_get():
                 'Authorization' : f"Bearer {session.get('access_token_cookie')}"
             }
     response = requests.get(url=f"{url}/users", headers=headers)
-    allUsers = response.json()
+    alldata = response.json()
     # endregion
     # region data users
+    account = decode_token(session.get('access_token_cookie'))
     data = {
+        "user_id" : account['sub'],
         "title" : "Kelola user",
         "username" : session.get('username'),
         "role" : session.get('role'),
@@ -147,7 +174,7 @@ def users_get():
             "reports" : False,
             "users" : True
         },
-        "users" : allUsers
+        "datas" : alldata
     }
     return render_template("page/users.html", data=data)
     # endregion
@@ -191,7 +218,7 @@ def users_delete(users_id = None):
     res_data = response.json()
     
     # Response Data
-    if response.status_code == 200:
+    if response.status_code == 202:
         if session.get('user_id') == user_id:
             session.clear()
         flash(res_data['message'], "success")
@@ -199,6 +226,134 @@ def users_delete(users_id = None):
         flash(res_data['message'], "danger")
         
     return redirect(url_for("router-web.users"))
+    # endregion
+# endregion
+# endregion
+
+# region kelola activities
+# View activities
+def activities_page(id):
+    methods = request.form.get("_method")
+    Id = id
+    # methods
+    if methods is None and Id is None:
+        return activities_get()
+    if methods == "POST" and Id is None:
+        return activities_add()
+    if methods == "PUT" and Id is not None:
+        return activities_edit(Id)
+    if methods == "DELETE" and Id is not None:
+        return users_delete(Id)
+# region user get
+def activities_get():
+    # region fetch api
+    headers = {
+                'Content-Type': 'application/json',
+                'Authorization' : f"Bearer {session.get('access_token_cookie')}"
+            }
+    response = requests.get(url=f"{url}/activities", headers=headers)
+    alldata = response.json()
+    # endregion
+    # region data users
+    # function 
+    def formatTime(dates, format="%d-%m-%Y %H:%M:%S"):
+        return dates.strftime(format)
+    function = {
+        "current_time" : formatTime
+    }
+    # data
+    account = decode_token(session.get('access_token_cookie'))
+    data = {
+        "user_id" : account['sub'],
+        "title" : "Kelola Aktivitas",
+        "username" : session.get('username'),
+        "role" : session.get('role'),
+        "func" : function,
+        "menu" : {
+            "dashboard" : False,
+            "activities" : True,
+            "sources" : False,
+            "emissions" : False,
+            "factor_carbons" : False,
+            "goals" : False,
+            "offsets" : False,
+            "reports" : False,
+            "users" : False
+        },
+        "datas" : alldata
+    }
+    return render_template("page/activities.html", data=data)
+    # endregion
+# endregion
+# region activity add
+def activities_add():
+    # region fetch api
+    headers = {
+                'Content-Type': 'application/json',
+                'Authorization' : f"Bearer {session.get('access_token_cookie')}"
+            }
+    payloads = {
+                "user_id": request.form.get("user_id"),
+                "factor_id": request.form.get("factor_id"),
+                "amount": request.form.get("amount"),
+                "activity_date": request.form.get("activity_date"),
+            }
+    response = requests.post(url=f"{url}/activities", headers=headers, json=payloads)
+    res_data = response.json()
+    # Response Data
+    if response.status_code == 201:
+        flash(res_data['message'], "success")
+    else : 
+        flash(res_data['message'], "danger")
+        
+    return redirect(url_for("router-web.activities"))
+    # endregion
+# endregion
+# region users edit
+def activities_edit(id = None):
+    # region fetch api
+    Id = id
+    method = "activities"
+    headers = {
+                'Content-Type': 'application/json',
+                'Authorization' : f"Bearer {session.get('access_token_cookie')}"
+            }
+    payloads = {
+                "user_id": request.form.get("user_id"),
+                "factor_id": request.form.get("factor_id"),
+                "amount": request.form.get("amount"),
+                "activity_date": request.form.get("activity_date"),
+            }
+    response = requests.put(url=f"{url}/{method}/{Id}", headers=headers, json=payloads)
+    res_data = response.json()
+    # Response Data
+    if response.status_code == 200:
+        flash(res_data['message'], "success")
+    else : 
+        flash(res_data['message'], "danger")
+        
+    return redirect(url_for("router-web.activities"))
+    # endregion
+# endregion
+# region users delete
+def users_delete(id = None):
+    # region fetch api
+    Id = id
+    method = "activities"
+    headers = {
+                'Content-Type': 'application/json',
+                'Authorization' : f"Bearer {session.get('access_token_cookie')}"
+            }
+    response = requests.delete(url=f"{url}/{method}/{Id}", headers=headers)
+    res_data = response.json()
+    
+    # Response Data
+    if response.status_code == 202:
+        flash(res_data['message'], "success")
+    else : 
+        flash(res_data['message'], "danger")
+        
+    return redirect(url_for("router-web.activities"))
     # endregion
 # endregion
 # endregion

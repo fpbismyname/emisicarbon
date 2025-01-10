@@ -1,39 +1,41 @@
 {% from"components/button.html" import button %}
 {% macro Navbar(data) %}
   <div class="navbar my-3 px-3 rounded-pill shadow bg-primary">
-    <a class="navbar-brand fw-bold fs-4 text-white" href="/"
-      ><i class="bi bi-clouds me-2"></i>Emisi Karbon</a
-    >
-    <form action="/logout" method="POST">
-      <div class="dropdown-center">
-        <a
-          type="button"
-          class="text-white"
-          role="button"
-          data-bs-toggle="dropdown"
-          data-bs-display="static"
-          aria-expanded="false"
-        >
-          <i class="bi bi-person-circle fs-4"></i>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end bg-white border-0 rounded-4 shadow p-2">
-          <li>
-            <div class="row text-center text-middle px-2">
-              <div class="col">
-                <p class="badge text-bg-primary rounded-1">{{ data.username }}</p>
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold fs-4 text-white" href="/"
+        ><i class="bi bi-clouds me-2"></i>Emisi Karbon</a
+      >
+      <form action="/logout" method="POST">
+        <div class="dropdown-center">
+          <a
+            type="button"
+            class="text-white"
+            role="button"
+            data-bs-toggle="dropdown"
+            data-bs-display="static"
+            aria-expanded="false"
+          >
+            <i class="bi bi-person-circle fs-4"></i>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end bg-white border-0 rounded-4 shadow p-2">
+            <li>
+              <div class="row text-center text-middle px-2">
+                <div class="col">
+                  <p class="badge text-bg-primary rounded-1">{{ data.username }}</p>
+                </div>
+                <div class="col">
+                  <span class="badge text-bg-warning">{{ data.role }}</span>
+                </div>
               </div>
-              <div class="col">
-                <span class="badge text-bg-warning">{{ data.role }}</span>
-              </div>
-            </div>
-          </li>
-          <li class="dropdown-divider"></li>
-          <li>
-            {{ button("submit", "", "Logout", False, "btn btn-sm rounded-3 btn-danger dropdown-item") }}
-          </li>
-        </ul>
-      </div>
-    </form>
+            </li>
+            <li class="dropdown-divider"></li>
+            <li>
+              {{ button("submit", "", "Logout", False, "btn btn-sm rounded-3 btn-danger dropdown-item") }}
+            </li>
+          </ul>
+        </div>
+      </form>
+    </div>
   </div>
 {% endmacro %}
 {% macro Menubar(role, menu) %}

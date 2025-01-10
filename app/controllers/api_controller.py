@@ -92,7 +92,7 @@ def users(users_id):
             return jsonify({
                 "status" : 200,
                 "message" : "Get all users",
-                "Accounts" : users,
+                "accounts" : users,
             }), 200
        except IntegrityError as err:
            return jsonify({
@@ -178,7 +178,6 @@ def users(users_id):
                 "message" : "Internal Server Error",
                 # "err" : str(err)
             }), 500
-   
            
 # Activities Controller
 def activities(activity_id):
@@ -223,7 +222,7 @@ def activities(activity_id):
     # Add one source data
    if methods == "POST" and activityID is None:
        data = request.get_json()
-       if not data or not data['user_id'] or not data['factor_id'] or not data['amount'] or not data['activity_date'] or not data['report_date']:
+       if not data or not data['user_id'] or not data['factor_id'] or not data['amount'] or not data['activity_date']:
            return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
        try:
             addActivity = Activities(
@@ -231,15 +230,14 @@ def activities(activity_id):
                 factor_id= data['factor_id'],
                 amount= data['amount'],
                 activity_date= data['activity_date'],
-                report_date= data['report_date']
             )
             db.session.add(addActivity)
             db.session.commit()
             return jsonify({
-                "status" : 200,
-                "message" : "Add carbon factor data successfully",
+                "status" : 201,
+                "message" : "Add activity data successfully",
                 "added_activity" : data
-            }), 200
+            }), 201
        except IntegrityError as err:
            return jsonify({
                 "status" : 500,
@@ -250,7 +248,7 @@ def activities(activity_id):
     # Update one of source data
    if methods == "PUT" and activityID is not None:
        data = request.get_json()
-       if not data or not data['user_id'] or not data['factor_id'] or not data['amount'] or not data['activity_date'] or not data['report_date']:
+       if not data or not data['user_id'] or not data['factor_id'] or not data['amount'] or not data['activity_date']:
            return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
        try:
             activity = Activities.query.get(activityID)
@@ -260,7 +258,6 @@ def activities(activity_id):
             activity.factor_id= data['factor_id']
             activity.amount= data['amount']
             activity.activity_date= data['activity_date']
-            activity.report_date= data['report_date']
             db.session.commit()
             return jsonify({
                 "status" : 200,
@@ -283,9 +280,9 @@ def activities(activity_id):
             db.session.delete(activity)
             db.session.commit() 
             return jsonify({
-                "status" : 200,
+                "status" : 202,
                 "message" : "Delete activity data successfully",
-            }), 200
+            }), 202
        except IntegrityError as err:
            return jsonify({
                 "status" : 500,
