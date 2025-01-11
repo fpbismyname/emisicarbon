@@ -17,7 +17,7 @@ def seed():
             data2 = Users(email='fajar@gmail.com', username='Fajar PB', role='admin')
             data2.set_password(password='fajar')
             db.session.add(data)
-            db.session.add(data2) 
+            db.session.add(data2)
             db.session.commit()
             
     # Activities seeder

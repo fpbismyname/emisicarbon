@@ -10,7 +10,7 @@ from app.database.models.Goals import Goals
 from app.database.models.Offsets import Offsets
 from app.database.models.Reports import Reports
 
-controller = Blueprint("controller-api", __name__)
+api = Blueprint("controller-api", __name__)
 
 # Create Method for controll the routes
 
@@ -129,7 +129,7 @@ def users(users_id):
             }), 500   
    if methods == "PUT" and userID is not None:
        data = request.get_json()
-       if not data or not data['username'] or not data['email'] or not data['role']:
+       if not data:
             return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
        try:
             token = decode_token(request.headers.get('Authorization').split(" ")[1])
@@ -248,7 +248,7 @@ def activities(activity_id):
     # Update one of source data
    if methods == "PUT" and activityID is not None:
        data = request.get_json()
-       if not data or not data['user_id'] or not data['factor_id'] or not data['amount'] or not data['activity_date']:
+       if not data:
            return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
        try:
             activity = Activities.query.get(activityID)
@@ -351,7 +351,7 @@ def sources(source_id):
     # Update one of source data
    if methods == "PUT" and sourceID is not None:
        data = request.get_json()
-       if not data or not data['source_name'] or not data['description']:
+       if not data:
            return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"}), 400
        try:
             source = Sources.query.get(sourceID)
@@ -432,15 +432,14 @@ def emissions(emission_id):
     # Add one source data
    if methods == "POST" and emissionID is None:
        data = request.get_json()
-       if not data or not data['user_id'] or not data['source_id'] or not data['amount'] or not data['emission_date'] or not data['report_date']:
-           return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"}),400
+       if not data or not data['user_id'] or not data['source_id'] or not data['amount'] or not data['emission_date'] :
+           return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
        try:
             addEmissions = Emissions(
                 user_id=data['user_id'],
                 source_id=data['source_id'],
                 amount=data['amount'],
                 emission_date=data['emission_date'],
-                report_date=data['report_date']
             )
             db.session.add(addEmissions)
             db.session.commit()
@@ -459,17 +458,15 @@ def emissions(emission_id):
     # Update one of source data
    if methods == "PUT" and emissionID is not None:
        data = request.get_json()
-       if not data or not data['user_id'] or not data['source_id'] or not data['amount'] or not data['emission_date'] or not data['report_date']:
+       if not data:
            return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"}),400
        try:
             emission = Emissions.query.get(emissionID)
             if not emission:
                 return jsonify({"status": 404, "message": "Emission not found !"}),404
-            emission.user_id = data['user_id']
             emission.source_id= data['source_id']
             emission.amount= data['amount']
             emission.emission_date= data['emission_date']
-            emission.report_date= data['report_date']
             db.session.commit()
             return jsonify({
                 "status" : 200,
@@ -546,7 +543,7 @@ def carbon_factors(carbonFact_id):
    if methods == "POST" and carbonFactorID is None:
        data = request.get_json()
        if not data or not data['source_id'] or not data['description'] or not data['conversion_factor'] or not data['unit']:
-           return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"}),400
+           return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
        try:
             addCarbonFact = CarbonFactors(
                 source_id=data['source_id'],
@@ -571,7 +568,7 @@ def carbon_factors(carbonFact_id):
     # Update one of source data
    if methods == "PUT" and carbonFactorID is not None:
        data = request.get_json()
-       if not data or not data['source_id'] or not data['description'] or not data['conversion_factor'] or not data['unit']:
+       if not data:
            return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"}),400
        try:
             carbonFact = CarbonFactors.query.get(carbonFactorID)
@@ -657,7 +654,7 @@ def goals(goals_id):
    if methods == "POST" and goalID is None:
        data = request.get_json()
        if not data or not data['user_id'] or not data['target_emission'] or not data['deadline']:
-           return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"}),400
+           return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
        try:
             addGoal = Goals(
                 user_id=data['user_id'],
@@ -681,7 +678,7 @@ def goals(goals_id):
     # Update one of source data
    if methods == "PUT" and goalID is not None:
        data = request.get_json()
-       if not data or not data['user_id'] or not data['target_emission'] or not data['deadline']:
+       if not data:
            return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"}),400
        try:
             goal = Goals.query.get(goalID)
@@ -766,7 +763,7 @@ def offsets(offsets_id):
    if methods == "POST" and offsetID is None:
        data = request.get_json()
        if not data or not data['user_id'] or not data['project_name'] or not data['offset_amount'] or not data['offset_date']:
-           return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"}),400
+           return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
        try:
             addOffset = Offsets(
                 user_id=data['user_id'],
@@ -791,7 +788,7 @@ def offsets(offsets_id):
     # Update one of source data
    if methods == "PUT" and offsetID is not None:
        data = request.get_json()
-       if not data or not data['user_id'] or not data['project_name'] or not data['offset_amount'] or not data['offset_date']:
+       if not data:
            return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"}),400
        try:
             offset = Offsets.query.get(offsetID)
@@ -837,7 +834,7 @@ def offsets(offsets_id):
 def reports(reports_id):
    methods = request.method
    reportID = reports_id
-   
+
     # Get all the source data
    if methods == "GET" and reportID is None:
        try:
@@ -877,7 +874,7 @@ def reports(reports_id):
    if methods == "POST" and reportID is None:
        data = request.get_json()
        if not data or not data['user_id'] or not data['start_date'] or not data['end_date'] or not data['total_emission']:
-           return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"}),400
+           return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
        try:
             addReport = Reports(
                 user_id=data['user_id'],
@@ -902,7 +899,7 @@ def reports(reports_id):
     # Update one of source data
    if methods == "PUT" and reportID is not None:
        data = request.get_json()
-       if not data or not data['user_id'] or not data['start_date'] or not data['end_date'] or not data['total_emission']:
+       if not data:
            return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"}),400
        try:
             report = Reports.query.get(reportID)

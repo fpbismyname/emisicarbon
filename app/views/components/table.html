@@ -3,20 +3,53 @@
 {% macro table(data=[]) %}
 <div class="row">
   <div class="col">
-    {% if data['menu']['users'] %}
-    <p class="fs-4"><i class="bi bi-person-fill me-2"></i>Kelola users</p>
-    {% elif data['menu']['activities'] %}
-    <p class="fs-4"><i class="bi bi-person-fill me-2"></i>Kelola activities</p>
-    {% endif %}
+    <p class="fs-4"><i class="bi 
+      {% if data['menu']['users'] %}
+      bi-person-fill
+      {% elif data['menu']['activities'] %}
+      bi-list-task
+      {% elif data['menu']['sources'] %}
+      bi-cloud-fog2-fill
+      {% elif data['menu']['emissions'] %}
+      bi-cloud-haze-fill
+      {% elif data['menu']['carbon_factors'] %}
+      bi-cloud-arrow-down-fill
+      {% elif data['menu']['goals'] %}
+      bi-cloud-check-fill
+      {% elif data['menu']['offsets'] %}
+      bi-cloud-slash-fill
+      {% elif data['menu']['reports'] %}
+      bi-file-earmark-arrow-down-fill
+      {% endif %}
+      me-2"></i>{{ data['title'] }}</p>
   </div>
   <div class="col-auto">
     {% if data['menu']['users'] %}
-    {{ button("modal", "primary", "Tambah users", False, "", "addUsers") }}
-    {{ modal_add("", "addUsers", "Tambah users Baru", "", data) }}
+      {{ button("modal", "primary", "Tambah user", False, "", "addUser") }}
+      {{ modal_add("", "addUser", "Tambah user", dt, data) }}
     {% elif data['menu']['activities'] %}
-    {{ button("modal", "primary", "Tambah aktivitas", False, "", "addActivities") }}
-    {{ modal_add("", "addActivities", "Tambah aktivitas Baru", "", data) }}
+      {{ button("modal", "primary", "Tambah aktivitas", False, "", "addActivity") }}
+      {{ modal_add("", "addActivity", "Tambah aktivitas", dt, data) }}
+    {% elif data['menu']['sources'] %}  
+      {{ button("modal", "primary", "Tambah sumber emisi", False, "", "addSource") }}
+      {{ modal_add("", "addSource", "Tambah sumber emisi", dt, data) }}
+    {% elif data['menu']['emissions'] %}
+      {{ button("modal", "primary", "Tambah emisi", False, "", "addEmission") }}
+      {{ modal_add("", "addEmission", "Tambah emisi", dt, data) }}
+    {% elif data['menu']['carbon_factors'] %}
+      {{ button("modal", "primary", "Tambah faktor karbon", False, "", "addCarbonFactor") }}
+      {{ modal_add("", "addCarbonFactor", "Tambah faktor karbon", dt, data) }}
+    {% elif data['menu']['goals'] %}
+      {{ button("modal", "primary", "Tambah target emisi", False, "", "addGoal") }}
+      {{ modal_add("", "addGoal", "Tambah target emisi", dt, data) }}
+    {% elif data['menu']['offsets'] %}
+      {{ button("modal", "primary", "Tambah offset", False, "", "addOffsets") }}
+      {{ modal_add("", "addOffsets", "Tambah offset", dt, data) }}
+    {% elif data['menu']['reports'] %} 
+      {{ button("modal", "primary", "Tambah laporan", False, "", "addReport") }}
+      {{ modal_add("", "addReport", "Tambah laporan", dt, data) }}
     {% endif %}
+      
   </div>
 </div>
 <div class="row">
@@ -26,6 +59,7 @@
       style="--bs-table-bg: transparent"
     >
       <thead class="border-bottom border-dark">
+      <!-- header users -->
       {% if data['menu']['users'] %}
         <tr>
           <th scope="col">#</th>
@@ -34,6 +68,7 @@
           <th scope="col">Email</th>
           <th scope="col">Action</th>
         </tr>
+      <!-- header activities -->
       {% elif data['menu']['activities'] %}
         <tr>
           <th scope="col">#</th>
@@ -42,6 +77,76 @@
           <th scope="col">Total emisi</th>
           <th scope="col">Tanggal Aktivitas</th>
           <th scope="col">Tanggal Laporan</th>
+          <th scope="col">Action</th>
+        </tr>
+      <!-- header sources -->
+      {% elif data['menu']['sources'] %}
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Nama sumber</th>
+          <th scope="col">Deskripsi</th>
+          <th scope="col">Action</th>
+        </tr>
+      <!-- header sources -->
+      {% elif data['menu']['emissions'] %}
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">User</th>
+          <th scope="col">Sumber</th>
+          <th scope="col">Jumlah emisi</th>
+          <th scope="col">Tanggal emisi</th>
+          <th scope="col">Tanggal laporan</th>
+          <th scope="col">Action</th>
+        </tr>
+      <!-- header sources -->
+      {% elif data['menu']['sources'] %}
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Nama sumber</th>
+          <th scope="col">Deskripsi</th>
+          <th scope="col">Action</th>
+        </tr>
+      <!-- header carbon factor -->
+      {% elif data['menu']['carbon_factors'] %}
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Sumber</th>
+          <th scope="col">Deskripsi</th>
+          <th scope="col">Faktor Konversi</th>
+          <th scope="col">Unit</th>
+          <th scope="col">Action</th>
+        </tr>
+      <!-- header goals -->
+      {% elif data['menu']['goals'] %}
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">User</th>
+          <th scope="col">Target emisi</th>
+          <th scope="col">Batas waktu</th>
+          <th scope="col">Status</th>
+          <th scope="col">Dibuat pada</th>
+          <th scope="col">Action</th>
+        </tr>
+      <!-- header offsets -->
+      {% elif data['menu']['offsets'] %}
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">User</th>
+          <th scope="col">Nama proyek</th>
+          <th scope="col">Jumlah offset</th>
+          <th scope="col">Tanggal offset</th>
+          <th scope="col">Dibuat pada</th>
+          <th scope="col">Action</th>
+        </tr>
+      <!-- header reports -->
+      {% elif data['menu']['reports'] %}
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">User</th>
+          <th scope="col">Tanggal awal</th>
+          <th scope="col">Tanggal akhir</th>
+          <th scope="col">Total emisi</th>
+          <th scope="col">Laporan dibuat pada</th>
           <th scope="col">Action</th>
         </tr>
       {% endif %}
@@ -79,6 +184,110 @@
             </td> 
             {{ modal_edit(dt.activity_id, "editActivity", dt.factor_id ~ " - Edit Users", dt, data) }}
             {{ modal_delete(dt.activity_id, "deleteActivity", dt.factor_id ~ " - Delete Users", dt, data) }}
+          </tr>
+          {% endfor %}
+        <!-- Table sources -->
+        {% elif data['menu']['sources'] %}
+          {% for dt in data['datas']['sources'] %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ dt.source_name}}</td>
+            <td>{{ dt.description }}</td>
+            <td>
+              {{ button("modal", "info", "Edit", False, "", "editSource"~"-"~dt.source_id) }}
+              {{ button("modal", "danger", "Delete", False, "", "deleteSource"~"-"~dt.source_id) }}
+            </td> 
+            {{ modal_edit(dt.source_id, "editSource", dt.source_name ~ " - Edit sumber emisi", dt, data) }}
+            {{ modal_delete(dt.source_id, "deleteSource", dt.source_name ~ " - Delete sumber emisi", dt, data) }}
+          </tr>
+          {% endfor %}
+        <!-- Table emissions -->
+        {% elif data['menu']['emissions'] %}
+          {% for dt in data['datas']['emissions'] %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ dt.user_id}}</td>
+            <td>{{ dt.source_id }}</td>
+            <td>{{ dt.amount }}</td>
+            <td>{{ dt.emission_date }}</td>
+            <td>{{ dt.report_date }}</td>
+            <td>
+              {{ button("modal", "info", "Edit", False, "", "editEmission"~"-"~dt.emission_id) }}
+              {{ button("modal", "danger", "Delete", False, "", "deleteEmission"~"-"~dt.emission_id) }}
+            </td> 
+            {{ modal_edit(dt.emission_id, "editEmission", dt.emission_id ~ " - Edit emisi", dt, data) }}
+            {{ modal_delete(dt.emission_id, "deleteEmission", dt.emission_id ~ " - Delete emisi", dt, data) }}
+          </tr>
+          {% endfor %}
+        <!-- Table carbon factor -->
+        {% elif data['menu']['carbon_factors'] %}
+          {% for dt in data['datas']['carbon_factors'] %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ dt.source_id }}</td>
+            <td>{{ dt.description }}</td>
+            <td>{{ dt.conversion_factor }}</td>
+            <td>{{ dt.unit }}</td>
+            <td>
+              {{ button("modal", "info", "Edit", False, "", "editCarbonFactor"~"-"~dt.factor_id) }}
+              {{ button("modal", "danger", "Delete", False, "", "deleteCarbonFactor"~"-"~dt.factor_id) }}
+            </td> 
+            {{ modal_edit(dt.factor_id, "editCarbonFactor", dt.factor_id ~ " - Edit sumber emisi", dt, data) }}
+            {{ modal_delete(dt.factor_id, "deleteCarbonFactor", dt.factor_id ~ " - Delete sumber emisi", dt, data) }}
+          </tr>
+          {% endfor %}
+        <!-- Table goals -->
+        {% elif data['menu']['goals'] %}
+          {% for dt in data['datas']['goals'] %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ dt.user_id }}</td>
+            <td>{{ dt.target_emission }}</td>
+            <td>{{ dt.deadline }}</td>
+            <td>{{ dt.status }}</td>
+            <td>{{ dt.created_at }}</td>
+            <td>
+              {{ button("modal", "info", "Edit", False, "", "editGoal"~"-"~dt.goal_id) }}
+              {{ button("modal", "danger", "Delete", False, "", "deleteGoal"~"-"~dt.goal_id) }}
+            </td> 
+            {{ modal_edit(dt.goal_id, "editGoal", dt.goal_id ~ " - Edit target emisi", dt, data) }}
+            {{ modal_delete(dt.goal_id, "deleteGoal", dt.goal_id ~ " - Delete target emisi", dt, data) }}
+          </tr>
+          {% endfor %}
+        <!-- Table offsets -->
+        {% elif data['menu']['offsets'] %}
+          {% for dt in data['datas']['offsets'] %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ dt.user_id }}</td>
+            <td>{{ dt.project_name }}</td>
+            <td>{{ dt.offset_amount }}</td>
+            <td>{{ dt.offset_date }}</td>
+            <td>{{ dt.created_at }}</td>
+            <td>
+              {{ button("modal", "info", "Edit", False, "", "editOffset"~"-"~dt.offset_id) }}
+              {{ button("modal", "danger", "Delete", False, "", "deleteOffset"~"-"~dt.offset_id) }}
+            </td> 
+            {{ modal_edit(dt.offset_id, "editOffset", dt.offset_id ~ " - Edit offset emisi", dt, data) }}
+            {{ modal_delete(dt.offset_id, "deleteOffset", dt.offset_id ~ " - Delete offset emisi", dt, data) }}
+          </tr>
+          {% endfor %}
+        <!-- Table report -->
+        {% elif data['menu']['reports'] %}
+          {% for dt in data['datas']['reports'] %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ dt.user_id }}</td>
+            <td>{{ dt.start_date }}</td>
+            <td>{{ dt.end_date }}</td>
+            <td>{{ dt.total_emission }}</td>
+            <td>{{ dt.report_generated_at }}</td>
+            <td>
+              {{ button("modal", "info", "Edit", False, "", "editLaporan"~"-"~dt.report_id) }}
+              {{ button("modal", "danger", "Delete", False, "", "deleteLaporan"~"-"~dt.report_id) }}
+            </td> 
+            {{ modal_edit(dt.report_id, "editLaporan", dt.offset_id ~ " - Edit offset emisi", dt, data) }}
+            {{ modal_delete(dt.report_id, "deleteLaporan", dt.offset_id ~ " - Delete offset emisi", dt, data) }}
           </tr>
           {% endfor %}
         {% endif %}

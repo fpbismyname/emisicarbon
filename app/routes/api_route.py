@@ -46,8 +46,8 @@ def emissions(id):
     return api_controller.emissions(emission_id= id)
 
 # Route for CRUD Carbon Factors
-@api.route(f"{URL}/carbon-factors", defaults={'id' : None }, methods=[ 'GET', 'POST'])
-@api.route(f"{URL}/carbon-factors/<int:id>", methods=['GET','PUT','DELETE'])
+@api.route(f"{URL}/carbon_factors", defaults={'id' : None }, methods=[ 'GET', 'POST'])
+@api.route(f"{URL}/carbon_factors/<int:id>", methods=['GET','PUT','DELETE'])
 @jwt_required()
 def carbon_factor(id):
     return api_controller.carbon_factors(carbonFact_id= id)

@@ -56,7 +56,7 @@ CREATE TABLE activities (
 
 -- Tabel reports: Menyimpan laporan bulanan atau tahunan dari data emisi
 CREATE TABLE reports (
-    report_id INT PRIMARY KEY AUTO_INCREMENT,
+    report_id INT PRIMA RY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,

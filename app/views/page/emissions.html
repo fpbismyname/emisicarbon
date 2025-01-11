@@ -1,0 +1,20 @@
+{% extends "layouts.html" %} {% block title %} {{ data.title }} {% endblock %} {% block
+content %}
+<div class="container">
+  <div class="row-auto">
+    <div class="col-12 sticky-top">
+      <!-- Navbar -->
+      {{ Navbar(data) }}
+    </div>
+    <div class="col-12">
+      <!-- Menubar -->
+      {{ Menubar(data.role, data.menu) }} 
+    </div>
+    <div class="col-12 bg-white bg-opacity-25 rounded-5 p-5 shadow">
+      <!-- Content -->
+      {{ alert() }}
+      {{ table(data) }}
+    </div>
+  </div>
+</div>
+{% endblock %}
