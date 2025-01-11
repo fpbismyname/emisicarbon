@@ -183,15 +183,23 @@ def users(users_id):
 def activities(activity_id):
    methods = request.method
    activityID = activity_id
-   
-    # Get all the Activities data
+
    if methods == "GET" and activityID is None:
        try:
-            activity = Activities.query.all()
-            activities = [activity.to_dict() for activity in activity]
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
+            if token and token['role'] == "admin":
+                activity = Activities.query.all()
+                activities = [activity.to_dict() for activity in activity]
+                if not activities:
+                    return jsonify({"status": 404, "message": "Activity data not found !"}), 404
+            else:
+                activity = Activities.query.filter_by(user_id = token['sub'])
+                activities = [activity.to_dict() for activity in activity]
+                if not activities:
+                    return jsonify({"status": 404, "message": "Activity data not found !"}), 404
             return jsonify({
                 "status" : 200,
-                "message" : "Get all carbon factors",
+                "message" : "Get all activities",
                 "activities" : activities,
             }), 200
        except IntegrityError as err:
@@ -204,13 +212,19 @@ def activities(activity_id):
     # Get one of Activities data
    if methods == "GET" and activityID is not None:
        try:
-            oneActivity = Activities.query.get(activityID)
-            if not oneActivity:
-                return jsonify({"status": 404, "message": "Emission data not found !"}), 404
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
+            if token and token['role'] == "admin":
+                activity = Activities.query.filter_by(activity_id=activityID).first()
+                if not activity:
+                    return jsonify({"status": 404, "message": "Activity data not found !"}), 404
+            else:
+                activity = Activities.query.filter_by(user_id=token['sub'], activity_id=activityID).first()
+                if not activity:
+                    return jsonify({"status": 404, "message": "Activity data not found !"}), 404
             return jsonify({
                 "status" : 200,
                 "message" : "One emission data found !",
-                "activity" : oneActivity.to_dict()
+                "activity" : activity.to_dict()
             }), 200
        except IntegrityError as err:
            return jsonify({
@@ -251,10 +265,15 @@ def activities(activity_id):
        if not data:
            return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
        try:
-            activity = Activities.query.get(activityID)
-            if not activity:
-                return jsonify({"status": 404, "message": "Activity not found !"}),404
-            activity.user_id= data['user_id']
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
+            if token and token['role'] == "admin":
+                activity = Activities.query.filter_by(activity_id = activityID).first()
+                if not activity:
+                    return jsonify({"status": 404, "message": "Activity data not found !"}), 404
+            else:
+                activity = Activities.query.filter_by(user_id=token['sub'], activity_id = activityID).first()
+                if not activity:
+                    return jsonify({"status": 404, "message": "Activity data not found !"}), 404
             activity.factor_id= data['factor_id']
             activity.amount= data['amount']
             activity.activity_date= data['activity_date']
@@ -274,9 +293,15 @@ def activities(activity_id):
     # Delete one of source data
    if methods == "DELETE" and activityID is not None:
        try:
-            activity = Activities.query.get(activityID)
-            if not activity:
-                return jsonify({"status": 404, "message": "Activity not found !"}),404
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
+            if token and token['role'] == "admin":
+                activity = Activities.query.filter_by(activity_id = activityID).first()
+                if not activity:
+                    return jsonify({"status": 404, "message": "Activity data not found !"}), 404
+            else:
+                activity = Activities.query.filter_by(user_id=token['sub'], activity_id = activityID).first()
+                if not activity:
+                    return jsonify({"status": 404, "message": "Activity data not found !"}), 404
             db.session.delete(activity)
             db.session.commit() 
             return jsonify({
@@ -394,11 +419,19 @@ def emissions(emission_id):
    methods = request.method
    emissionID = emission_id
    
-    # Get all the source data
    if methods == "GET" and emissionID is None:
        try:
-            emission = Emissions.query.all()
-            emissions = [emission.to_dict() for emission in emission]
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
+            if token and token['role'] == "admin":
+                emission = Emissions.query.all()
+                emissions = [emission.to_dict() for emission in emission]
+                if not emissions:
+                    return jsonify({"status": 404, "message": "Emission data not found !"}), 404
+            else:
+                emission = Emissions.query.filter_by(user_id=token['sub'])
+                emissions = [emission.to_dict() for emission in emission]
+                if not emissions:
+                    return jsonify({"status": 404, "message": "Emission data not found !"}), 404
             return jsonify({
                 "status" : 200,
                 "message" : "Get all emissions",
@@ -414,13 +447,19 @@ def emissions(emission_id):
     # Get one of source data
    if methods == "GET" and emissionID is not None:
        try:
-            oneEmission = Emissions.query.get(emissionID)
-            if not oneEmission:
-                return jsonify({"status": 404, "message": "Emission data not found !"}), 404
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
+            if token and token['role'] == "admin":
+                emission = Emissions.query.filter_by(emission_id = emissionID).first()
+                if not emission:
+                    return jsonify({"status": 404, "message": "Emission data not found !"}), 404
+            else:
+                emission = Emissions.query.filter_by(user_id=token['sub'], emission_id = emissionID).first()
+                if not emission:
+                    return jsonify({"status": 404, "message": "Emission data not found !"}), 404
             return jsonify({
                 "status" : 200,
                 "message" : "One emission data found !",
-                "emissions" : oneEmission.to_dict()
+                "emissions" : emission.to_dict()
             }), 200
        except IntegrityError as err:
            return jsonify({
@@ -429,7 +468,7 @@ def emissions(emission_id):
                 # "err" : str(err)
             }), 500
        
-    # Add one source data
+    # Add one emission data
    if methods == "POST" and emissionID is None:
        data = request.get_json()
        if not data or not data['user_id'] or not data['source_id'] or not data['amount'] or not data['emission_date'] :
@@ -459,11 +498,17 @@ def emissions(emission_id):
    if methods == "PUT" and emissionID is not None:
        data = request.get_json()
        if not data:
-           return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"}),400
+           return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
        try:
-            emission = Emissions.query.get(emissionID)
-            if not emission:
-                return jsonify({"status": 404, "message": "Emission not found !"}),404
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
+            if token and token['role'] == "admin":
+                emission = Emissions.query.filter_by(emission_id = emissionID).first()
+                if not emission:
+                    return jsonify({"status": 404, "message": "Emission data not found !"}), 404
+            else:
+                emission = Emissions.query.filter_by(user_id=token['sub'], emission_id = emissionID).first()
+                if not emission:
+                    return jsonify({"status": 404, "message": "Emission data not found !"}), 404
             emission.source_id= data['source_id']
             emission.amount= data['amount']
             emission.emission_date= data['emission_date']
@@ -483,9 +528,15 @@ def emissions(emission_id):
     # Delete one of source data
    if methods == "DELETE" and emissionID is not None:
        try:
-            emission = Emissions.query.get(emissionID)
-            if not emission:
-                return jsonify({"status": 404, "message": "Emission data not found !"}),404
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
+            if token and token['role'] == "admin":
+                emission = Emissions.query.filter_by(emission_id = emissionID).first()
+                if not emission:
+                    return jsonify({"status": 404, "message": "Emission data not found !"}), 404
+            else:
+                emission = Emissions.query.filter_by(user_id=token['sub'], emission_id = emissionID).first()
+                if not emission:
+                    return jsonify({"status": 404, "message": "Emission data not found !"}), 404
             db.session.delete(emission)
             db.session.commit()
             return jsonify({
@@ -615,15 +666,24 @@ def goals(goals_id):
    methods = request.method
    goalID = goals_id
    
-    # Get all the source data
+    # Get all the goals data
    if methods == "GET" and goalID is None:
        try:
-            goals = Goals.query.all()
-            goal = [goals.to_dict() for goals in goals]
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
+            if token and token['role'] == "admin":
+                goal = Goals.query.all()
+                goals = [goal.to_dict() for goal in goal]
+                if not goals:
+                    return jsonify({"status": 404, "message": "Goal data not found !"}), 404
+            else:
+                goal = Goals.query.filter_by(user_id = token['sub'])
+                goals = [goal.to_dict() for goal in goal]
+                if not goals:
+                    return jsonify({"status": 404, "message": "Goal data not found !"}), 404
             return jsonify({
                 "status" : 200,
                 "message" : "Get all goals",
-                "goals" : goal,
+                "goals" : goals,
             }), 200
        except IntegrityError as err:
            return jsonify({
@@ -635,13 +695,19 @@ def goals(goals_id):
     # Get one of source data
    if methods == "GET" and goalID is not None:
        try:
-            oneGoal = Goals.query.get(goalID)
-            if not oneGoal:
-                return jsonify({"status": 404, "message": "Goal data not found !"}), 404
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
+            if token and token['role'] == "admin":
+                goal = Goals.query.filter_by(goal_id=goalID).first()
+                if not goal:
+                    return jsonify({"status": 404, "message": "Goal data not found !"}), 404
+            else:
+                goal = Goals.query.filter_by(user_id=token['sub'], goal_id=goalID).first()
+                if not goal:
+                    return jsonify({"status": 404, "message": "Goal data not found !"}), 404
             return jsonify({
                 "status" : 200,
                 "message" : "One goal data found !",
-                "source" : oneGoal.to_dict()
+                "source" : goal.to_dict()
             }), 200
        except IntegrityError as err:
            return jsonify({
@@ -681,10 +747,15 @@ def goals(goals_id):
        if not data:
            return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"}),400
        try:
-            goal = Goals.query.get(goalID)
-            if not goal:
-                return jsonify({"status": 404, "message": "Goal data not found !"}),404
-            goal.user_id= data['user_id']
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
+            if token and token['role'] == "admin":
+                goal = Goals.query.filter_by(goal_id=goalID).first()
+                if not goal:
+                    return jsonify({"status": 404, "message": "Goal data not found !"}), 404
+            else:
+                goal = Goals.query.filter_by(user_id=token['sub'], goal_id=goalID).first()
+                if not goal:
+                    return jsonify({"status": 404, "message": "Goal data not found !"}), 404
             goal.target_emission= data['target_emission']
             goal.deadline= data['deadline']
             db.session.commit()
@@ -703,9 +774,15 @@ def goals(goals_id):
     # Delete one of source data
    if methods == "DELETE" and goalID is not None:
        try:
-            goal = Goals.query.get(goalID)
-            if not goal:
-                return jsonify({"status": 404, "message": "Carbon factor not found !"}),404
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
+            if token and token['role'] == "admin":
+                goal = Goals.query.filter_by(goal_id=goalID).first()
+                if not goal:
+                    return jsonify({"status": 404, "message": "Goal data not found !"}), 404
+            else:
+                goal = Goals.query.filter_by(user_id=token['sub'], goal_id=goalID).first()
+                if not goal:
+                    return jsonify({"status": 404, "message": "Goal data not found !"}), 404
             db.session.delete(goal)
             db.session.commit() 
             return jsonify({
@@ -724,15 +801,24 @@ def offsets(offsets_id):
    methods = request.method
    offsetID = offsets_id
    
-    # Get all the source data
+    # Get all the offset data
    if methods == "GET" and offsetID is None:
        try:
-            offsets = Offsets.query.all()
-            offset = [offsets.to_dict() for offsets in offsets]
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
+            if token and token['role'] == "admin":
+                offset = Offsets.query.all()
+                offsets = [offset.to_dict() for offset in offset]
+                if not offsets:
+                    return jsonify({"status": 404, "message": "Offset data not found !"}), 404
+            else:
+                offset = Offsets.query.filter_by(user_id = token['sub'])
+                offsets = [offset.to_dict() for offset in offset]
+                if not offsets:
+                    return jsonify({"status": 404, "message": "Offset data not found !"}), 404
             return jsonify({
                 "status" : 200,
                 "message" : "Get all offsets",
-                "offsets" : offset
+                "offsets" : offsets
             }), 200
        except IntegrityError as err:
            return jsonify({
@@ -744,13 +830,19 @@ def offsets(offsets_id):
     # Get one of source data
    if methods == "GET" and offsetID is not None:
        try:
-            oneOffset = Offsets.query.get(offsetID)
-            if not oneOffset:
-                return jsonify({"status": 404, "message": "Offset data not found !"}), 404
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
+            if token and token['role'] == "admin":
+                offset = Offsets.query.filter_by(offset_id=offsetID).first()
+                if not offset:
+                    return jsonify({"status": 404, "message": "Offset data not found !"}), 404
+            else:
+                offset = Offsets.query.filter_by(user_id=token['sub'], offset_id=offsetID).first()
+                if not offset:
+                    return jsonify({"status": 404, "message": "Offset data not found !"}), 404
             return jsonify({
                 "status" : 200,
                 "message" : "One offset data found !",
-                "source" : oneOffset.to_dict()
+                "source" : offset.to_dict()
             }), 200
        except IntegrityError as err:
            return jsonify({
@@ -791,10 +883,15 @@ def offsets(offsets_id):
        if not data:
            return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"}),400
        try:
-            offset = Offsets.query.get(offsetID)
-            if not offset:
-                return jsonify({"status": 404, "message": "Offset data not found !"}),404
-            offset.user_id= data['user_id']
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
+            if token and token['role'] == "admin":
+                offset = Offsets.query.filter_by(offset_id=offsetID).first()
+                if not offset:
+                    return jsonify({"status": 404, "message": "Offset data not found !"}), 404
+            else:
+                offset = Offsets.query.filter_by(user_id=token['sub'], offset_id=offsetID).first()
+                if not offset:
+                    return jsonify({"status": 404, "message": "Offset data not found !"}), 404
             offset.project_name= data['project_name']
             offset.offset_amount=data['offset_amount']
             offset.offset_date=data['offset_date']
@@ -814,9 +911,15 @@ def offsets(offsets_id):
     # Delete one of source data
    if methods == "DELETE" and offsetID is not None:
        try:
-            offset = Offsets.query.get(offsetID)
-            if not offset:
-                return jsonify({"status": 404, "message": "Carbon factor not found !"}),404
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
+            if token and token['role'] == "admin":
+                offset = Offsets.query.filter_by(offset_id=offsetID).first()
+                if not offset:
+                    return jsonify({"status": 404, "message": "Offset data not found !"}), 404
+            else:
+                offset = Offsets.query.filter_by(user_id=token['sub'], offset_id=offsetID).first()
+                if not offset:
+                    return jsonify({"status": 404, "message": "Offset data not found !"}), 404
             db.session.delete(offset)
             db.session.commit() 
             return jsonify({
@@ -835,15 +938,24 @@ def reports(reports_id):
    methods = request.method
    reportID = reports_id
 
-    # Get all the source data
+    # Get all the report data
    if methods == "GET" and reportID is None:
        try:
-            reports = Reports.query.all()
-            report = [reports.to_dict() for reports in reports]
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
+            if token and token['role'] == "admin":
+                report = Reports.query.all()
+                reports = [report.to_dict() for report in report]
+                if not reports:
+                    return jsonify({"status": 404, "message": "Report data not found !"}), 404
+            else:
+                report = Reports.query.filter_by(user_id = token['sub'])
+                reports = [report.to_dict() for report in report]
+                if not reports:
+                    return jsonify({"status": 404, "message": "Report data not found !"}), 404
             return jsonify({
                 "status" : 200,
                 "message" : "Get all reports",
-                "reports" : report
+                "reports" : reports
             }), 200
        except IntegrityError as err:
            return jsonify({
@@ -855,13 +967,19 @@ def reports(reports_id):
     # Get one of source data
    if methods == "GET" and reportID is not None:
        try:
-            oneReport = Reports.query.get(reportID)
-            if not oneReport:
-                return jsonify({"status": 404, "message": "Report data not found !"}), 404
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
+            if token and token['role'] == "admin":
+                report = Reports.query.filter_by(report_id=reportID).first()
+                if not report:
+                    return jsonify({"status": 404, "message": "Report data not found !"}), 404
+            else:
+                report = Reports.query.filter_by(user_id=token['sub'], report_id=reportID).first()
+                if not report:
+                    return jsonify({"status": 404, "message": "Report data not found !"}), 404
             return jsonify({
                 "status" : 200,
                 "message" : "One report  data found !",
-                "source" : oneReport.to_dict()
+                "source" : report.to_dict()
             }), 200
        except IntegrityError as err:
            return jsonify({
@@ -902,10 +1020,15 @@ def reports(reports_id):
        if not data:
            return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"}),400
        try:
-            report = Reports.query.get(reportID)
-            if not report:
-                return jsonify({"status": 404, "message": "Report data not found !"}),404
-            report.user_id= data['user_id']
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
+            if token and token['role'] == "admin":
+                report = Reports.query.filter_by(report_id=reportID).first()
+                if not report:
+                    return jsonify({"status": 404, "message": "Report data not found !"}), 404
+            else:
+                report = Reports.query.filter_by(user_id=token['sub'], report_id=reportID).first()
+                if not report:
+                    return jsonify({"status": 404, "message": "Report data not found !"}), 404
             report.start_date= data['start_date']
             report.end_date=data['end_date']
             report.total_emission=data['total_emission']
@@ -925,9 +1048,15 @@ def reports(reports_id):
     # Delete one of source data
    if methods == "DELETE" and reportID is not None:
        try:
-            report = Reports.query.get(reportID)
-            if not report:
-                return jsonify({"status": 404, "message": "Report data not found !"}),404
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
+            if token and token['role'] == "admin":
+                report = Reports.query.filter_by(report_id=reportID).first()
+                if not report:
+                    return jsonify({"status": 404, "message": "Report data not found !"}), 404
+            else:
+                report = Reports.query.filter_by(user_id=token['sub'], report_id=reportID).first()
+                if not report:
+                    return jsonify({"status": 404, "message": "Report data not found !"}), 404
             db.session.delete(report)
             db.session.commit() 
             return jsonify({

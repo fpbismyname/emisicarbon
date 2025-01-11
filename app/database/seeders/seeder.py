@@ -13,8 +13,8 @@ def seed():
     def users():
         if not Users.query.first():
             data = Users(email='admin@gmail.com', username='Admin Account', role='admin')
-            data.set_password(password='AdMin123')
-            data2 = Users(email='fajar@gmail.com', username='Fajar PB', role='admin')
+            data.set_password(password='adm')
+            data2 = Users(email='fajar@gmail.com', username='Fajar PB', role='company')
             data2.set_password(password='fajar')
             db.session.add(data)
             db.session.add(data2)
@@ -30,14 +30,24 @@ def seed():
                     activity_date= datetime.now(),
                     report_date= datetime.now()
                 )
+            data2 = Activities(
+                    user_id = 2,
+                    factor_id= 2,
+                    amount= 30,
+                    activity_date= datetime.now(),
+                    report_date= datetime.now()
+                )
             db.session.add(data)
+            db.session.add(data2)
             db.session.commit()
     
     # Sources seeder
     def sources():
         if not Sources.query.first():
-            data = Sources(source_name="Pabrik Manufaktur", description="Emisi co2 Pabrik Manufaktur")
+            data = Sources(source_name="Pabrik", description="Emisi pabrik")
+            data2 = Sources(source_name="Kendaraan", description="Emisi kendaraan")
             db.session.add(data)
+            db.session.add(data2)
             db.session.commit()
         
     # Emissions seeder
@@ -50,7 +60,15 @@ def seed():
                     emission_date=datetime.now(),
                     report_date=datetime.now()
                 )
+            data2 = Emissions(
+                    user_id=2,
+                    source_id=2,
+                    amount=30,
+                    emission_date=datetime.now(),
+                    report_date=datetime.now()
+                )
             db.session.add(data)
+            db.session.add(data2)
             db.session.commit()
     
     # Carbon factor seeder
@@ -58,11 +76,18 @@ def seed():
         if not CarbonFactors.query.first():
             data = CarbonFactors(
                     source_id=1,
-                    description="1 Ton Kwh per co2",
+                    description="1 Liter per co2",
                     conversion_factor=1,
-                    unit="Ton"
+                    unit="Liter"
+                )
+            data2 = CarbonFactors(
+                    source_id=2,
+                    description="2 Kwh per co2",
+                    conversion_factor=2,
+                    unit="Kwh"
                 )
             db.session.add(data)
+            db.session.add(data2)
             db.session.commit()
         
     # Goals seeder
@@ -73,7 +98,13 @@ def seed():
                     target_emission=504,
                     deadline=datetime.now()
                 )
+            data2 = Goals(
+                    user_id=2,
+                    target_emission=1200,
+                    deadline=datetime.now()
+                )
             db.session.add(data)
+            db.session.add(data2)
             db.session.commit()
         
     # Offsets seeder
@@ -85,7 +116,14 @@ def seed():
                     offset_amount=90,
                     offset_date=datetime.now()
                 )
+            data2 = Offsets(
+                    user_id=1,
+                    project_name="Penanaman 1000 pohon sawit",
+                    offset_amount=120,
+                    offset_date=datetime.now()
+                )
             db.session.add(data)
+            db.session.add(data2)
             db.session.commit()
         
     # reports seeder
@@ -97,7 +135,14 @@ def seed():
                     end_date=datetime.now() + timedelta(days=5),
                     total_emission=120
                 )
+            data2 = Reports(
+                    user_id=2,
+                    start_date=datetime.now() - timedelta(days=1),
+                    end_date=datetime.now() + timedelta(days=5),
+                    total_emission=140
+                )
             db.session.add(data)
+            db.session.add(data2)
             db.session.commit()
             
     users()
