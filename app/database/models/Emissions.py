@@ -16,6 +16,6 @@ class Emissions(db.Model):
             'user_id': self.user_id,
             'source_id': self.source_id,
             'amount': self.amount,
-            'emission_date': self.emission_date.isoformat(),
-            'report_date': self.report_date.isoformat(),
+            'emission_date': self.emission_date.strftime('%Y-%m-%d'),
+            'report_date': self.report_date.strftime('%Y-%m-%d')
         }

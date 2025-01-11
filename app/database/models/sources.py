@@ -12,5 +12,5 @@ class Sources(db.Model):
             'source_id': self.source_id,
             'source_name': self.source_name,
             'description': self.description,
-            'created_at' : self.created_at.isoformat(),
+            'created_at' : self.created_at.strftime('%Y-%m-%d')
         }

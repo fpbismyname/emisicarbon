@@ -63,7 +63,8 @@ def payload(method_url):
             payloads = {
                 "user_id" : request.form.get("user_id")	,
                 "target_emission" : request.form.get("target_emission"),
-                "deadline" : request.form.get("deadline")
+                "deadline" : request.form.get("deadline"),
+                "status" : request.form.get("status")
             }
         case "goals":
             payloads = {
@@ -155,7 +156,7 @@ def logout_page():
     return redirect(url_for('router-web.login'))
 # endregion
 
-# region DashboardPage
+# region DashboardPage 
 def dashboard_page(method_url, title=""):
     method = method_url
     # region fetch api
@@ -259,7 +260,7 @@ def users_edit(users_id = None, url = ""):
     return redirect(url_for(f"router-web.{method}"))
     # endregion
 # endregion
-# region users delete
+# region users delete 
 def users_delete(users_id = None, url = ""):
     # region fetch api
     user_id = users_id
@@ -282,7 +283,7 @@ def users_delete(users_id = None, url = ""):
     return redirect(url_for(f"router-web.{method}"))
     # endregion
 # endregion
-# endregion
+# endregion 
 
 # region kelola activities
 # View activities
@@ -308,14 +309,14 @@ def activities_get(url = "", title = ""):
             }
     response = requests.get(url=f"{url_api}/{method}", headers=headers)
     alldata = response.json()
+    # data users
+    response_users = requests.get(url=f"{url_api}/users", headers=headers)
+    userData = response_users.json()
+    # data carbon factors
+    response_factors = requests.get(url=f"{url_api}/carbon_factors", headers=headers)
+    factorData = response_factors.json() 
     # endregion
     # region data users
-    # function 
-    def formatTime(dates, format="%d-%m-%Y %H:%M:%S"):
-        return dates.strftime(format)
-    function = {
-        "current_time" : formatTime
-    }
     # data
     account = decode_token(session.get('access_token_cookie'))
     data = {
@@ -323,9 +324,10 @@ def activities_get(url = "", title = ""):
         "title" : title,
         "username" : session.get('username'),
         "role" : session.get('role'),
-        "func" : function,
         "menu" : json.loads(menuBar(method=method)),
-        "datas" : alldata
+        "datas" : alldata,
+        "carbon_factors" : factorData,
+        "users" : userData
     }
     return render_template(f"page/{method}.html", data=data)
     # endregion
@@ -421,12 +423,7 @@ def sources_get(url = "", title=""):
     alldata = response.json()
     # endregion
     # region data users
-    # function 
-    def formatTime(dates, format="%d-%m-%Y %H:%M:%S"):
-        return dates.strftime(format)
-    function = {
-        "current_time" : formatTime
-    }
+     
     # data
     account = decode_token(session.get('access_token_cookie'))
     data = {
@@ -434,7 +431,6 @@ def sources_get(url = "", title=""):
         "title" : title,
         "username" : session.get('username'),
         "role" : session.get('role'),
-        "func" : function,
         "menu" : json.loads(menuBar(method=method)),
         "datas" : alldata
     }
@@ -529,14 +525,14 @@ def emissions_get(url = "", title = ""):
             }
     response = requests.get(url=f"{url_api}/{method}", headers=headers)
     alldata = response.json()
+    # sources data
+    response_source = requests.get(url=f"{url_api}/sources", headers=headers)
+    sourceData = response_source.json() 
+    # users data
+    response_users = requests.get(url=f"{url_api}/users", headers=headers)
+    userData = response_users.json() 
     # endregion
     # region data users
-    # function 
-    def formatTime(dates, format="%d-%m-%Y %H:%M:%S"):
-        return dates.strftime(format)
-    function = {
-        "current_time" : formatTime
-    }
     # data
     account = decode_token(session.get('access_token_cookie'))
     data = {
@@ -544,9 +540,10 @@ def emissions_get(url = "", title = ""):
         "title" : title,
         "username" : session.get('username'),
         "role" : session.get('role'),
-        "func" : function,
         "menu" : json.loads(menuBar(method=method)),
-        "datas" : alldata
+        "datas" : alldata,
+        "sources" : sourceData,
+        "users" : userData
     }
     return render_template(f"page/{method}.html", data=data)
     # endregion
@@ -639,14 +636,10 @@ def carbon_factors_get(url = "", title =""):
             }
     response = requests.get(url=f"{url_api}/{method}", headers=headers)
     alldata = response.json()
+    response_source = requests.get(url=f"{url_api}/sources", headers=headers)
+    sourceData = response_source.json()
     # endregion
     # region data users
-    # function 
-    def formatTime(dates, format="%d-%m-%Y %H:%M:%S"):
-        return dates.strftime(format)
-    function = {
-        "current_time" : formatTime
-    }
     # data
     account = decode_token(session.get('access_token_cookie'))
     data = {
@@ -654,9 +647,9 @@ def carbon_factors_get(url = "", title =""):
         "title" : title,
         "username" : session.get('username'),
         "role" : session.get('role'),
-        "func" : function,
         "menu" : json.loads(menuBar(method=method)),
-        "datas" : alldata
+        "datas" : alldata,
+        "sources" : sourceData
     }
     return render_template(f"page/{method}.html", data=data)
     # endregion
@@ -749,14 +742,12 @@ def goals_get(url = "", title =""):
             }
     response = requests.get(url=f"{url_api}/{method}", headers=headers)
     alldata = response.json()
+    # data user
+    response_users = requests.get(url=f"{url_api}/users", headers=headers)
+    userData = response_users.json() 
     # endregion
     # region data users
-    # function 
-    def formatTime(dates, format="%d-%m-%Y %H:%M:%S"):
-        return dates.strftime(format)
-    function = {
-        "current_time" : formatTime
-    }
+     
     # data
     account = decode_token(session.get('access_token_cookie'))
     data = {
@@ -764,9 +755,9 @@ def goals_get(url = "", title =""):
         "title" : title,
         "username" : session.get('username'),
         "role" : session.get('role'),
-        "func" : function,
         "menu" : json.loads(menuBar(method=method)),
-        "datas" : alldata
+        "datas" : alldata,
+        "users" : userData
     }
     return render_template(f"page/{method}.html", data=data)
     # endregion
@@ -859,14 +850,12 @@ def offsets_get(url = "", title =""):
             }
     response = requests.get(url=f"{url_api}/{method}", headers=headers)
     alldata = response.json()
+    # data user
+    response_users = requests.get(url=f"{url_api}/users", headers=headers)
+    userData = response_users.json() 
     # endregion
     # region data users
-    # function 
-    def formatTime(dates, format="%d-%m-%Y %H:%M:%S"):
-        return dates.strftime(format)
-    function = {
-        "current_time" : formatTime
-    }
+     
     # data
     account = decode_token(session.get('access_token_cookie'))
     data = {
@@ -874,9 +863,9 @@ def offsets_get(url = "", title =""):
         "title" : title,
         "username" : session.get('username'),
         "role" : session.get('role'),
-        "func" : function,
         "menu" : json.loads(menuBar(method=method)),
-        "datas" : alldata
+        "datas" : alldata,
+        "users" : userData
     }
     return render_template(f"page/{method}.html", data=data)
     # endregion
@@ -969,14 +958,12 @@ def reports_get(url = "", title =""):
             }
     response = requests.get(url=f"{url_api}/{method}", headers=headers)
     alldata = response.json()
+    # data user
+    response_users = requests.get(url=f"{url_api}/users", headers=headers)
+    userData = response_users.json() 
     # endregion
     # region data users
-    # function 
-    def formatTime(dates, format="%d-%m-%Y %H:%M:%S"):
-        return dates.strftime(format)
-    function = {
-        "current_time" : formatTime
-    }
+     
     # data
     account = decode_token(session.get('access_token_cookie'))
     data = {
@@ -984,9 +971,9 @@ def reports_get(url = "", title =""):
         "title" : title,
         "username" : session.get('username'),
         "role" : session.get('role'),
-        "func" : function,
         "menu" : json.loads(menuBar(method=method)),
-        "datas" : alldata
+        "datas" : alldata,
+        "users" : userData
     }
     return render_template(f"page/{method}.html", data=data)
     # endregion

@@ -89,16 +89,6 @@
                   placeholder="Password baru"
                 />
               </div>
-              <div class="col p-4">
-                <div class="row">
-                  <div class="col text-end">
-                    <!-- submit -->
-                    {{ button("submit", "info", "Submit", False, "")}}
-                    <!-- kembali -->
-                    {{ button("modal", "secondary", "Kembali", False, "", id_modal) }}
-                  </div>
-                </div>
-              </div>
             </div>
             <!-- add activities -->
             {% elif data['menu']['activities'] %}
@@ -111,39 +101,31 @@
                   value="{{ data['user_id'] }}"
                 />
               </div>
-              <div class="col-12 mb-2">
-                <input
-                  class="form-control"
-                  type="text"
-                  name="factor_id"
-                  placeholder="Faktor"
-                />
+              <div class="col-12 mb-2 input-group">
+                <label class="input-group-text">Faktor</label>
+                <select name="factor_id" id="" class="form-select">
+                {% for dt_cf in data['carbon_factors']['carbon_factors'] %}
+                    <option value="{{ dt_cf.factor_id }}" >{{ dt_cf['conversion_factor'] }} {{ dt_cf['unit'] }}</option>
+                {% endfor %}
+                </select>
               </div>
               <div class="col-12 mb-2">
                 <input
                   class="form-control"
-                  type="text"
+                  type="number"
                   name="amount"
                   placeholder="Total Emisi"
                 />
               </div>
-              <div class="col-12 mb-2">
+              <div class="col-12 mb-2 input-group">
+                <label for="" class="input-group-text">Tanggal aktivitas</label>
                 <input
                   class="form-control"
                   type="date"
                   name="activity_date"
                   placeholder="Tanggal Aktivitas"
+                  required
                 />
-              </div>
-              <div class="col p-4">
-                <div class="row">
-                  <div class="col text-end">
-                    <!-- submit -->
-                    {{ button("submit", "info", "Submit", False, "")}}
-                    <!-- kembali -->
-                    {{ button("modal", "secondary", "Kembali", False, "", id_modal) }}
-                  </div>
-                </div>
               </div>
             </div>
             <!-- add sources -->
@@ -165,16 +147,6 @@
                   placeholder="Deskripsi sumber emisi baru"
                 />
               </div>
-              <div class="col p-4">
-                <div class="row">
-                  <div class="col text-end">
-                    <!-- submit -->
-                    {{ button("submit", "info", "Submit", False, "")}}
-                    <!-- kembali -->
-                    {{ button("modal", "secondary", "Kembali", False, "", id_modal) }}
-                  </div>
-                </div>
-              </div>
             </div>
             <!-- add emissions -->
             {% elif data['menu']['emissions'] %}
@@ -187,13 +159,13 @@
                   value="{{ data['user_id'] }}"
                 />
               </div>
-              <div class="col-12 mb-2">
-                <input
-                  class="form-control"
-                  type="text"
-                  name="source_id"
-                  placeholder="Sumber"
-                />
+              <div class="col-12 mb-2 input-group">
+                <label class="input-group-text">Sumber</label>
+                <select name="source_id" id="" class="form-select">
+                {% for dt_sc in data['sources']['sources'] %}
+                    <option value="{{ dt_sc.source_id }}">{{ dt_sc['source_name'] }}</option>
+                {% endfor %}
+                </select>
               </div>
               <div class="col-12 mb-2">
                 <input
@@ -203,35 +175,27 @@
                   placeholder="Jumlah emisi"
                 />
               </div>
-              <div class="col-12 mb-2">
-                <input
-                  class="form-control"
-                  type="date"
-                  name="emission_date"
-                  placeholder="Tanggal emisi"
-                />
-              </div>
-              <div class="col p-4">
-                <div class="row">
-                  <div class="col text-end">
-                    <!-- submit -->
-                    {{ button("submit", "info", "Submit", False, "")}}
-                    <!-- kembali -->
-                    {{ button("modal", "secondary", "Kembali", False, "", id_modal) }}
-                  </div>
-                </div>
+              <div class="col-12 mb-2 input-group">
+                <label for="" class="input-group-text">Tanggal emisi</label>
+                  <input
+                    class="form-control"
+                    type="date"
+                    name="emission_date"
+                    placeholder="Tanggal emisi"
+                    required
+                  />
               </div>
             </div>
             <!-- add carbon_factors -->
             {% elif data['menu']['carbon_factors'] %}
             <div class="carbon_factors">
-              <div class="col-12 mb-2">
-                <input
-                  class="form-control"
-                  type="text"
-                  name="source_id"
-                  placeholder="Sumber"
-                />
+              <div class="col-12 mb-2 input-group">
+                <label class="input-group-text">Sumber</label>
+                <select name="source_id" id="" class="form-select">
+                {% for dt_sc in data['sources']['sources'] %}
+                    <option value="{{ dt_sc.source_id }}">{{ dt_sc['source_name'] }}</option>
+                {% endfor %}
+                </select>
               </div>
               <div class="col-12 mb-2">
                 <input
@@ -257,16 +221,6 @@
                   placeholder="Unit emisi"
                 />
               </div>
-              <div class="col p-4">
-                <div class="row">
-                  <div class="col text-end">
-                    <!-- submit -->
-                    {{ button("submit", "info", "Submit", False, "")}}
-                    <!-- kembali -->
-                    {{ button("modal", "secondary", "Kembali", False, "", id_modal) }}
-                  </div>
-                </div>
-              </div>
             </div>
             <!-- add goals -->
             {% elif data['menu']['goals'] %}
@@ -287,31 +241,23 @@
                   placeholder="Target emisi"
                 />
               </div>
-              <div class="col-12 mb-2">
+              <div class="col-12 mb-2 input-group">
+                <label for="" class="input-group-text">Batas waktu</label>
                 <input
                   class="form-control"
                   type="date"
                   name="deadline"
                   placeholder="Deadline"
+                  required
                 />
               </div>
-              <div class="col-12 mb-2">
-                <input
-                  class="form-control"
-                  type="text"
-                  name="status"
-                  placeholder="Status"
-                />
-              </div>
-              <div class="col p-4">
-                <div class="row">
-                  <div class="col text-end">
-                    <!-- submit -->
-                    {{ button("submit", "info", "Submit", False, "")}}
-                    <!-- kembali -->
-                    {{ button("modal", "secondary", "Kembali", False, "", id_modal) }}
-                  </div>
-                </div>
+              <div class="col-12 mb-2 input-group">
+                <label class="input-group-text">Status</label>
+                <select name="status" id="" class="form-select">
+                  <option value="in_progress">Dalam proses</option>
+                  <option value="achieved">Tercapai</option>
+                  <option value="missed">Terlewat</option>
+                </select>
               </div>
             </div>
             <!-- add offsets -->
@@ -341,23 +287,15 @@
                   placeholder="Jumlah offset"
                 />
               </div>
-              <div class="col-12 mb-2">
+              <div class="col-12 mb-2 input-group">
+                <label class="input-group-text">Tanggal Offset</label>
                 <input
                   class="form-control"
                   type="date"
                   name="offset_date"
                   placeholder="Tanggal offset"
+                  required
                 />
-              </div>
-              <div class="col p-4">
-                <div class="row">
-                  <div class="col text-end">
-                    <!-- submit -->
-                    {{ button("submit", "info", "Submit", False, "")}}
-                    <!-- kembali -->
-                    {{ button("modal", "secondary", "Kembali", False, "", id_modal) }}
-                  </div>
-                </div>
               </div>
             </div>
             <!-- add reports -->
@@ -371,20 +309,24 @@
                   value="{{ data['user_id'] }}"
                 />
               </div>
-              <div class="col-12 mb-2">
+              <div class="col-12 mb-2 input-group">
+                <label class="input-group-text">Tanggal Awal</label>
                 <input
-                  class="form-control"
-                  type="date"
-                  name="start_date"
-                  placeholder="Tanggal mulai"
+                class="form-control"
+                type="date"
+                name="start_date"
+                placeholder="Tanggal awal"
+                required
                 />
               </div>
-              <div class="col-12 mb-2">
+              <div class="col-12 mb-2 input-group">
+                <label class="input-group-text">Tanggal Akhir</label>
                 <input
                   class="form-control"
                   type="date"
                   name="end_date"
-                  placeholder="Tanggal selesai"
+                  placeholder="Tanggal Akhir"
+                  required
                 />
               </div>
               <div class="col-12 mb-2">
@@ -395,18 +337,18 @@
                   placeholder="Total emisi"
                 />
               </div>
-              <div class="col p-4">
-                <div class="row">
-                  <div class="col text-end">
-                    <!-- submit -->
-                    {{ button("submit", "info", "Submit", False, "")}}
-                    <!-- kembali -->
-                    {{ button("modal", "secondary", "Kembali", False, "", id_modal) }}
-                  </div>
+            </div>
+            {% endif %}
+            <div class="col p-4">
+              <div class="row">
+                <div class="col text-end">
+                  <!-- submit -->
+                  {{ button("submit", "info", "Submit", False, "")}}
+                  <!-- kembali -->
+                  {{ button("modal", "secondary", "Kembali", False, "", id_modal) }}
                 </div>
               </div>
             </div>
-            {% endif %}
             </form>
           </div>
         </div>
@@ -431,7 +373,30 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content rounded-4 border-0">
         <div class="modal-header">
-          <h1 class="modal-title fs-5">{{ title }}</h1>
+          <h1 class="modal-title fs-5">{% if data['menu']['users'] %}
+            Edit user
+            {% endif %}
+            {% if data['menu']['activities'] %}
+            Edit aktivitas
+            {% endif %}
+            {% if data['menu']['sources'] %}
+            Edit sumber emisi
+            {% endif %}
+            {% if data['menu']['emissions'] %}
+            Edit emisi
+            {% endif %}
+            {% if data['menu']['carbon_factors'] %}
+            Edit faktor karbon
+            {% endif %}
+            {% if data['menu']['goals'] %}
+            Edit target emisi
+            {% endif %}
+            {% if data['menu']['offsets'] %}
+            Edit offset
+            {% endif %}
+            {% if data['menu']['reports'] %}
+            Edit laporan
+            {% endif %}</h1>
           <button
             type="button"
             class="btn-close"
@@ -486,11 +451,12 @@
                   value="{{ dt['username'] }}"
                 />
               </div>
-              <div class="col-12 mb-2">
+              <div class="col-12 mb-2 input-group">
+                <label class="input-group-text">Role</label>
                 <select name="role" id="role" class="form-select">
-                  <option value="user" {% if data['role']=="user" %} selected {% endif %}>User</option>
-                  <option value="company" {% if data['role']=="company" %} selected {% endif %}>Company</option>
-                  <option value="admin" {% if data['role']=="admin" %} selected {% endif %}>Admin</option>
+                  <option value="user" {% if dt['role'] == "user" %} selected {% endif %}>User</option>
+                  <option value="company" {% if dt['role'] == "company" %} selected {% endif %}>Company</option>
+                  <option value="admin" {% if dt['role'] == "admin" %} selected {% endif %}>Admin</option>
                 </select>
               </div>
               <div class="col-12 mb-2">
@@ -501,28 +467,17 @@
                   placeholder="Password baru"
                 />
               </div>
-              <div class="col p-4">
-                <div class="row">
-                  <div class="col text-end">
-                    <!-- submit -->
-                    {{ button("submit", "info", "Submit", False, "")}}
-                    <!-- kembali -->
-                    {{ button("modal", "secondary", "Kembali", False, "", id_modal) }}
-                  </div>
-                </div>
-              </div>
             </div>
             <!-- edit activities -->
             {% elif data['menu']['activities'] %}
             <div class="activities">
-              <div class="col-12 mb-2">
-                <input
-                  class="form-control"
-                  type="text"
-                  name="factor_id"
-                  placeholder="Faktor"
-                  value="{{ dt['factor_id'] }}"
-                />
+              <div class="col-12 mb-2 input-group">
+                <label class="input-group-text">Faktor</label>
+                <select name="factor_id" id="" class="form-select">
+                {% for dt_cf in data['carbon_factors']['carbon_factors'] %}
+                    <option value="{{ dt_cf.factor_id }}" {% if dt['factor_id'] == dt_cf.factor_id %} selected {% endif %}>{{ dt_cf['conversion_factor'] }} {{ dt_cf['unit'] }}</option>
+                {% endfor %}
+                </select>
               </div>
               <div class="col-12 mb-2">
                 <input
@@ -533,24 +488,15 @@
                   value="{{ dt['amount'] }}"
                 />
               </div>
-              <div class="col-12 mb-2">
+              <div class="col-12 mb-2 input-group">
+                <label for="" class="input-group-text">Tanggal aktivitas</label>
                 <input
                   class="form-control"
                   type="date"
                   name="activity_date"
                   placeholder="Tanggal Aktivitas"
-                  value="{{ dt['activity_date'] }}"
+                  required
                 />
-              </div>
-              <div class="col p-4">
-                <div class="row">
-                  <div class="col text-end">
-                    <!-- submit -->
-                    {{ button("submit", "info", "Submit", False, "")}}
-                    <!-- kembali -->
-                    {{ button("modal", "secondary", "Kembali", False, "", id_modal) }}
-                  </div>
-                </div>
               </div>
             </div>
             <!-- edit sources -->
@@ -574,28 +520,17 @@
                   value="{{ dt['description'] }}"
                 />
               </div>
-              <div class="col p-4">
-                <div class="row">
-                  <div class="col text-end">
-                    <!-- submit -->
-                    {{ button("submit", "info", "Submit", False, "")}}
-                    <!-- kembali -->
-                    {{ button("modal", "secondary", "Kembali", False, "", id_modal) }}
-                  </div>
-                </div>
-              </div>
             </div>
             <!-- edit emissions -->
             {% elif data['menu']['emissions'] %}
             <div class="emissions">
-              <div class="col-12 mb-2">
-                <input
-                  class="form-control"
-                  type="text"
-                  name="source_id"
-                  placeholder="Sumber"
-                  value="{{ dt['source_id'] }}"
-                />
+              <div class="col-12 mb-2 input-group">
+                <label class="input-group-text">Sumber</label>
+                <select name="source_id" id="" class="form-select">
+                {% for dt_sc in data['sources']['sources'] %}
+                    <option value="{{ dt_sc.source_id }}">{{ dt_sc['source_name'] }}</option>
+                {% endfor %}
+                </select>
               </div>
               <div class="col-12 mb-2">
                 <input
@@ -606,37 +541,27 @@
                   value="{{ dt['amount'] }}"
                 />
               </div>
-              <div class="col-12 mb-2">
-                <input
-                  class="form-control"
-                  type="text"
-                  name="emission_date"
-                  placeholder="Tanggal emisi"
-                  value="{{ dt['emission_date'] }}"
-                />
-              </div>
-              <div class="col p-4">
-                <div class="row">
-                  <div class="col text-end">
-                    <!-- submit -->
-                    {{ button("submit", "info", "Submit", False, "")}}
-                    <!-- kembali -->
-                    {{ button("modal", "secondary", "Kembali", False, "", id_modal) }}
-                  </div>
-                </div>
+              <div class="col-12 mb-2 input-group">
+                <label for="" class="input-group-text">Tanggal emisi</label>
+                  <input
+                    class="form-control"
+                    type="date"
+                    name="emission_date"
+                    placeholder="Tanggal emisi"
+                    required
+                  />
               </div>
             </div>
             <!-- edit carbon_factors -->
             {% elif data['menu']['carbon_factors'] %}
             <div class="carbon_factors">
-              <div class="col-12 mb-2">
-                <input
-                  class="form-control"
-                  type="text"
-                  name="source_id"
-                  placeholder="Sumber"
-                  value="{{ dt['source_id'] }}"
-                />
+              <div class="col-12 mb-2 input-group">
+                <label class="input-group-text">Sumber</label>
+                <select name="source_id" id="" class="form-select">
+                {% for dt_sc in data['sources']['sources'] %}
+                    <option value="{{ dt_sc.source_id }}">{{ dt_sc['source_name'] }}</option>
+                {% endfor %}
+                </select>
               </div>
               <div class="col-12 mb-2">
                 <input
@@ -665,16 +590,6 @@
                   value="{{ dt['unit'] }}"
                 />
               </div>
-              <div class="col p-4">
-                <div class="row">
-                  <div class="col text-end">
-                    <!-- submit -->
-                    {{ button("submit", "info", "Submit", False, "")}}
-                    <!-- kembali -->
-                    {{ button("modal", "secondary", "Kembali", False, "", id_modal) }}
-                  </div>
-                </div>
-              </div>
             </div>
             <!-- edit goals -->
             {% elif data['menu']['goals'] %}
@@ -688,33 +603,22 @@
                   value="{{ dt['target_emission'] }}"
                 />
               </div>
-              <div class="col-12 mb-2">
+              <div class="col-12 mb-2 input-group">
+                <label for="" class="input-group-text">Batas waktu</label>
                 <input
                   class="form-control"
                   type="date"
                   name="deadline"
-                  placeholder="Deadline"
-                  value="{{ dt['deadline'] }}"
+                  required
                 />
               </div>
-              <div class="col-12 mb-2">
-                <input
-                  class="form-control"
-                  type="text"
-                  name="status"
-                  placeholder="Status"
-                  value="{{ dt['status'] }}"
-                />
-              </div>
-              <div class="col p-4">
-                <div class="row">
-                  <div class="col text-end">
-                    <!-- submit -->
-                    {{ button("submit", "info", "Submit", False, "")}}
-                    <!-- kembali -->
-                    {{ button("modal", "secondary", "Kembali", False, "", id_modal) }}
-                  </div>
-                </div>
+              <div class="col-12 mb-2 input-group">
+                <label class="input-group-text">Status</label>
+                <select name="status" id="" class="form-select">
+                  <option value="in_progress" {% if dt['status'] == "in_progress" %} selected {% endif %}>Dalam proses</option>
+                  <option value="achieved" {% if dt['status'] == "achieved" %} selected {% endif %}>Tercapai</option>
+                  <option value="missed" {% if dt['status'] == "missed" %} selected {% endif %}>Terlewat</option>
+                </select>
               </div>
             </div>
             <!-- edit offsets -->
@@ -738,24 +642,15 @@
                   value="{{ dt['offset_amount'] }}"
                 />
               </div>
-              <div class="col-12 mb-2">
+              <div class="col-12 mb-2 input-group">
+                <label class="input-group-text">Tanggal Offset</label>
                 <input
                   class="form-control"
                   type="date"
                   name="offset_date"
                   placeholder="Tanggal offset"
-                  value="{{ dt['offset_date'] }}"
+                  required
                 />
-              </div>
-              <div class="col p-4">
-                <div class="row">
-                  <div class="col text-end">
-                    <!-- submit -->
-                    {{ button("submit", "info", "Submit", False, "")}}
-                    <!-- kembali -->
-                    {{ button("modal", "secondary", "Kembali", False, "", id_modal) }}
-                  </div>
-                </div>
               </div>
             </div>
             <!-- edit reports -->
@@ -764,19 +659,29 @@
               <div class="col-12 mb-2">
                 <input
                   class="form-control"
-                  type="date"
-                  name="start_date"
-                  placeholder="Tanggal mulai"
-                  value="{{ dt['start_date'] }}"
+                  type="hidden"
+                  name="user_id"
+                  value="{{ data['user_id'] }}"
                 />
               </div>
-              <div class="col-12 mb-2">
+              <div class="col-12 mb-2 input-group">
+                <label class="input-group-text">Tanggal Awal</label>
+                <input
+                class="form-control"
+                type="date"
+                name="start_date"
+                placeholder="Tanggal awal"
+                required
+                />
+              </div>
+              <div class="col-12 mb-2 input-group">
+                <label class="input-group-text">Tanggal Akhir</label>
                 <input
                   class="form-control"
                   type="date"
                   name="end_date"
-                  placeholder="Tanggal selesai"
-                  value="{{ dt['end_date'] }}"
+                  placeholder="Tanggal Akhir"
+                  required
                 />
               </div>
               <div class="col-12 mb-2">
@@ -788,18 +693,18 @@
                   value="{{ dt['total_emission'] }}"
                 />
               </div>
-              <div class="col p-4">
-                <div class="row">
-                  <div class="col text-end">
-                    <!-- submit -->
-                    {{ button("submit", "info", "Submit", False, "")}}
-                    <!-- kembali -->
-                    {{ button("modal", "secondary", "Kembali", False, "", id_modal) }}
-                  </div>
+            </div>
+            {% endif %}
+            <div class="col p-4">
+              <div class="row">
+                <div class="col text-end">
+                  <!-- submit -->
+                  {{ button("submit", "info", "Submit", False, "")}}
+                  <!-- kembali -->
+                  {{ button("modal", "secondary", "Kembali", False, "", id_modal) }}
                 </div>
               </div>
             </div>
-            {% endif %}
           </form>
           </div>
         </div>
@@ -824,7 +729,30 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content rounded-4 border-0">
         <div class="modal-header">
-          <h1 class="modal-title fs-5">{{ title }}</h1>
+          <h1 class="modal-title fs-5">{% if data['menu']['users'] %}
+            Delete user
+            {% endif %}
+            {% if data['menu']['activities'] %}
+            Delete aktivitas
+            {% endif %}
+            {% if data['menu']['sources'] %}
+            Delete sumber emisi
+            {% endif %}
+            {% if data['menu']['emissions'] %}
+            Delete emisi
+            {% endif %}
+            {% if data['menu']['carbon_factors'] %}
+            Delete faktor karbon
+            {% endif %}
+            {% if data['menu']['goals'] %}
+            Delete target emisi
+            {% endif %}
+            {% if data['menu']['offsets'] %}
+            Delete offset
+            {% endif %}
+            {% if data['menu']['reports'] %}
+            Delete laporan
+            {% endif %}</h1>
           <button
             type="button"
             class="btn-close"
@@ -860,49 +788,49 @@
             {% if data['menu']['users'] %}
               <div class="col-12">
                 <p class="fs-4">Apakah anda yakin ingin menghapus</p>
-                <div class="fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">{{ dt['username'] }}</div>
+                <div class="rounded-4 fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">{{ dt['username'] }}</div>
               </div>
               <!-- delete activities -->
             {% elif data['menu']['activities'] %}
               <div class="col-12">
                 <p class="fs-4">Apakah anda yakin ingin menghapus</p>
-                <div class="fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">{{ dt['factor_id'] }}</div>
+                <div class="rounded-4 fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">{{ dt['factor_id'] }}</div>
               </div>
               <!-- delete sources -->
             {% elif data['menu']['sources'] %}
               <div class="col-12">
                 <p class="fs-4">Apakah anda yakin ingin menghapus</p>
-                <div class="fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">{{ dt['source_name'] }}</div>
+                <div class="rounded-4 fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">{{ dt['source_name'] }}</div>
               </div>
               <!-- delete emission -->
             {% elif data['menu']['emissions'] %}
               <div class="col-12">
                 <p class="fs-4">Apakah anda yakin ingin menghapus</p>
-                <div class="fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">{{ dt['emission_id'] }}</div>
+                <div class="rounded-4 fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">{{ dt['emission_id'] }}</div>
               </div>
               <!-- delete carbon_factors -->
             {% elif data['menu']['carbon_factors'] %}
               <div class="col-12">
                 <p class="fs-4">Apakah anda yakin ingin menghapus</p>
-                <div class="fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">{{ dt['factor_id'] }}</div>
+                <div class="rounded-4 fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">{{ dt['factor_id'] }}</div>
               </div>
               <!-- delete goals -->
             {% elif data['menu']['goals'] %}
               <div class="col-12">
                 <p class="fs-4">Apakah anda yakin ingin menghapus</p>
-                <div class="fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">{{ dt['goals_id'] }}</div>
+                <div class="rounded-4 fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">{{ dt['goals_id'] }}</div>
               </div>
               <!-- delete offsets -->
             {% elif data['menu']['offsets'] %}
               <div class="col-12">
                 <p class="fs-4">Apakah anda yakin ingin menghapus</p>
-                <div class="fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">{{ dt['project_name'] }}</div>
+                <div class="rounded-4 fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">{{ dt['project_name'] }}</div>
               </div>
               <!-- delete reports -->
             {% elif data['menu']['reports'] %}
               <div class="col-12">
                 <p class="fs-4">Apakah anda yakin ingin menghapus</p>
-                <div class="fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">{{ dt['report_id'] }}</div>
+                <div class="rounded-4 fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">{{ dt['report_id'] }}</div>
               </div>
             {% endif %}
                 <div class="col p-4">

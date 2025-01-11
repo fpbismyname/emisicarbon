@@ -72,26 +72,22 @@
       {% elif data['menu']['activities'] %}
         <tr>
           <th scope="col">#</th>
-          <th scope="col">User</th>
+          {% if data['role'] == "admin" %}
+              <th scope="col">User</th>
+          {% endif %}
           <th scope="col">Factor</th>
           <th scope="col">Total emisi</th>
           <th scope="col">Tanggal Aktivitas</th>
           <th scope="col">Tanggal Laporan</th>
           <th scope="col">Action</th>
         </tr>
-      <!-- header sources -->
-      {% elif data['menu']['sources'] %}
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Nama sumber</th>
-          <th scope="col">Deskripsi</th>
-          <th scope="col">Action</th>
-        </tr>
-      <!-- header sources -->
+      <!-- header emission -->
       {% elif data['menu']['emissions'] %}
         <tr>
           <th scope="col">#</th>
-          <th scope="col">User</th>
+          {% if data['role'] == "admin" %}
+              <th scope="col">User</th>
+          {% endif %}
           <th scope="col">Sumber</th>
           <th scope="col">Jumlah emisi</th>
           <th scope="col">Tanggal emisi</th>
@@ -120,7 +116,9 @@
       {% elif data['menu']['goals'] %}
         <tr>
           <th scope="col">#</th>
-          <th scope="col">User</th>
+          {% if data['role'] == "admin" %}
+              <th scope="col">User</th>
+          {% endif %}
           <th scope="col">Target emisi</th>
           <th scope="col">Batas waktu</th>
           <th scope="col">Status</th>
@@ -131,7 +129,9 @@
       {% elif data['menu']['offsets'] %}
         <tr>
           <th scope="col">#</th>
-          <th scope="col">User</th>
+          {% if data['role'] == "admin" %}
+            <th scope="col">User</th>
+          {% endif %}
           <th scope="col">Nama proyek</th>
           <th scope="col">Jumlah offset</th>
           <th scope="col">Tanggal offset</th>
@@ -142,7 +142,9 @@
       {% elif data['menu']['reports'] %}
         <tr>
           <th scope="col">#</th>
-          <th scope="col">User</th>
+          {% if data['role'] == "admin" %}
+              <th scope="col">User</th>
+          {% endif %}
           <th scope="col">Tanggal awal</th>
           <th scope="col">Tanggal akhir</th>
           <th scope="col">Total emisi</th>
@@ -154,142 +156,250 @@
       <tbody>  
         <!--Table user -->
         {% if data['menu']['users'] %}
-          {% for dt in data['datas']['accounts'] %} 
-          <tr>
-            <td>{{ loop.index }}</td>  
-            <td>{{ dt.role }}</td>
-            <td>{{ dt.username }}</td>  
-            <td>{{ dt.email }}</td>
-            <td>
-              {{ button("modal", "info", "Edit", False, "", "editUsers"~"-"~dt.user_id) }}
-              {{ button("modal", "danger", "Delete", False, "", "deleteUsers"~"-"~dt.user_id) }}
-            </td>
-            {{ modal_edit(dt.user_id, "editUsers", dt.username ~ " - Edit user", dt, data) }}
-            {{ modal_delete(dt.user_id, "deleteUsers", dt.username ~ " - Delete user", dt, data) }}
-          </tr>
-          {% endfor %}  
+          {% if data['datas']['accounts'] %}
+            {% for dt in data['datas']['accounts'] %} 
+            <tr>
+              <td>{{ loop.index }}</td>  
+              <td>{{ dt.role }}</td>
+              <td>{{ dt.username }}</td>  
+              <td>{{ dt.email }}</td>
+              <td>
+                {{ button("modal", "info", "Edit", False, "", "editUsers"~"-"~dt.user_id) }}
+                {{ button("modal", "danger", "Delete", False, "", "deleteUsers"~"-"~dt.user_id) }}
+              </td>
+              {{ modal_edit(dt.user_id, "editUsers", dt.username ~ " - Edit user", dt, data) }}
+              {{ modal_delete(dt.user_id, "deleteUsers", dt.username ~ " - Delete user", dt, data) }}
+            </tr>
+            {% endfor %}  
+          {% else %}
+            <tr>
+              <td colspan="10" class="text-center">No data</td>
+            </tr>
+          {% endif %}
         <!-- Table activity -->
         {% elif data['menu']['activities'] %}
-          {% for dt in data['datas']['activities'] %}
-          <tr>
-            <td>{{ loop.index }}</td>
-            <td>{{ dt.user_id}}</td>
-            <td>{{ dt.factor_id }}</td>
-            <td>{{ dt.amount }}</td> 
-            <td>{{ dt.activity_date }}</td> 
-            <td>{{ dt.report_date }}</td>
-            <td>
-              {{ button("modal", "info", "Edit", False, "", "editActivity"~"-"~dt.activity_id) }}
-              {{ button("modal", "danger", "Delete", False, "", "deleteActivity"~"-"~dt.activity_id) }}
-            </td> 
-            {{ modal_edit(dt.activity_id, "editActivity", dt.factor_id ~ " - Edit Users", dt, data) }}
-            {{ modal_delete(dt.activity_id, "deleteActivity", dt.factor_id ~ " - Delete Users", dt, data) }}
-          </tr>
-          {% endfor %}
+          {% if data['datas']['activities'] %}
+            {% for dt in data['datas']['activities'] %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              {% if data['role'] == "admin" %}
+              <td>
+                {% for dt_us in data['users']['accounts'] %}
+                {% if dt_us.user_id == dt.user_id %}
+                  {{ dt_us['username'] }}
+                {% endif %}
+              {% endfor %}
+            </td>
+              {% endif %}
+              <td>{% for dt_ft in data['carbon_factors']['carbon_factors'] %}
+                {% if dt_ft.factor_id == dt.factor_id %}
+                  {{ dt_ft['conversion_factor'] }} {{ dt_ft['unit'] }}
+                {% endif %}
+              {% endfor %}</td>
+              <td>{{ dt.amount }}</td> 
+              <td>{{ dt.activity_date }}</td> 
+              <td>{{ dt.report_date }}</td>
+              <td>
+                {{ button("modal", "info", "Edit", False, "", "editActivity"~"-"~dt.activity_id) }}
+                {{ button("modal", "danger", "Delete", False, "", "deleteActivity"~"-"~dt.activity_id) }}
+              </td> 
+              {{ modal_edit(dt.activity_id, "editActivity", dt.factor_id ~ " - Edit Users", dt, data) }}
+              {{ modal_delete(dt.activity_id, "deleteActivity", dt.factor_id ~ " - Delete Users", dt, data) }}
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="10" class="text-center">No data</td>
+            </tr>
+          {% endif %}
         <!-- Table sources -->
         {% elif data['menu']['sources'] %}
-          {% for dt in data['datas']['sources'] %}
-          <tr>
-            <td>{{ loop.index }}</td>
-            <td>{{ dt.source_name}}</td>
-            <td>{{ dt.description }}</td>
-            <td>
-              {{ button("modal", "info", "Edit", False, "", "editSource"~"-"~dt.source_id) }}
-              {{ button("modal", "danger", "Delete", False, "", "deleteSource"~"-"~dt.source_id) }}
-            </td> 
-            {{ modal_edit(dt.source_id, "editSource", dt.source_name ~ " - Edit sumber emisi", dt, data) }}
-            {{ modal_delete(dt.source_id, "deleteSource", dt.source_name ~ " - Delete sumber emisi", dt, data) }}
-          </tr>
-          {% endfor %}
+          {% if data['datas']['sources'] %}
+            {% for dt in data['datas']['sources'] %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ dt.source_name}}</td>
+              <td>{{ dt.description }}</td>
+              <td>
+                {{ button("modal", "info", "Edit", False, "", "editSource"~"-"~dt.source_id) }}
+                {{ button("modal", "danger", "Delete", False, "", "deleteSource"~"-"~dt.source_id) }}
+              </td> 
+              {{ modal_edit(dt.source_id, "editSource", dt.source_name ~ " - Edit sumber emisi", dt, data) }}
+              {{ modal_delete(dt.source_id, "deleteSource", dt.source_name ~ " - Delete sumber emisi", dt, data) }}
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="10" class="text-center">No data</td>
+            </tr>
+          {% endif %}
         <!-- Table emissions -->
         {% elif data['menu']['emissions'] %}
-          {% for dt in data['datas']['emissions'] %}
-          <tr>
-            <td>{{ loop.index }}</td>
-            <td>{{ dt.user_id}}</td>
-            <td>{{ dt.source_id }}</td>
-            <td>{{ dt.amount }}</td>
-            <td>{{ dt.emission_date }}</td>
-            <td>{{ dt.report_date }}</td>
-            <td>
-              {{ button("modal", "info", "Edit", False, "", "editEmission"~"-"~dt.emission_id) }}
-              {{ button("modal", "danger", "Delete", False, "", "deleteEmission"~"-"~dt.emission_id) }}
-            </td> 
-            {{ modal_edit(dt.emission_id, "editEmission", dt.emission_id ~ " - Edit emisi", dt, data) }}
-            {{ modal_delete(dt.emission_id, "deleteEmission", dt.emission_id ~ " - Delete emisi", dt, data) }}
-          </tr>
-          {% endfor %}
+          {% if data['datas']['emissions'] %}
+            {% for dt in data['datas']['emissions'] %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              {% if data['role'] == "admin" %}
+              <td>
+                {% for dt_us in data['users']['accounts'] %}
+                {% if dt_us.user_id == dt.user_id %}
+                  {{ dt_us['username'] }}
+                {% endif %}
+              {% endfor %}
+            </td>
+              {% endif %}
+              <td>{% for dt_sc in data['sources']['sources'] %}
+                {% if dt_sc.source_id == dt.source_id %}
+                  {{ dt_sc['source_name'] }}
+                {% endif %}
+              {% endfor %}</td>
+              <td>{{ dt.amount }}</td>
+              <td>{{ dt.emission_date }}</td>
+              <td>{{ dt.report_date }}</td>
+              <td>
+                {{ button("modal", "info", "Edit", False, "", "editEmission"~"-"~dt.emission_id) }}
+                {{ button("modal", "danger", "Delete", False, "", "deleteEmission"~"-"~dt.emission_id) }}
+              </td> 
+              {{ modal_edit(dt.emission_id, "editEmission", dt.emission_id ~ " - Edit emisi", dt, data) }}
+              {{ modal_delete(dt.emission_id, "deleteEmission", dt.emission_id ~ " - Delete emisi", dt, data) }}
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="10" class="text-center">No data</td>
+            </tr>
+          {% endif %}
         <!-- Table carbon factor -->
         {% elif data['menu']['carbon_factors'] %}
-          {% for dt in data['datas']['carbon_factors'] %}
-          <tr>
-            <td>{{ loop.index }}</td>
-            <td>{{ dt.source_id }}</td>
-            <td>{{ dt.description }}</td>
-            <td>{{ dt.conversion_factor }}</td>
-            <td>{{ dt.unit }}</td>
-            <td>
-              {{ button("modal", "info", "Edit", False, "", "editCarbonFactor"~"-"~dt.factor_id) }}
-              {{ button("modal", "danger", "Delete", False, "", "deleteCarbonFactor"~"-"~dt.factor_id) }}
-            </td> 
-            {{ modal_edit(dt.factor_id, "editCarbonFactor", dt.factor_id ~ " - Edit sumber emisi", dt, data) }}
-            {{ modal_delete(dt.factor_id, "deleteCarbonFactor", dt.factor_id ~ " - Delete sumber emisi", dt, data) }}
-          </tr>
-          {% endfor %}
+          {% if data['datas']['carbon_factors'] %}
+            {% for dt in data['datas']['carbon_factors'] %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td>
+                {% for dt_sc in data['sources']['sources'] %}
+                  {% if dt_sc.source_id == dt.source_id %}
+                    {{ dt_sc['source_name'] }}
+                  {% endif %}
+                {% endfor %}
+              </td>
+              <td>{{ dt.description }}</td>
+              <td>{{ dt.conversion_factor }}</td>
+              <td>{{ dt.unit }}</td>
+              <td>
+                {{ button("modal", "info", "Edit", False, "", "editCarbonFactor"~"-"~dt.factor_id) }}
+                {{ button("modal", "danger", "Delete", False, "", "deleteCarbonFactor"~"-"~dt.factor_id) }}
+              </td> 
+              {{ modal_edit(dt.factor_id, "editCarbonFactor", dt.factor_id ~ " - Edit sumber emisi", dt, data) }}
+              {{ modal_delete(dt.factor_id, "deleteCarbonFactor", dt.factor_id ~ " - Delete sumber emisi", dt, data) }}
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="10" class="text-center">No data</td>
+            </tr>
+          {% endif %}
         <!-- Table goals -->
         {% elif data['menu']['goals'] %}
-          {% for dt in data['datas']['goals'] %}
-          <tr>
-            <td>{{ loop.index }}</td>
-            <td>{{ dt.user_id }}</td>
-            <td>{{ dt.target_emission }}</td>
-            <td>{{ dt.deadline }}</td>
-            <td>{{ dt.status }}</td>
-            <td>{{ dt.created_at }}</td>
-            <td>
-              {{ button("modal", "info", "Edit", False, "", "editGoal"~"-"~dt.goal_id) }}
-              {{ button("modal", "danger", "Delete", False, "", "deleteGoal"~"-"~dt.goal_id) }}
-            </td> 
-            {{ modal_edit(dt.goal_id, "editGoal", dt.goal_id ~ " - Edit target emisi", dt, data) }}
-            {{ modal_delete(dt.goal_id, "deleteGoal", dt.goal_id ~ " - Delete target emisi", dt, data) }}
-          </tr>
-          {% endfor %}
+          {% if data['datas']['goals'] %}
+            {% for dt in data['datas']['goals'] %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              {% if data['role'] == "admin" %}
+              <td>
+                {% for dt_us in data['users']['accounts'] %}
+                {% if dt_us.user_id == dt.user_id %}
+                  {{ dt_us['username'] }}
+                {% endif %}
+              {% endfor %}
+              </td>
+              {% endif %}
+              <td>{{ dt.target_emission }}</td>
+              <td>{{ dt.deadline }}</td>
+              {% if dt.status == "in_progress" %}
+              <td>Dalam proses</td>
+              {% elif dt.status == "achieved" %}
+              <td>Tercapai</td>
+              {% elif dt.status == "missed" %}
+              <td>Terlewat</td>
+              {% endif %}
+              <td>{{ dt.created_at }}</td>
+              <td>
+                {{ button("modal", "info", "Edit", False, "", "editGoal"~"-"~dt.goal_id) }}
+                {{ button("modal", "danger", "Delete", False, "", "deleteGoal"~"-"~dt.goal_id) }}
+              </td> 
+              {{ modal_edit(dt.goal_id, "editGoal", dt.goal_id ~ " - Edit target emisi", dt, data) }}
+              {{ modal_delete(dt.goal_id, "deleteGoal", dt.goal_id ~ " - Delete target emisi", dt, data) }}
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="10" class="text-center">No data</td>
+            </tr>
+          {% endif %}
         <!-- Table offsets -->
         {% elif data['menu']['offsets'] %}
-          {% for dt in data['datas']['offsets'] %}
-          <tr>
-            <td>{{ loop.index }}</td>
-            <td>{{ dt.user_id }}</td>
-            <td>{{ dt.project_name }}</td>
-            <td>{{ dt.offset_amount }}</td>
-            <td>{{ dt.offset_date }}</td>
-            <td>{{ dt.created_at }}</td>
-            <td>
-              {{ button("modal", "info", "Edit", False, "", "editOffset"~"-"~dt.offset_id) }}
-              {{ button("modal", "danger", "Delete", False, "", "deleteOffset"~"-"~dt.offset_id) }}
-            </td> 
-            {{ modal_edit(dt.offset_id, "editOffset", dt.offset_id ~ " - Edit offset emisi", dt, data) }}
-            {{ modal_delete(dt.offset_id, "deleteOffset", dt.offset_id ~ " - Delete offset emisi", dt, data) }}
-          </tr>
-          {% endfor %}
+          {% if data['datas']['offsets'] %}
+            {% for dt in data['datas']['offsets'] %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              {% if data['role'] == "admin" %}
+              <td>
+                {% for dt_us in data['users']['accounts'] %}
+                {% if dt_us.user_id == dt.user_id %}
+                  {{ dt_us['username'] }}
+                {% endif %}
+              {% endfor %}
+              </td>
+              {% endif %}
+              <td>{{ dt.project_name }}</td>
+              <td>{{ dt.offset_amount }}</td>
+              <td>{{ dt.offset_date }}</td>
+              <td>{{ dt.created_at }}</td>
+              <td>
+                {{ button("modal", "info", "Edit", False, "", "editOffset"~"-"~dt.offset_id) }}
+                {{ button("modal", "danger", "Delete", False, "", "deleteOffset"~"-"~dt.offset_id) }}
+              </td> 
+              {{ modal_edit(dt.offset_id, "editOffset", dt.offset_id ~ " - Edit offset emisi", dt, data) }}
+              {{ modal_delete(dt.offset_id, "deleteOffset", dt.offset_id ~ " - Delete offset emisi", dt, data) }}
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="10" class="text-center">No data</td>
+            </tr>
+          {% endif %}
         <!-- Table report -->
         {% elif data['menu']['reports'] %}
-          {% for dt in data['datas']['reports'] %}
-          <tr>
-            <td>{{ loop.index }}</td>
-            <td>{{ dt.user_id }}</td>
-            <td>{{ dt.start_date }}</td>
-            <td>{{ dt.end_date }}</td>
-            <td>{{ dt.total_emission }}</td>
-            <td>{{ dt.report_generated_at }}</td>
-            <td>
-              {{ button("modal", "info", "Edit", False, "", "editLaporan"~"-"~dt.report_id) }}
-              {{ button("modal", "danger", "Delete", False, "", "deleteLaporan"~"-"~dt.report_id) }}
-            </td> 
-            {{ modal_edit(dt.report_id, "editLaporan", dt.offset_id ~ " - Edit offset emisi", dt, data) }}
-            {{ modal_delete(dt.report_id, "deleteLaporan", dt.offset_id ~ " - Delete offset emisi", dt, data) }}
-          </tr>
-          {% endfor %}
+          {% if data['datas']['reports'] %}
+            {% for dt in data['datas']['reports'] %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              {% if data['role'] == "admin" %}
+              <td>
+                {% for dt_us in data['users']['accounts'] %}
+                {% if dt_us.user_id == dt.user_id %}
+                  {{ dt_us['username'] }}
+                {% endif %}
+              {% endfor %}
+              </td>
+              {% endif %}
+              <td>{{ dt.start_date }}</td>
+              <td>{{ dt.end_date }}</td>
+              <td>{{ dt.total_emission }}</td>
+              <td>{{ dt.report_generated_at }}</td>
+              <td>
+                {{ button("modal", "info", "Edit", False, "", "editLaporan"~"-"~dt.report_id) }}
+                {{ button("modal", "danger", "Delete", False, "", "deleteLaporan"~"-"~dt.report_id) }}
+              </td> 
+              {{ modal_edit(dt.report_id, "editLaporan", dt.offset_id ~ " - Edit offset emisi", dt, data) }}
+              {{ modal_delete(dt.report_id, "deleteLaporan", dt.offset_id ~ " - Delete offset emisi", dt, data) }}
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="10" class="text-center">No data</td>
+            </tr>
+          {% endif %}
         {% endif %}
       </tbody>
     </table>

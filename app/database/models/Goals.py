@@ -14,8 +14,8 @@ class Goals(db.Model):
         return {
             'goal_id': self.goal_id,
             'user_id': self.user_id,
-            'target_emission': str(self.target_emission),
-            'deadline': self.deadline.isoformat(),
+            'target_emission': self.target_emission,
+            'deadline': self.deadline.strftime('%Y-%m-%d'),
             'status': self.status,
-            'created_at': self.created_at.isoformat(),
+            'created_at': self.created_at.strftime('%Y-%m-%d')
         }

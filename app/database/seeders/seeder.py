@@ -1,6 +1,6 @@
 from app.extensions import *
 from app import db
-from app.database.models.Users import Users
+from app.database.models.Users import Users 
 from app.database.models.Activities import Activities
 from app.database.models.Carbon_factors import CarbonFactors
 from app.database.models.Emissions import Emissions
@@ -12,19 +12,22 @@ def seed():
     # Users seeder
     def users():
         if not Users.query.first():
-            data = Users(email='admin@gmail.com', username='Admin Account', role='admin')
-            data.set_password(password='adm')
-            data2 = Users(email='fajar@gmail.com', username='Fajar PB', role='company')
-            data2.set_password(password='fajar')
+            data = Users(email='admin@gmail.com', username='Admin Emisi', role='admin')
+            data.set_password(password='admin256')
+            data2 = Users(email='garudacompany@gmail.com', username='Garuda Company', role='company')
+            data2.set_password(password='garuda256')
+            data3 = Users(email='steven@gmail.com', username='Steven Beam', role='user')
+            data3.set_password(password='steven256')
             db.session.add(data)
             db.session.add(data2)
+            db.session.add(data3)
             db.session.commit()
             
     # Activities seeder
     def activities(): 
         if not Activities.query.first():
             data = Activities(
-                    user_id = 1,
+                    user_id = 3,
                     factor_id= 1,
                     amount= 10,
                     activity_date= datetime.now(),
@@ -54,9 +57,9 @@ def seed():
     def emissions():
         if not Emissions.query.first():
             data = Emissions(
-                    user_id=1,
+                    user_id=3,
                     source_id=1,
-                    amount=1,
+                    amount=10,
                     emission_date=datetime.now(),
                     report_date=datetime.now()
                 )
@@ -82,8 +85,8 @@ def seed():
                 )
             data2 = CarbonFactors(
                     source_id=2,
-                    description="2 Kwh per co2",
-                    conversion_factor=2,
+                    description="1 Kwh per co2",
+                    conversion_factor=1,
                     unit="Kwh"
                 )
             db.session.add(data)
@@ -94,7 +97,7 @@ def seed():
     def goals():
         if not Goals.query.first():
             data = Goals(
-                    user_id=1,
+                    user_id=3,
                     target_emission=504,
                     deadline=datetime.now()
                 )
@@ -111,13 +114,13 @@ def seed():
     def offsets():
         if not Offsets.query.first():
             data = Offsets(
-                    user_id=1,
+                    user_id=2,
                     project_name="Penanaman 1000 bibit Pohon Jati",
                     offset_amount=90,
                     offset_date=datetime.now()
                 )
             data2 = Offsets(
-                    user_id=1,
+                    user_id=3,
                     project_name="Penanaman 1000 pohon sawit",
                     offset_amount=120,
                     offset_date=datetime.now()
@@ -130,9 +133,9 @@ def seed():
     def reports():
         if not Reports.query.first():
             data = Reports(
-                    user_id=1,
+                    user_id=3,
                     start_date=datetime.now() - timedelta(days=1),
-                    end_date=datetime.now() + timedelta(days=5),
+                    end_date=datetime.now() + timedelta(days=7),
                     total_emission=120
                 )
             data2 = Reports(

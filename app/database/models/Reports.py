@@ -14,8 +14,8 @@ class Reports(db.Model):
         return {
             'report_id': self.report_id,
             'user_id': self.user_id,
-            'start_date': self.start_date.isoformat(),
-            'end_date': self.end_date.isoformat(),
+            'start_date': self.start_date.strftime('%Y-%m-%d'),
+            'end_date': self.end_date.strftime('%Y-%m-%d'),
             'total_emission': str(self.total_emission),
-            'report_generated_at': self.report_generated_at.isoformat(),
+            'report_generated_at': self.report_generated_at.strftime('%Y-%m-%d')
         }

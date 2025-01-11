@@ -1,9 +1,12 @@
 {% extends "layouts.html" %} {% block title %} Register {% endblock %} {% block
 content %}
 <div class="container">
-  <div class="row text-center justify-content-center">
-    <div class="col-12">{{ alert() }}</div>
-    <div class="col-5">{{ form_input('register') }}</div>
+  <div class="row justify-content-center align-items-center vh-100">
+    <div class="col-5">
+      <div class="form-control rounded-4">
+        <div class="col">{{ form_input('register') }}</div>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}

@@ -1,7 +1,7 @@
 import flask_jwt_extended as flask_jwt
 import json
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, make_response, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity, decode_token, set_access_cookies
+from flask_jwt_extended import jwt_required, get_jwt_identity, decode_token, set_access_cookies, JWTManager, exceptions
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, upgrade, migrate
 from flask_bcrypt import Bcrypt
@@ -17,4 +17,4 @@ db = SQLAlchemy()
 migrate_app = Migrate() 
 bcrypt = Bcrypt()
 corsOrigin = CORS()
-jwt = flask_jwt.JWTManager()
+jwt = JWTManager()

@@ -20,7 +20,7 @@ api = Blueprint("controller-api", __name__)
 def login_user():
     data = request.get_json()
     if not data or not data['email'] or not data['password']:
-        return jsonify({"status" : 400, "message" : "Invalid Request, please fill the email and password"}),400
+        return jsonify({"status" : 400, "message" : "Please fill the email and password"}),400
     currentUsers = Users.query.filter_by(email=data['email']).first()
     if not currentUsers : return jsonify({"status": 404, "message": "Invalid Credentials !"}), 404
     currentUser = currentUsers.to_dict()
@@ -47,7 +47,7 @@ def login_user():
 def register_user():
     data = request.get_json()
     if not data or not data['email'] or not data['username'] or not data['password'] or not data['role']:
-        return jsonify({"status" : 400, "message" : "Please fill the username and password"}), 400
+        return jsonify({"status" : 400, "message" : "Please fill all the fields !"}), 400
     role = data['role'] if data['role'] != "admin" else "user"
     checkDuplicationEmail = Users.query.filter_by(email=data['email']).first()
     checkDuplicationUsername = Users.query.filter_by(username=data['username']).first()
@@ -262,8 +262,8 @@ def activities(activity_id):
     # Update one of source data
    if methods == "PUT" and activityID is not None:
        data = request.get_json()
-       if not data:
-           return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
+       if not data['activity_date']:
+           return jsonify({"status" : 400, "message" : "Please fill the date !"}),400
        try:
             token = decode_token(request.headers.get('Authorization').split(" ")[1])
             if token and token['role'] == "admin":
@@ -497,8 +497,8 @@ def emissions(emission_id):
     # Update one of source data
    if methods == "PUT" and emissionID is not None:
        data = request.get_json()
-       if not data:
-           return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
+       if not data['emission_date']:
+           return jsonify({"status" : 400, "message" : "Please fill the date !"}),400
        try:
             token = decode_token(request.headers.get('Authorization').split(" ")[1])
             if token and token['role'] == "admin":
@@ -719,13 +719,14 @@ def goals(goals_id):
     # Add one source data
    if methods == "POST" and goalID is None:
        data = request.get_json()
-       if not data or not data['user_id'] or not data['target_emission'] or not data['deadline']:
+       if not data or not data['user_id'] or not data['target_emission'] or not data['deadline'] or not data['status']:
            return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
        try:
             addGoal = Goals(
                 user_id=data['user_id'],
                 target_emission=data['target_emission'],
-                deadline=data['deadline']
+                deadline=data['deadline'],
+                status=data['status']
             )
             db.session.add(addGoal)
             db.session.commit()
@@ -744,8 +745,8 @@ def goals(goals_id):
     # Update one of source data
    if methods == "PUT" and goalID is not None:
        data = request.get_json()
-       if not data:
-           return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"}),400
+       if not data['deadline']:
+           return jsonify({"status" : 400, "message" : "Please fill the date !"}),400
        try:
             token = decode_token(request.headers.get('Authorization').split(" ")[1])
             if token and token['role'] == "admin":
@@ -758,6 +759,7 @@ def goals(goals_id):
                     return jsonify({"status": 404, "message": "Goal data not found !"}), 404
             goal.target_emission= data['target_emission']
             goal.deadline= data['deadline']
+            goal.status= data['status']
             db.session.commit()
             return jsonify({
                 "status" : 200,
@@ -880,8 +882,8 @@ def offsets(offsets_id):
     # Update one of source data
    if methods == "PUT" and offsetID is not None:
        data = request.get_json()
-       if not data:
-           return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"}),400
+       if not data['offset_date']:
+           return jsonify({"status" : 400, "message" : "Please fill the date !"}),400
        try:
             token = decode_token(request.headers.get('Authorization').split(" ")[1])
             if token and token['role'] == "admin":
@@ -993,6 +995,10 @@ def reports(reports_id):
        data = request.get_json()
        if not data or not data['user_id'] or not data['start_date'] or not data['end_date'] or not data['total_emission']:
            return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
+       start_date = datetime.strptime(data['start_date'], '%Y-%m-%d').date()
+       end_date = datetime.strptime(str(data['end_date']), '%Y-%m-%d').date()
+       if start_date > end_date:
+           return jsonify({"status" : 400, "message" : "Start date should be less then end date"}),400
        try:
             addReport = Reports(
                 user_id=data['user_id'],
@@ -1017,8 +1023,12 @@ def reports(reports_id):
     # Update one of source data
    if methods == "PUT" and reportID is not None:
        data = request.get_json()
-       if not data:
-           return jsonify({"status" : 400, "message" : "Invalid Request, please fill all the fields !"}),400
+       if not data['start_date'] or not data['end_date']:
+           return jsonify({"status" : 400, "message" : "Please fill the date !"}),400
+       start_date = datetime.strptime(data['start_date'], '%Y-%m-%d').date()
+       end_date = datetime.strptime(str(data['end_date']), '%Y-%m-%d').date()
+       if start_date > end_date:
+           return jsonify({"status" : 400, "message" : "Start date should be less then end date"}),400
        try:
             token = decode_token(request.headers.get('Authorization').split(" ")[1])
             if token and token['role'] == "admin":

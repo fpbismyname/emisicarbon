@@ -16,6 +16,6 @@ class Offsets(db.Model):
             'user_id': self.user_id,
             'project_name': self.project_name,
             'offset_amount': str(self.offset_amount),
-            'offset_date': self.offset_date.isoformat(),
-            'created_at': self.created_at.isoformat(),
+            'offset_date': self.offset_date.strftime('%Y-%m-%d'),
+            'created_at': self.created_at.strftime('%Y-%m-%d')
         }

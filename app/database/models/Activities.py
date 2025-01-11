@@ -1,7 +1,7 @@
 from app.database.models import *
 
-class Activities(db.Model):
-    __tablename__ = 'activities'
+class Activities(db.Model): 
+    __tablename__ = 'activities' 
 
     activity_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id', ondelete='CASCADE'), nullable=False)
@@ -17,6 +17,6 @@ class Activities(db.Model):
             'user_id': self.user_id,
             'factor_id': self.factor_id,
             'amount': self.amount,
-            'activity_date': self.activity_date.isoformat(),
-            'report_date': self.report_date.isoformat(),
+            'activity_date': self.activity_date.strftime('%Y-%m-%d'),
+            'report_date': self.report_date.strftime('%Y-%m-%d')
         }

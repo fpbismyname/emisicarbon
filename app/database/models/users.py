@@ -6,7 +6,7 @@ class Users(db.Model):
     username = db.Column(db.String(128), nullable=False, unique=True)
     email = db.Column(db.String(128), nullable=False, unique=True)
     password_hash = db.Column(db.String(128), nullable=False, unique=False)
-    role = db.Column(db.Enum('admin', 'company', 'user', name='user_role'), default="user")
+    role = db.Column(db.Enum('admin', 'company', 'user'), default="user")
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     
     def set_password(self, password: str) -> str:
@@ -22,5 +22,5 @@ class Users(db.Model):
             'email': self.email,
             'password_hash': self.password_hash,
             'role' : self.role,
-            'created_at' : self.created_at.isoformat()
+            'created_at' : self.created_at.strftime('%Y-%m-%d')
         }

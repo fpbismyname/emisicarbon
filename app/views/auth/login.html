@@ -1,9 +1,12 @@
-{% extends "layouts.html" %} {% block title %} Login {% endblock %}
-{% block content %}
+{% extends "layouts.html" %} {% block title %} Login {% endblock %} {% block
+content %}
 <div class="container">
-  <div class="row text-center justify-content-center">
-    <div class="col-12">{{ alert() }}</div>
-    <div class="col-6">{{ form_input('login') }}</div>
+  <div class="row justify-content-center align-items-center vh-100">
+    <div class="col-5">
+      <div class="form-control rounded-4">
+        <div class="col">{{ form_input('login') }}</div>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}

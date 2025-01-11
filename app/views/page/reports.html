@@ -1,6 +1,6 @@
 {% extends "layouts.html" %} {% block title %} {{ data.title }} {% endblock %} {% block
 content %}
-<div class="container">
+<div class="container" style="min-height:88vh">
   <div class="row-auto">
     <div class="col-12 sticky-top">
       <!-- Navbar -->
@@ -17,4 +17,5 @@ content %}
     </div>
   </div>
 </div>
+{{ footer() }}
 {% endblock %}
