@@ -2,7 +2,7 @@ from app.extensions import *
 from app import db
 from app.database.models.Users import Users 
 from app.database.models.Activities import Activities
-from app.database.models.Carbon_factors import CarbonFactors
+from app.database.models.Carbonfactors import CarbonFactors
 from app.database.models.Emissions import Emissions
 from app.database.models.Goals import Goals
 from app.database.models.Offsets import Offsets
@@ -59,6 +59,7 @@ def seed():
             data = Emissions(
                     user_id=3,
                     source_id=1,
+                    activity_id= 1,
                     amount=10,
                     emission_date=datetime.now(),
                     report_date=datetime.now()
@@ -66,6 +67,7 @@ def seed():
             data2 = Emissions(
                     user_id=2,
                     source_id=2,
+                    activity_id= 2,
                     amount=30,
                     emission_date=datetime.now(),
                     report_date=datetime.now()
@@ -79,14 +81,14 @@ def seed():
         if not CarbonFactors.query.first():
             data = CarbonFactors(
                     source_id=1,
-                    description="1 Liter per co2",
-                    conversion_factor=1,
+                    description="0.5 Liter",
+                    conversion_factor=0.5,
                     unit="Liter"
                 )
             data2 = CarbonFactors(
                     source_id=2,
-                    description="1 Kwh per co2",
-                    conversion_factor=1,
+                    description="0.8 Liter",
+                    conversion_factor=0.8,
                     unit="Kwh"
                 )
             db.session.add(data)

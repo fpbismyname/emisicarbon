@@ -10,6 +10,7 @@ class Activities(db.Model):
     activity_date = db.Column(db.Date, nullable=False)
     report_date = db.Column(db.TIMESTAMP, default=db.func.current_timestamp())
 
+    emissions = db.relationship('Emissions', backref='activity_emission', lazy='joined')
 
     def to_dict(self):
         return {

@@ -5,7 +5,7 @@ from app.database.models.Users import Users
 from app.database.models.Sources import Sources
 from app.database.models.Emissions import Emissions
 from app.database.models.Activities import Activities
-from app.database.models.Carbon_factors import CarbonFactors
+from app.database.models.Carbonfactors import CarbonFactors
 from app.database.models.Goals import Goals
 from app.database.models.Offsets import Offsets
 from app.database.models.Reports import Reports
@@ -236,26 +236,29 @@ def activities(activity_id):
     # Add one source data
    if methods == "POST" and activityID is None:
        data = request.get_json()
-       if not data or not data['user_id'] or not data['factor_id'] or not data['amount'] or not data['activity_date']:
+       if not data or not data['factor_id'] or not data['amount'] or not data['activity_date']:
            return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
        try:
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
             FactorConversion = CarbonFactors.query.filter_by(factor_id=data['factor_id']).first().to_dict()
             if not FactorConversion:
                 return jsonify({"status" : 400, "message" : "Factor data not found !"})
-            amountEmisi = int(data['amount']) * int(float(FactorConversion['conversion_factor'])) 
-            addEmission = Emissions(
-                user_id=data['user_id'],
-                source_id=FactorConversion['source_id'],
-                amount=amountEmisi,
-                emission_date=datetime.now().strftime('%Y-%m-%d')
-            )
+            amountEmisi = float(data['amount']) * float(FactorConversion['conversion_factor'])
             addActivity = Activities(
-                user_id = data['user_id'],
+                user_id = token['sub'],
                 factor_id= data['factor_id'],
                 amount= data['amount'],
                 activity_date= data['activity_date'],
             )
             db.session.add(addActivity)
+            db.session.commit()
+            addEmission = Emissions(
+                activity_id=addActivity.activity_id,
+                user_id=token['sub'],
+                source_id=FactorConversion['source_id'],
+                amount=amountEmisi,
+                emission_date=datetime.now().strftime('%Y-%m-%d')
+            )
             db.session.add(addEmission)
             db.session.commit()
             return jsonify({
@@ -267,7 +270,7 @@ def activities(activity_id):
            return jsonify({
                 "status" : 500,
                 "message" : "Internal Server Error",
-                # "err" : str(err)
+                "err" : str(err)
             }), 500
            
     # Update one of source data
@@ -285,6 +288,11 @@ def activities(activity_id):
                 activity = Activities.query.filter_by(user_id=token['sub'], activity_id = activityID).first()
                 if not activity:
                     return jsonify({"status": 404, "message": "Activity data not found !"}), 404
+            FactorConversion = CarbonFactors.query.filter_by(factor_id=data['factor_id']).first().to_dict() 
+            # return FactorConversion
+            for emisi in activity.emissions:
+                emisi.amount = float(data['amount']) * float(FactorConversion['conversion_factor'])
+            # return data.to_dict()
             activity.factor_id= data['factor_id']
             activity.amount= data['amount']
             activity.activity_date= data['activity_date']

@@ -35,6 +35,7 @@ def create_app(config = Environment):
             connection.execute(text("DROP TABLE IF EXISTS alembic_version"))
             connection.commit()
         # Recreate Table
+        # db.create_all()
         click.echo(" > Recreating All Database's...")
         migrate()
         upgrade()

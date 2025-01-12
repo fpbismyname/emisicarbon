@@ -35,7 +35,7 @@
       {{ modal_add("", "addSource", "Tambah sumber emisi", dt, data) }}
     {% elif data['menu']['emissions'] %}
       <span class="badge text-dark text-bg-primary bg-opacity-50 rounded-3 p-2">
-        Total keseluruhan emisi : <span class="text-white">{{ data['role'] }}</span>
+        Total keseluruhan emisi : <span class="text-white">{{ data['datas']['total_emission'] }}</span>
       </span>
     {% elif data['menu']['carbon_factors'] %}
       {{ button("modal", "primary", "Tambah faktor karbon", False, "", "addCarbonFactor") }}

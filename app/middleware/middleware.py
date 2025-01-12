@@ -6,8 +6,9 @@ from app.database.models.Users import Users
 @Jwt.invalid_token_loader
 def invalid_token_callback(reason):
     return redirect(url_for("router-web.login"))
+
 @Jwt.expired_token_loader
-def expired_token_callback(reason):
+def expired_token_callback(jwt_header, jwt_payload):
     return redirect(url_for("router-web.login"))
 
 # Checking access token
@@ -21,7 +22,7 @@ def access_token(roles=[]):
                     if not token:
                         return redirect(url_for("router-web.login"))
                     # Reading the current token
-                    read_token = decode_token(token) or session.clear()
+                    read_token = decode_token(token)
                     # Validating token that account is available
                     checkUser = Users.query.filter_by(username=read_token['username']).first()
                     if not checkUser:

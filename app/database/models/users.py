@@ -9,12 +9,12 @@ class Users(db.Model):
     role = db.Column(db.Enum('admin', 'company', 'user'), default="user")
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     
-    emissions = db.relationship('Emissions', backref='user_id', lazy=True)
-    activities = db.relationship('Activities', backref='user_id', lazy=True)
-    reports = db.relationship('Reports', backref='user_id', lazy=True)
-    offsets = db.relationship('Offsets', backref='user_id', lazy=True)
-    goals = db.relationship('Goals', backref='user_id', lazy=True)
-    
+    emissions = db.relationship('Emissions', backref='users_emission', lazy='joined')
+    activities = db.relationship('Activities', backref='users_activity', lazy='joined')
+    reports = db.relationship('Reports', backref='users_report', lazy='joined')
+    offsets = db.relationship('Offsets', backref='users_offset', lazy='joined')
+    goals = db.relationship('Goals', backref='users_goal', lazy='joined')
+
     def set_password(self, password: str) -> str:
         self.password_hash = bcrypt.generate_password_hash(password)
         
