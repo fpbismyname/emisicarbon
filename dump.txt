@@ -1,0 +1,9 @@
+# Edit emission etc
+<!-- <td>
+{{ button("modal", "info", "Edit", False, "", "editEmission"~"-"~dt.emission_id) }}
+{{ button("modal", "danger", "Delete", False, "", "deleteEmission"~"-"~dt.emission_id) }}
+{{ modal_edit(dt.emission_id, "editEmission", dt.emission_id ~ " - Edit emisi", dt, data) }}
+{{ modal_delete(dt.emission_id, "deleteEmission", dt.emission_id ~ " - Delete emisi", dt, data) }}
+</td>  -->
+<span class="d-none">{{ button("modal", "primary", "Tambah emisi", False, "", "addEmission") }}</span>
+<span class="d-none">{{ modal_add("", "addEmission", "Tambah emisi", dt, data) }}</span>

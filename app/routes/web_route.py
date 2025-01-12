@@ -59,7 +59,7 @@ def sources(id):
 @web.route("/emissions/<int:id>", methods=['POST'])
 @access_token(['admin', 'company', 'user'])
 def emissions(id):
-    return web_controller.emissions_page(id=id, method_url = "emissions", title="Kelola emisi")
+    return web_controller.emissions_page(id=id, method_url = "emissions", title="Semua Emisi")
 # endregion
 
 # region Kelola carbon factors

@@ -34,8 +34,9 @@
       {{ button("modal", "primary", "Tambah sumber emisi", False, "", "addSource") }}
       {{ modal_add("", "addSource", "Tambah sumber emisi", dt, data) }}
     {% elif data['menu']['emissions'] %}
-      {{ button("modal", "primary", "Tambah emisi", False, "", "addEmission") }}
-      {{ modal_add("", "addEmission", "Tambah emisi", dt, data) }}
+      <span class="badge text-dark text-bg-primary bg-opacity-50 rounded-3 p-2">
+        Total keseluruhan emisi : <span class="text-white">{{ data['role'] }}</span>
+      </span>
     {% elif data['menu']['carbon_factors'] %}
       {{ button("modal", "primary", "Tambah faktor karbon", False, "", "addCarbonFactor") }}
       {{ modal_add("", "addCarbonFactor", "Tambah faktor karbon", dt, data) }}
@@ -92,7 +93,7 @@
           <th scope="col">Jumlah emisi</th>
           <th scope="col">Tanggal emisi</th>
           <th scope="col">Tanggal laporan</th>
-          <th scope="col">Action</th>
+          <!-- <th scope="col">Action</th> -->
         </tr>
       <!-- header sources -->
       {% elif data['menu']['sources'] %}
@@ -154,6 +155,7 @@
       {% endif %}
       </thead>
       <tbody>  
+
         <!--Table user -->
         {% if data['menu']['users'] %}
           {% if data['datas']['accounts'] %}
@@ -176,6 +178,7 @@
               <td colspan="10" class="text-center">No data</td>
             </tr>
           {% endif %}
+
         <!-- Table activity -->
         {% elif data['menu']['activities'] %}
           {% if data['datas']['activities'] %}
@@ -191,9 +194,16 @@
               {% endfor %}
             </td>
               {% endif %}
-              <td>{% for dt_ft in data['carbon_factors']['carbon_factors'] %}
+              <td>
+              {% for dt_ft in data['carbon_factors']['carbon_factors'] %}
                 {% if dt_ft.factor_id == dt.factor_id %}
-                  {{ dt_ft['conversion_factor'] }} {{ dt_ft['unit'] }}
+                  {% for dt_sc in data['sources']['sources'] %}
+                    {% if dt_sc.source_id == dt_ft.source_id %}
+                      {{ dt_sc.source_name }}
+                    {% endif %}
+                  {% endfor %}
+                  <br/>
+                  <p class="border-4 border-start border-info p-2 badge text-bg-info bg-opacity-50">{{ dt_ft.conversion_factor }} kg CO₂</p>
                 {% endif %}
               {% endfor %}</td>
               <td>{{ dt.amount }}</td> 
@@ -233,6 +243,7 @@
               <td colspan="10" class="text-center">No data</td>
             </tr>
           {% endif %}
+
         <!-- Table emissions -->
         {% elif data['menu']['emissions'] %}
           {% if data['datas']['emissions'] %}
@@ -256,12 +267,6 @@
               <td>{{ dt.amount }}</td>
               <td>{{ dt.emission_date }}</td>
               <td>{{ dt.report_date }}</td>
-              <td>
-                {{ button("modal", "info", "Edit", False, "", "editEmission"~"-"~dt.emission_id) }}
-                {{ button("modal", "danger", "Delete", False, "", "deleteEmission"~"-"~dt.emission_id) }}
-              </td> 
-              {{ modal_edit(dt.emission_id, "editEmission", dt.emission_id ~ " - Edit emisi", dt, data) }}
-              {{ modal_delete(dt.emission_id, "deleteEmission", dt.emission_id ~ " - Delete emisi", dt, data) }}
             </tr>
             {% endfor %}
           {% else %}
@@ -269,7 +274,8 @@
               <td colspan="10" class="text-center">No data</td>
             </tr>
           {% endif %}
-        <!-- Table carbon factor -->
+
+        <!-- Table Faktor Carbon -->
         {% elif data['menu']['carbon_factors'] %}
           {% if data['datas']['carbon_factors'] %}
             {% for dt in data['datas']['carbon_factors'] %}
@@ -283,7 +289,7 @@
                 {% endfor %}
               </td>
               <td>{{ dt.description }}</td>
-              <td>{{ dt.conversion_factor }}</td>
+              <td>{{ dt.conversion_factor }} kg CO₂</td>
               <td>{{ dt.unit }}</td>
               <td>
                 {{ button("modal", "info", "Edit", False, "", "editCarbonFactor"~"-"~dt.factor_id) }}

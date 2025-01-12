@@ -7,6 +7,9 @@ class Sources(db.Model):
     description = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     
+    emissions = db.relationship('Emissions', backref='source_id', lazy=True)
+    carbon_factors = db.relationship('Carbon_factors', backref='source_id', lazy=True)
+    
     def to_dict(self):
         return {
             'source_id': self.source_id,

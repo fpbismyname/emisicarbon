@@ -6,7 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, upgrade, migrate
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
-from sqlalchemy import text
+from sqlalchemy import text, func
 from sqlalchemy.exc import IntegrityError
 from functools import wraps
 from enum import Enum

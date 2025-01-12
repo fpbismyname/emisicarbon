@@ -9,6 +9,8 @@ class CarbonFactors(db.Model):
     conversion_factor = db.Column(db.Numeric(10, 4), nullable=False)
     unit = db.Column(db.String(20), nullable=False)
 
+    activities = db.relationship('Activities', backref="factor_id", lazy=True)
+
     def to_dict(self):
         return {
             'factor_id': self.factor_id,

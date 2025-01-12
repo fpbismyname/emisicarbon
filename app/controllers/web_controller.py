@@ -309,9 +309,12 @@ def activities_get(url = "", title = ""):
             }
     response = requests.get(url=f"{url_api}/{method}", headers=headers)
     alldata = response.json()
-    # data users
+    # data users 
     response_users = requests.get(url=f"{url_api}/users", headers=headers)
     userData = response_users.json()
+    # data source 
+    response_source = requests.get(url=f"{url_api}/sources", headers=headers)
+    sourceData = response_source.json()
     # data carbon factors
     response_factors = requests.get(url=f"{url_api}/carbon_factors", headers=headers)
     factorData = response_factors.json() 
@@ -327,7 +330,8 @@ def activities_get(url = "", title = ""):
         "menu" : json.loads(menuBar(method=method)),
         "datas" : alldata,
         "carbon_factors" : factorData,
-        "users" : userData
+        "users" : userData,
+        "sources" : sourceData
     }
     return render_template(f"page/{method}.html", data=data)
     # endregion

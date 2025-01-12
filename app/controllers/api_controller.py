@@ -239,6 +239,16 @@ def activities(activity_id):
        if not data or not data['user_id'] or not data['factor_id'] or not data['amount'] or not data['activity_date']:
            return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
        try:
+            FactorConversion = CarbonFactors.query.filter_by(factor_id=data['factor_id']).first().to_dict()
+            if not FactorConversion:
+                return jsonify({"status" : 400, "message" : "Factor data not found !"})
+            amountEmisi = int(data['amount']) * int(float(FactorConversion['conversion_factor'])) 
+            addEmission = Emissions(
+                user_id=data['user_id'],
+                source_id=FactorConversion['source_id'],
+                amount=amountEmisi,
+                emission_date=datetime.now().strftime('%Y-%m-%d')
+            )
             addActivity = Activities(
                 user_id = data['user_id'],
                 factor_id= data['factor_id'],
@@ -246,6 +256,7 @@ def activities(activity_id):
                 activity_date= data['activity_date'],
             )
             db.session.add(addActivity)
+            db.session.add(addEmission)
             db.session.commit()
             return jsonify({
                 "status" : 201,
@@ -420,22 +431,26 @@ def emissions(emission_id):
    emissionID = emission_id
    
    if methods == "GET" and emissionID is None:
+       token = decode_token(request.headers.get('Authorization').split(" ")[1])
+       totalEmissions = None
        try:
-            token = decode_token(request.headers.get('Authorization').split(" ")[1])
             if token and token['role'] == "admin":
                 emission = Emissions.query.all()
                 emissions = [emission.to_dict() for emission in emission]
                 if not emissions:
                     return jsonify({"status": 404, "message": "Emission data not found !"}), 404
+                totalEmissions = db.session.query(func.sum(Emissions.amount)).scalar()
             else:
                 emission = Emissions.query.filter_by(user_id=token['sub'])
                 emissions = [emission.to_dict() for emission in emission]
                 if not emissions:
                     return jsonify({"status": 404, "message": "Emission data not found !"}), 404
+                totalEmissions = db.session.query(func.sum(Emissions.amount)).filter(Emissions.user_id == token['sub']).scalar()
             return jsonify({
                 "status" : 200,
                 "message" : "Get all emissions",
-                "emissions" : emissions
+                "emissions" : emissions,
+                "total_emission" : totalEmissions
             }), 200
        except IntegrityError as err:
            return jsonify({

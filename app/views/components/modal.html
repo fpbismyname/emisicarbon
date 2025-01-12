@@ -90,7 +90,7 @@
                 />
               </div>
             </div>
-            <!-- add activities -->
+            <!-- add activity -->
             {% elif data['menu']['activities'] %}
             <div class="activities">
               <div class="col-12 mb-2">
@@ -105,7 +105,13 @@
                 <label class="input-group-text">Faktor</label>
                 <select name="factor_id" id="" class="form-select">
                 {% for dt_cf in data['carbon_factors']['carbon_factors'] %}
-                    <option value="{{ dt_cf.factor_id }}" >{{ dt_cf['conversion_factor'] }} {{ dt_cf['unit'] }}</option>
+                    <option value="{{ dt_cf.factor_id }}">
+                      {% for dt_sc in data['sources']['sources'] %}
+                        {% if dt_sc.source_id == dt_cf.source_id %}
+                          {{ dt_sc.source_name }}
+                        {% endif %}
+                      {% endfor %}
+                    </option>
                 {% endfor %}
                 </select>
               </div>
@@ -113,6 +119,9 @@
                 <input
                   class="form-control"
                   type="number"
+                  min="0"
+                  max="99999"
+                  step="0.01"
                   name="amount"
                   placeholder="Total Emisi"
                 />
@@ -209,6 +218,9 @@
                 <input
                   class="form-control"
                   type="number"
+                  min="0"
+                  max="99999"
+                  step="0.01"
                   name="conversion_factor"
                   placeholder="Konversi faktor emisi"
                 />
@@ -475,7 +487,13 @@
                 <label class="input-group-text">Faktor</label>
                 <select name="factor_id" id="" class="form-select">
                 {% for dt_cf in data['carbon_factors']['carbon_factors'] %}
-                    <option value="{{ dt_cf.factor_id }}" {% if dt['factor_id'] == dt_cf.factor_id %} selected {% endif %}>{{ dt_cf['conversion_factor'] }} {{ dt_cf['unit'] }}</option>
+                    <option value="{{ dt_cf.factor_id }}">
+                      {% for dt_sc in data['sources']['sources'] %}
+                        {% if dt_sc.source_id == dt_cf.source_id %}
+                          {{ dt_sc.source_name }}
+                        {% endif %}
+                      {% endfor %}
+                    </option>
                 {% endfor %}
                 </select>
               </div>
@@ -576,6 +594,9 @@
                 <input
                   class="form-control"
                   type="number"
+                  min="0"
+                  max="99999"
+                  step="0.01"
                   name="conversion_factor"
                   placeholder="Konversi faktor emisi"
                   value="{{ dt['conversion_factor'] }}"

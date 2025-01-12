@@ -81,7 +81,7 @@ CREATE TABLE goals (
     goal_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     target_emission DECIMAL(10, 2) NOT NULL,   -- Target emisi yang ingin dicapai
-    deadline DATE NOT NULL,                    -- Tenggat waktu untuk mencapai tar  get
+    deadline DATE NOT NULL,                    -- Tenggat waktu untuk mencapai target
     status ENUM('in_progress', 'achieved', 'missed') DEFAULT 'in_progress',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
