@@ -10,8 +10,8 @@ class Activities(db.Model):
     activity_date = db.Column(db.Date, nullable=False)
     report_date = db.Column(db.TIMESTAMP, default=db.func.current_timestamp())
 
-    emissions = db.relationship('Emissions', backref='activity_emission', lazy='joined')
-
+    emissions = db.relationship('Emissions', backref='activity_emission', lazy='dynamic', cascade='all, delete-orphan')
+    # def onInsertActivity(self, amount)
     def to_dict(self):
         return {
             'activity_id': self.activity_id,

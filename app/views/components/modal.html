@@ -263,26 +263,10 @@
                   required
                 />
               </div>
-              <div class="col-12 mb-2 input-group">
-                <label class="input-group-text">Status</label>
-                <select name="status" id="" class="form-select">
-                  <option value="in_progress">Dalam proses</option>
-                  <option value="achieved">Tercapai</option>
-                  <option value="missed">Terlewat</option>
-                </select>
-              </div>
             </div>
             <!-- add offsets -->
             {% elif data['menu']['offsets'] %}
             <div class="offsets">
-              <div class="col-12 mb-2">
-                <input
-                  class="form-control"
-                  type="hidden"
-                  name="user_id"
-                  value="{{ data['user_id'] }}"
-                />
-              </div>
               <div class="col-12 mb-2">
                 <input
                   class="form-control"
@@ -339,14 +323,6 @@
                   name="end_date"
                   placeholder="Tanggal Akhir"
                   required
-                />
-              </div>
-              <div class="col-12 mb-2">
-                <input
-                  class="form-control"
-                  type="number"
-                  name="total_emission"
-                  placeholder="Total emisi"
                 />
               </div>
             </div>
@@ -513,6 +489,7 @@
                   type="date"
                   name="activity_date"
                   placeholder="Tanggal Aktivitas"
+                  value="{{ dt['activity_date'] }}"
                   required
                 />
               </div>
@@ -633,14 +610,6 @@
                   required
                 />
               </div>
-              <div class="col-12 mb-2 input-group">
-                <label class="input-group-text">Status</label>
-                <select name="status" id="" class="form-select">
-                  <option value="in_progress" {% if dt['status'] == "in_progress" %} selected {% endif %}>Dalam proses</option>
-                  <option value="achieved" {% if dt['status'] == "achieved" %} selected {% endif %}>Tercapai</option>
-                  <option value="missed" {% if dt['status'] == "missed" %} selected {% endif %}>Terlewat</option>
-                </select>
-              </div>
             </div>
             <!-- edit offsets -->
             {% elif data['menu']['offsets'] %}
@@ -677,14 +646,6 @@
             <!-- edit reports -->
             {% elif data['menu']['reports'] %}
             <div class="reports">
-              <div class="col-12 mb-2">
-                <input
-                  class="form-control"
-                  type="hidden"
-                  name="user_id"
-                  value="{{ data['user_id'] }}"
-                />
-              </div>
               <div class="col-12 mb-2 input-group">
                 <label class="input-group-text">Tanggal Awal</label>
                 <input
@@ -703,15 +664,6 @@
                   name="end_date"
                   placeholder="Tanggal Akhir"
                   required
-                />
-              </div>
-              <div class="col-12 mb-2">
-                <input
-                  class="form-control"
-                  type="number"
-                  name="total_emission"
-                  placeholder="Total emisi"
-                  value="{{ dt['total_emission'] }}"
                 />
               </div>
             </div>
@@ -839,7 +791,7 @@
             {% elif data['menu']['goals'] %}
               <div class="col-12">
                 <p class="fs-4">Apakah anda yakin ingin menghapus</p>
-                <div class="rounded-4 fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">{{ dt['goals_id'] }}</div>
+                <div class="rounded-4 fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">Target emisi : {{ dt['target_emission'] }}</div>
               </div>
               <!-- delete offsets -->
             {% elif data['menu']['offsets'] %}

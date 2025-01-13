@@ -24,25 +24,25 @@ def seed():
             db.session.commit()
             
     # Activities seeder
-    def activities(): 
-        if not Activities.query.first():
-            data = Activities(
-                    user_id = 3,
-                    factor_id= 1,
-                    amount= 10,
-                    activity_date= datetime.now(),
-                    report_date= datetime.now()
-                )
-            data2 = Activities(
-                    user_id = 2,
-                    factor_id= 2,
-                    amount= 30,
-                    activity_date= datetime.now(),
-                    report_date= datetime.now()
-                )
-            db.session.add(data)
-            db.session.add(data2)
-            db.session.commit()
+    # def activities(): 
+    #     if not Activities.query.first():
+    #         data = Activities(
+    #                 user_id = 3,
+    #                 factor_id= 1,
+    #                 amount= 10,
+    #                 activity_date= datetime.now(),
+    #                 report_date= datetime.now()
+    #             )
+    #         data2 = Activities(
+    #                 user_id = 2,
+    #                 factor_id= 2,
+    #                 amount= 30,
+    #                 activity_date= datetime.now(),
+    #                 report_date= datetime.now()
+    #             )
+    #         db.session.add(data)
+    #         db.session.add(data2)
+    #         db.session.commit()
     
     # Sources seeder
     def sources():
@@ -54,27 +54,27 @@ def seed():
             db.session.commit()
         
     # Emissions seeder
-    def emissions():
-        if not Emissions.query.first():
-            data = Emissions(
-                    user_id=3,
-                    source_id=1,
-                    activity_id= 1,
-                    amount=10,
-                    emission_date=datetime.now(),
-                    report_date=datetime.now()
-                )
-            data2 = Emissions(
-                    user_id=2,
-                    source_id=2,
-                    activity_id= 2,
-                    amount=30,
-                    emission_date=datetime.now(),
-                    report_date=datetime.now()
-                )
-            db.session.add(data)
-            db.session.add(data2)
-            db.session.commit()
+    # def emissions():
+    #     if not Emissions.query.first():
+    #         data = Emissions(
+    #                 user_id=3,
+    #                 source_id=1,
+    #                 activity_id= 1,
+    #                 amount=10,
+    #                 emission_date=datetime.now(),
+    #                 report_date=datetime.now()
+    #             )
+    #         data2 = Emissions(
+    #                 user_id=2,
+    #                 source_id=2,
+    #                 activity_id= 2,
+    #                 amount=30,
+    #                 emission_date=datetime.now(),
+    #                 report_date=datetime.now()
+    #             )
+    #         db.session.add(data)
+    #         db.session.add(data2)
+    #         db.session.commit()
     
     # Carbon factor seeder
     def carbonFactor():
@@ -153,8 +153,8 @@ def seed():
     users()
     sources()
     carbonFactor()
-    activities()
-    emissions()
+    # activities()
+    # emissions()
     goals()
     offsets()
     reports()

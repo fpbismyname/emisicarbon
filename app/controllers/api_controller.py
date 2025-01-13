@@ -12,10 +12,7 @@ from app.database.models.Reports import Reports
 
 api = Blueprint("controller-api", __name__)
 
-# Create Method for controll the routes
-
-# Controller for Users
-
+# Create Method for controller the routes
 # Login users controller
 def login_user():
     data = request.get_json()
@@ -251,13 +248,14 @@ def activities(activity_id):
                 activity_date= data['activity_date'],
             )
             db.session.add(addActivity)
+            db.session.flush()
             db.session.commit()
             addEmission = Emissions(
                 activity_id=addActivity.activity_id,
                 user_id=token['sub'],
                 source_id=FactorConversion['source_id'],
                 amount=amountEmisi,
-                emission_date=datetime.now().strftime('%Y-%m-%d')
+                emission_date=data['activity_date']
             )
             db.session.add(addEmission)
             db.session.commit()
@@ -288,10 +286,12 @@ def activities(activity_id):
                 activity = Activities.query.filter_by(user_id=token['sub'], activity_id = activityID).first()
                 if not activity:
                     return jsonify({"status": 404, "message": "Activity data not found !"}), 404
-            FactorConversion = CarbonFactors.query.filter_by(factor_id=data['factor_id']).first().to_dict() 
+            carbonFactors = CarbonFactors.query.filter_by(factor_id=data['factor_id']).first().to_dict()
             # return FactorConversion
             for emisi in activity.emissions:
-                emisi.amount = float(data['amount']) * float(FactorConversion['conversion_factor'])
+                emisi.amount = float(data['amount']) * float(carbonFactors['conversion_factor'])
+                emisi.source_id = carbonFactors['source_id']
+                emisi.emission_date = data['activity_date']
             # return data.to_dict()
             activity.factor_id= data['factor_id']
             activity.amount= data['amount']
@@ -331,7 +331,7 @@ def activities(activity_id):
            return jsonify({
                 "status" : 500,
                 "message" : "Internal Server Error",
-                # "err" : str(err)
+                "err" : str(err)
             }), 500
 
 # Sources Controller
@@ -458,7 +458,7 @@ def emissions(emission_id):
                 "status" : 200,
                 "message" : "Get all emissions",
                 "emissions" : emissions,
-                "total_emission" : totalEmissions
+                "total_emissions" : totalEmissions
             }), 200
        except IntegrityError as err:
            return jsonify({
@@ -492,86 +492,86 @@ def emissions(emission_id):
             }), 500
        
     # Add one emission data
-   if methods == "POST" and emissionID is None:
-       data = request.get_json()
-       if not data or not data['user_id'] or not data['source_id'] or not data['amount'] or not data['emission_date'] :
-           return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
-       try:
-            addEmissions = Emissions(
-                user_id=data['user_id'],
-                source_id=data['source_id'],
-                amount=data['amount'],
-                emission_date=data['emission_date'],
-            )
-            db.session.add(addEmissions)
-            db.session.commit()
-            return jsonify({
-                "status" : 201,
-                "message" : "Add data emission successfully",
-                "added_emission" : data
-            }), 201
-       except IntegrityError as err:
-           return jsonify({
-                "status" : 500,
-                "message" : "Internal Server Error",
-                # "err" : str(err)
-            }), 500
+#    if methods == "POST" and emissionID is None:
+#        data = request.get_json()
+#        if not data or not data['user_id'] or not data['source_id'] or not data['amount'] or not data['emission_date'] :
+#            return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
+#        try:
+#             addEmissions = Emissions(
+#                 user_id=data['user_id'],
+#                 source_id=data['source_id'],
+#                 amount=data['amount'],
+#                 emission_date=data['emission_date'],
+#             )
+#             db.session.add(addEmissions)
+#             db.session.commit()
+#             return jsonify({
+#                 "status" : 201,
+#                 "message" : "Add data emission successfully",
+#                 "added_emission" : data
+#             }), 201
+#        except IntegrityError as err:
+#            return jsonify({
+#                 "status" : 500,
+#                 "message" : "Internal Server Error",
+#                 # "err" : str(err)
+#             }), 500
            
-    # Update one of source data
-   if methods == "PUT" and emissionID is not None:
-       data = request.get_json()
-       if not data['emission_date']:
-           return jsonify({"status" : 400, "message" : "Please fill the date !"}),400
-       try:
-            token = decode_token(request.headers.get('Authorization').split(" ")[1])
-            if token and token['role'] == "admin":
-                emission = Emissions.query.filter_by(emission_id = emissionID).first()
-                if not emission:
-                    return jsonify({"status": 404, "message": "Emission data not found !"}), 404
-            else:
-                emission = Emissions.query.filter_by(user_id=token['sub'], emission_id = emissionID).first()
-                if not emission:
-                    return jsonify({"status": 404, "message": "Emission data not found !"}), 404
-            emission.source_id= data['source_id']
-            emission.amount= data['amount']
-            emission.emission_date= data['emission_date']
-            db.session.commit()
-            return jsonify({
-                "status" : 200,
-                "message" : "Update data emission successfully",
-                "updated_emission" : data
-            }), 200
-       except IntegrityError as err:
-           return jsonify({
-                "status" : 500,
-                "message" : "Internal Server Error",
-                # "err" : str(err)
-            }), 500
+#     # Update one of source data
+#    if methods == "PUT" and emissionID is not None:
+#        data = request.get_json()
+#        if not data['emission_date']:
+#            return jsonify({"status" : 400, "message" : "Please fill the date !"}),400
+#        try:
+#             token = decode_token(request.headers.get('Authorization').split(" ")[1])
+#             if token and token['role'] == "admin":
+#                 emission = Emissions.query.filter_by(emission_id = emissionID).first()
+#                 if not emission:
+#                     return jsonify({"status": 404, "message": "Emission data not found !"}), 404
+#             else:
+#                 emission = Emissions.query.filter_by(user_id=token['sub'], emission_id = emissionID).first()
+#                 if not emission:
+#                     return jsonify({"status": 404, "message": "Emission data not found !"}), 404
+#             emission.source_id= data['source_id']
+#             emission.amount= data['amount']
+#             emission.emission_date= data['emission_date']
+#             db.session.commit()
+#             return jsonify({
+#                 "status" : 200,
+#                 "message" : "Update data emission successfully",
+#                 "updated_emission" : data
+#             }), 200
+#        except IntegrityError as err:
+#            return jsonify({
+#                 "status" : 500,
+#                 "message" : "Internal Server Error",
+#                 # "err" : str(err)
+#             }), 500
        
-    # Delete one of source data
-   if methods == "DELETE" and emissionID is not None:
-       try:
-            token = decode_token(request.headers.get('Authorization').split(" ")[1])
-            if token and token['role'] == "admin":
-                emission = Emissions.query.filter_by(emission_id = emissionID).first()
-                if not emission:
-                    return jsonify({"status": 404, "message": "Emission data not found !"}), 404
-            else:
-                emission = Emissions.query.filter_by(user_id=token['sub'], emission_id = emissionID).first()
-                if not emission:
-                    return jsonify({"status": 404, "message": "Emission data not found !"}), 404
-            db.session.delete(emission)
-            db.session.commit()
-            return jsonify({
-                "status" : 202,
-                "message" : "Delete emission data successfully",
-            }), 202
-       except IntegrityError as err:
-           return jsonify({
-                "status" : 500,
-                "message" : "Internal Server Error",
-                "err" : str(err)
-            }), 500
+#     # Delete one of source data
+#    if methods == "DELETE" and emissionID is not None:
+#        try:
+#             token = decode_token(request.headers.get('Authorization').split(" ")[1])
+#             if token and token['role'] == "admin":
+#                 emission = Emissions.query.filter_by(emission_id = emissionID).first()
+#                 if not emission:
+#                     return jsonify({"status": 404, "message": "Emission data not found !"}), 404
+#             else:
+#                 emission = Emissions.query.filter_by(user_id=token['sub'], emission_id = emissionID).first()
+#                 if not emission:
+#                     return jsonify({"status": 404, "message": "Emission data not found !"}), 404
+#             db.session.delete(emission)
+#             db.session.commit()
+#             return jsonify({
+#                 "status" : 202,
+#                 "message" : "Delete emission data successfully",
+#             }), 202
+#        except IntegrityError as err:
+#            return jsonify({
+#                 "status" : 500,
+#                 "message" : "Internal Server Error",
+#                 "err" : str(err)
+#             }), 500
            
 # Carbon Factor Controller
 def carbon_factors(carbonFact_id):
@@ -698,15 +698,67 @@ def goals(goals_id):
                 goals = [goal.to_dict() for goal in goal]
                 if not goals:
                     return jsonify({"status": 404, "message": "Goal data not found !"}), 404
+                # get data emission
+                emission = Emissions.query.all()
+                emissions = [emission.to_dict() for emission in emission]
+                # get data offset
+                offset = Offsets.query.all()
+                offsets = [offset.to_dict() for offset in offset]
             else:
                 goal = Goals.query.filter_by(user_id = token['sub'])
                 goals = [goal.to_dict() for goal in goal]
                 if not goals:
                     return jsonify({"status": 404, "message": "Goal data not found !"}), 404
+                # get data emission
+                emission = Emissions.query.filter(Emissions.user_id == token['sub']).all()
+                emissions = [emission.to_dict() for emission in emission]
+                # get data offset
+                offset = Offsets.query.filter(Offsets.user_id == token['sub']).all()
+                offsets = [offset.to_dict() for offset in offset]
+                
+            # Total emission & Offsets calculation
+            totalEmissions = 0.0
+            totalOffsets = 0.0
+            for emission in emissions:
+                amountEmission = emission['amount']
+                totalEmissions += float(amountEmission)
+            for offset in offsets:
+                amountOffset  = offset['offset_amount']
+                totalOffsets += float(amountOffset)
+            totalReportEmissions = float(totalEmissions) - float(totalOffsets)
+            if totalReportEmissions <= 0 :
+                totalReportEmissions = 0.0
+                
+            # total goal
+            totalGoalEmissions = 0.0
+            
+            # Logic current status
+            for Goal in goal:
+                # get every single goal
+                oneGoal = Goal.to_dict()
+                # save every goal amount
+                totalGoalEmissions += float(oneGoal['target_emission'])
+                # Time Now
+                current_time = datetime.now().strftime('%Y-%m-%d')
+                timeNow = datetime.strptime(str(current_time), '%Y-%m-%d')
+                # Deadline
+                Deadline = datetime.strptime(oneGoal['deadline'], '%Y-%m-%d' )
+                # status got missed if it's on deadline when amount doens't hit the target
+                if timeNow >= Deadline:
+                    Goal.status = "missed"
+                    db.session.commit()
+                elif timeNow <= Deadline and totalReportEmissions > oneGoal['target_emission'] :
+                    Goal.status = "achieved"
+                    db.session.commit()
+                elif timeNow <= Deadline and totalReportEmissions < oneGoal['target_emission'] :
+                    Goal.status = "in_progress"
+                    db.session.commit()
+            
             return jsonify({
                 "status" : 200,
                 "message" : "Get all goals",
                 "goals" : goals,
+                "total_goal_emissions" : totalGoalEmissions
             }), 200
        except IntegrityError as err:
            return jsonify({
@@ -741,15 +793,18 @@ def goals(goals_id):
        
     # Add one source data
    if methods == "POST" and goalID is None:
+       token = decode_token(request.headers.get('Authorization').split(" ")[1])
        data = request.get_json()
-       if not data or not data['user_id'] or not data['target_emission'] or not data['deadline'] or not data['status']:
+       if not data or not data['target_emission'] or not data['deadline']:
            return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
+       if float(data['target_emission']) <= 0:
+           return jsonify({"status" : 400, "message" : "Target emission must greater then 0 !"}),400
+           
        try:
             addGoal = Goals(
-                user_id=data['user_id'],
+                user_id=token['sub'],
                 target_emission=data['target_emission'],
                 deadline=data['deadline'],
-                status=data['status']
             )
             db.session.add(addGoal)
             db.session.commit()
@@ -782,7 +837,6 @@ def goals(goals_id):
                     return jsonify({"status": 404, "message": "Goal data not found !"}), 404
             goal.target_emission= data['target_emission']
             goal.deadline= data['deadline']
-            goal.status= data['status']
             db.session.commit()
             return jsonify({
                 "status" : 200,
@@ -879,11 +933,14 @@ def offsets(offsets_id):
     # Add one source data
    if methods == "POST" and offsetID is None:
        data = request.get_json()
-       if not data or not data['user_id'] or not data['project_name'] or not data['offset_amount'] or not data['offset_date']:
+       if not data or not data['project_name'] or not data['offset_amount'] or not data['offset_date']:
            return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
+       if float(data['offset_amount']) <= 0:
+           return jsonify({"status" : 400, "message" : "Offset amount must greater then 0 !"}),400
        try:
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
             addOffset = Offsets(
-                user_id=data['user_id'],
+                user_id=token['sub'],
                 project_name=data['project_name'],
                 offset_amount=data['offset_amount'],
                 offset_date=data['offset_date']
@@ -907,6 +964,8 @@ def offsets(offsets_id):
        data = request.get_json()
        if not data['offset_date']:
            return jsonify({"status" : 400, "message" : "Please fill the date !"}),400
+       if float(data['offset_amount']) <= 0:
+           return jsonify({"status" : 400, "message" : "Offset amount must greater then 0 !"}),400
        try:
             token = decode_token(request.headers.get('Authorization').split(" ")[1])
             if token and token['role'] == "admin":
@@ -968,19 +1027,65 @@ def reports(reports_id):
        try:
             token = decode_token(request.headers.get('Authorization').split(" ")[1])
             if token and token['role'] == "admin":
-                report = Reports.query.all()
-                reports = [report.to_dict() for report in report]
-                if not reports:
-                    return jsonify({"status": 404, "message": "Report data not found !"}), 404
+                # get data report
+                dt = Reports.query.all()
+                dts = [dt.to_dict() for dt in dt]
+                if not dt:
+                    return jsonify({"status": 404, "message": "Report data not found !"}),404
+                # get data emission
+                emission = Emissions.query.all()
+                emissions = [emission.to_dict() for emission in emission]
+                # get data offset
+                offset = Offsets.query.all()
+                offsets = [offset.to_dict() for offset in offset]
             else:
-                report = Reports.query.filter_by(user_id = token['sub'])
-                reports = [report.to_dict() for report in report]
-                if not reports:
-                    return jsonify({"status": 404, "message": "Report data not found !"}), 404
+                # get data report
+                dt = Reports.query.filter(Reports.user_id == token['sub']).all()
+                dts = [dt.to_dict() for dt in dt]
+                if not dt:
+                    return jsonify({"status": 404, "message": "Report data not found !"}),404
+                # get data emission
+                emission = Emissions.query.filter(Emissions.user_id == token['sub']).all()
+                emissions = [emission.to_dict() for emission in emission]
+                # get data offset
+                offset = Offsets.query.filter(Offsets.user_id == token['sub']).all()
+                offsets = [offset.to_dict() for offset in offset]
+            # Total emission & Offsets calculation
+            totalEmissions = 0.0
+            totalOffsets = 0.0
+            for emission in emissions:
+                amountEmission = emission['amount']
+                totalEmissions += float(amountEmission)
+            for offset in offsets:
+                amountOffset  = offset['offset_amount']
+                totalOffsets += float(amountOffset)
+            totalReportEmissions = float(totalEmissions) - float(totalOffsets)
+            if totalReportEmissions <= 0 :
+                totalReportEmissions = 0
+                        
+            # Update total emission report value
+            for data in dt:
+                data.total_emission = totalReportEmissions
+                db.session.commit()
+            
+            if token and token['role'] == "admin":
+                # get data report
+                end_dt = Reports.query.all()
+                end_dts = [end_dt.to_dict() for end_dt in end_dt]
+                if not dt:
+                    return jsonify({"status": 404, "message": "Report data not found !"}),404
+            else:
+                # get data report
+                end_dt = Reports.query.filter(Reports.user_id == token['sub']).all()
+                end_dts = [end_dt.to_dict() for end_dt in end_dt]
+                if not dt:
+                    return jsonify({"status": 404, "message": "Report data not found !"}),404
+
             return jsonify({
                 "status" : 200,
                 "message" : "Get all reports",
-                "reports" : reports
+                "reports" : end_dts,
+                "total_emissions" : totalReportEmissions
             }), 200
        except IntegrityError as err:
            return jsonify({
@@ -1016,25 +1121,58 @@ def reports(reports_id):
     # Add one source data
    if methods == "POST" and reportID is None:
        data = request.get_json()
-       if not data or not data['user_id'] or not data['start_date'] or not data['end_date'] or not data['total_emission']:
+       if not data or not data['start_date'] or not data['end_date']:
            return jsonify({"status" : 400, "message" : "Please fill all the fields !"}),400
-       start_date = datetime.strptime(data['start_date'], '%Y-%m-%d').date()
+       start_date = datetime.strptime(str(data['start_date']), '%Y-%m-%d').date()
        end_date = datetime.strptime(str(data['end_date']), '%Y-%m-%d').date()
        if start_date > end_date:
            return jsonify({"status" : 400, "message" : "Start date should be less then end date"}),400
        try:
+            token = decode_token(request.headers.get('Authorization').split(" ")[1])
+            if token and token['role'] == "admin":
+                data = Emissions.query.filter(Emissions.emission_date >= start_date, Emissions.emission_date <= end_date).all()
+                datas = [data.to_dict() for data in data]
+                # get data offset
+                offset = Offsets.query.all()
+                offsets = [offset.to_dict() for offset in offset]
+                if not datas:
+                    return jsonify({"status": 404, "message": "Report data not found !"}), 404
+            else:
+                data = Emissions.query.filter(Emissions.emission_date >= start_date, Emissions.emission_date <= end_date, Emissions.user_id == token['sub']).all()
+                datas = [data.to_dict() for data in data]
+                # get data offset
+                offset = Offsets.query.filter(Offsets.user_id == token['sub']).all()
+                offsets = [offset.to_dict() for offset in offset]
+                if not datas:
+                    return jsonify({"status": 404, "message": "Report data not found !"}), 404
+            # total emission
+            totalEmissions = 0.0
+            # total offset
+            totalOffsets = 0.0
+            
+            for emission in datas:
+                totalEmissions += float(emission['amount'])
+            for offset in offsets:
+                totalOffsets += float(offset['offset_amount'])
+            
+            # Calculate Emission - Offset
+            total_emission = totalEmissions - totalOffsets
+            # Checking value to dont < from 0
+            if total_emission < 0:
+                total_emission = 0.0
+            
             addReport = Reports(
-                user_id=data['user_id'],
-                start_date=data['start_date'],
-                end_date=data['end_date'],
-                total_emission=data['total_emission']
+                user_id=token['sub'],
+                start_date=start_date,
+                end_date=end_date,
+                total_emission=total_emission
             )
             db.session.add(addReport)
             db.session.commit()
             return jsonify({
                 "status" : 201,
                 "message" : "Add Report data successfully",
-                "added_report" : data
+                "added_report" : addReport.total_emission
             }), 201
        except IntegrityError as err:
            return jsonify({
@@ -1055,17 +1193,44 @@ def reports(reports_id):
        try:
             token = decode_token(request.headers.get('Authorization').split(" ")[1])
             if token and token['role'] == "admin":
-                report = Reports.query.filter_by(report_id=reportID).first()
-                if not report:
+                report = Reports.query.filter(Reports.report_id == reportID).first()
+                dt = Emissions.query.filter(Emissions.emission_date >= start_date, Emissions.emission_date <= end_date).all()
+                dts = [dt.to_dict() for dt in dt]
+                # get data offset
+                offset = Offsets.query.all()
+                offsets = [offset.to_dict() for offset in offset]
+                if not dts:
                     return jsonify({"status": 404, "message": "Report data not found !"}), 404
             else:
-                report = Reports.query.filter_by(user_id=token['sub'], report_id=reportID).first()
-                if not report:
+                report = Reports.query.filter(Reports.report_id == reportID, Reports.user_id == token['sub']).first()
+                dt = Emissions.query.filter(Emissions.emission_date >= start_date, Emissions.emission_date <= end_date, Emissions.user_id == token['sub']).all()
+                dts = [dt.to_dict() for dt in dt]
+                # get data offset
+                offset = Offsets.query.filter(Offsets.user_id == token['sub']).all()
+                offsets = [offset.to_dict() for offset in offset]
+                if not dts:
                     return jsonify({"status": 404, "message": "Report data not found !"}), 404
+            # total emission
+            totalEmissions = 0.0
+            # total offset
+            totalOffsets = 0.0
+            
+            for emission in dts:
+                totalEmissions += float(emission['amount'])
+            for offset in offsets:
+                totalOffsets += float(offset['offset_amount'])
+            
+            # Calculate Emission - Offset
+            total_emission = float(totalEmissions) - float(totalOffsets)
+            # Checking value to dont < from 0
+            if total_emission < 0:  
+                total_emission = 0.0
+            
             report.start_date= data['start_date']
-            report.end_date=data['end_date']
-            report.total_emission=data['total_emission']
+            report.end_date= data['end_date']
+            report.total_emission=total_emission
             db.session.commit()
+            
             return jsonify({
                 "status" : 200,
                 "message" : "Update report data successfully",

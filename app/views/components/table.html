@@ -22,6 +22,9 @@
       bi-file-earmark-arrow-down-fill
       {% endif %}
       me-2"></i>{{ data['title'] }}</p>
+      <span class="badge text-dark border-4 border-start border-info text-bg-info bg-opacity-50 rounded-3 p-2">
+        Total keseluruhan emisi : <u>{{ data['datas']['total_emission'] }} kg CO₂</u>
+      </span>
   </div>
   <div class="col-auto">
     {% if data['menu']['users'] %}
@@ -34,8 +37,8 @@
       {{ button("modal", "primary", "Tambah sumber emisi", False, "", "addSource") }}
       {{ modal_add("", "addSource", "Tambah sumber emisi", dt, data) }}
     {% elif data['menu']['emissions'] %}
-      <span class="badge text-dark text-bg-primary bg-opacity-50 rounded-3 p-2">
-        Total keseluruhan emisi : <span class="text-white">{{ data['datas']['total_emission'] }}</span>
+      <span class="badge text-dark border-4 border-start border-info text-bg-info bg-opacity-50 rounded-3 p-2">
+        Total keseluruhan emisi : <u>{{ data['datas']['total_emission'] }} kg CO₂</u>
       </span>
     {% elif data['menu']['carbon_factors'] %}
       {{ button("modal", "primary", "Tambah faktor karbon", False, "", "addCarbonFactor") }}
@@ -77,7 +80,7 @@
               <th scope="col">User</th>
           {% endif %}
           <th scope="col">Factor</th>
-          <th scope="col">Total emisi</th>
+          <th scope="col">Jumlah emisi</th>
           <th scope="col">Tanggal Aktivitas</th>
           <th scope="col">Tanggal Laporan</th>
           <th scope="col">Action</th>
@@ -205,8 +208,16 @@
                   <br/>
                   <p class="border-4 border-start border-info p-2 badge text-bg-info bg-opacity-50">{{ dt_ft.conversion_factor }} kg CO₂</p>
                 {% endif %}
-              {% endfor %}</td>
-              <td>{{ dt.amount }}</td> 
+                {% endfor %}
+              </td>
+              <td>
+                {{ dt.amount }}
+                {% for dt_ft in data['carbon_factors']['carbon_factors'] %}
+                  {% if dt_ft.factor_id == dt.factor_id %}
+                    {{ dt_ft.unit }}
+                  {% endif %}
+                {% endfor %}
+              </td> 
               <td>{{ dt.activity_date }}</td> 
               <td>{{ dt.report_date }}</td>
               <td>
@@ -259,12 +270,16 @@
               {% endfor %}
             </td>
               {% endif %}
-              <td>{% for dt_sc in data['sources']['sources'] %}
-                {% if dt_sc.source_id == dt.source_id %}
-                  {{ dt_sc['source_name'] }}
-                {% endif %}
-              {% endfor %}</td>
-              <td>{{ dt.amount }}</td>
+              <td>
+                {% for dt_sc in data['sources']['sources'] %}
+                  {% if dt_sc.source_id == dt.source_id %}
+                    {{ dt_sc['source_name'] }}
+                  {% endif %}
+                {% endfor %}
+            </td>
+              <td>
+                {{ dt.amount }} kg CO₂
+              </td>
               <td>{{ dt.emission_date }}</td>
               <td>{{ dt.report_date }}</td>
             </tr>

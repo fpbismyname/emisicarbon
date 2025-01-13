@@ -1,4 +1,3 @@
-import requests
 from app.extensions import *
 web = Blueprint("controller-web", __name__)
 
@@ -7,6 +6,7 @@ web = Blueprint("controller-web", __name__)
 url_api = "http://127.0.0.1:5000/emisi-carbon/api/v1"
     
 # Create Method for controll the routes
+# Headers for request
 # Menu selecter controller
 def menuBar(method):
     data = {
@@ -532,6 +532,8 @@ def emissions_get(url = "", title = ""):
     # sources data
     response_source = requests.get(url=f"{url_api}/sources", headers=headers)
     sourceData = response_source.json() 
+    response_factors = requests.get(url=f"{url_api}/carbon_factors", headers=headers)
+    factorsData = response_factors.json() 
     # users data
     response_users = requests.get(url=f"{url_api}/users", headers=headers)
     userData = response_users.json() 
@@ -547,7 +549,8 @@ def emissions_get(url = "", title = ""):
         "menu" : json.loads(menuBar(method=method)),
         "datas" : alldata,
         "sources" : sourceData,
-        "users" : userData
+        "users" : userData,
+        "carbon_factors" : factorsData
     }
     return render_template(f"page/{method}.html", data=data)
     # endregion
@@ -617,7 +620,7 @@ def emissions_delete(id = None, url = ""):
 # endregion
 
 # region kelola carbon factors
-# View emissions
+# View carbon factors
 def carbon_factors_page(id, method_url, title=""):
     methods = request.form.get("_method")
     Id = id
@@ -630,7 +633,7 @@ def carbon_factors_page(id, method_url, title=""):
         return carbon_factors_edit(Id, url = method_url)
     if methods == "DELETE" and Id is not None:
         return carbon_factors_delete(Id, url = method_url)
-# region emissions get
+# region carbon factors get
 def carbon_factors_get(url = "", title =""):
     # region fetch api
     method = url
@@ -658,7 +661,7 @@ def carbon_factors_get(url = "", title =""):
     return render_template(f"page/{method}.html", data=data)
     # endregion
 # endregion
-# region emissions add
+# region carbon factors add
 def carbon_factors_add(url = ""):
     # region fetch api
     method = url
@@ -678,7 +681,7 @@ def carbon_factors_add(url = ""):
     return redirect(url_for(f"router-web.{method}"))
     # endregion
 # endregion
-# region emissions edit
+# region carbon factors edit
 def carbon_factors_edit(id = None, url = ""):
     # region fetch api
     Id = id
@@ -699,7 +702,7 @@ def carbon_factors_edit(id = None, url = ""):
     return redirect(url_for(f"router-web.{method}"))
     # endregion
 # endregion
-# region emissions delete
+# region carbon factors delete 
 def carbon_factors_delete(id = None, url = ""):
     # region fetch api
     Id = id
@@ -744,6 +747,9 @@ def goals_get(url = "", title =""):
                 'Content-Type': 'application/json',
                 'Authorization' : f"Bearer {session.get('access_token_cookie')}"
             }
+    response = requests.get(url=f"{url_api}/{method}", headers=headers)
+    alldata = response.json()
+    # Check goals data
     response = requests.get(url=f"{url_api}/{method}", headers=headers)
     alldata = response.json()
     # data user
@@ -938,8 +944,8 @@ def offsets_delete(id = None, url = ""):
 # endregion
 # endregion
 
-# region kelola offsets
-# View offsets
+# region kelola reports
+# View reports
 def reports_page(id, method_url, title=""):
     methods = request.form.get("_method")
     Id = id
@@ -952,7 +958,7 @@ def reports_page(id, method_url, title=""):
         return reports_edit(Id, url = method_url)
     if methods == "DELETE" and Id is not None:
         return reports_delete(Id, url = method_url)
-# region offsets get
+# region reports get
 def reports_get(url = "", title =""):
     # region fetch api
     method = url
@@ -982,7 +988,7 @@ def reports_get(url = "", title =""):
     return render_template(f"page/{method}.html", data=data)
     # endregion
 # endregion
-# region offsets add
+# region reports add
 def reports_add(url = ""):
     # region fetch api
     method = url
@@ -1002,7 +1008,7 @@ def reports_add(url = ""):
     return redirect(url_for(f"router-web.{method}"))
     # endregion
 # endregion
-# region offsets edit
+# region reports edit
 def reports_edit(id = None, url = ""):
     # region fetch api
     Id = id
@@ -1023,7 +1029,7 @@ def reports_edit(id = None, url = ""):
     return redirect(url_for(f"router-web.{method}"))
     # endregion
 # endregion
-# region offsets delete
+# region reports delete
 def reports_delete(id = None, url = ""):
     # region fetch api
     Id = id
