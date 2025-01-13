@@ -1,7 +1,7 @@
 {% from"components/modal.html" import modal_add, modal_edit, modal_delete %}
 {% from"components/button.html" import button %}
 {% macro table(data=[]) %}
-<div class="row">
+<div class="row align-items-center pb-4">
   <div class="col">
     <p class="fs-4"><i class="bi 
       {% if data['menu']['users'] %}
@@ -22,9 +22,25 @@
       bi-file-earmark-arrow-down-fill
       {% endif %}
       me-2"></i>{{ data['title'] }}</p>
-      <span class="badge text-dark border-4 border-start border-info text-bg-info bg-opacity-50 rounded-3 p-2">
-        Total keseluruhan emisi : <u>{{ data['datas']['total_emission'] }} kg CO₂</u>
-      </span>
+      {% if data['menu']['offsets'] %}
+      {% if data['role'] != "admin" %}
+        <span class="badge text-dark border-4 border-start border-info text-bg-info bg-opacity-50 rounded-3 p-2">
+          Total keseluruhan offset : <span class="text-dark">{{ data['datas']['total_offsets'] }} kg CO₂</span class="fs-6">
+        </span>
+      {% endif %}
+      {% elif data['menu']['goals'] %}
+        {% if data['role'] != "admin" %}
+        <span class="badge text-dark border-4 border-start border-info text-bg-info bg-opacity-50 rounded-3 p-2">
+          Total keseluruhan goals : <span class="text-dark">{{ data['datas']['total_goals'] }} kg CO₂</span class="fs-6">
+        </span>
+        {% endif %}
+      {% elif data['menu']['reports'] %}
+        {% if data['role'] != "admin" %}
+        <span class="badge text-dark border-4 border-start border-info text-bg-info bg-opacity-50 rounded-3 p-2">
+          Total keseluruhan goals : <span class="text-dark">{{ data['datas']['total_emissions'] }} kg CO₂</span class="fs-6">
+        </span>
+        {% endif %}
+      {% endif %}
   </div>
   <div class="col-auto">
     {% if data['menu']['users'] %}
@@ -44,14 +60,27 @@
       {{ button("modal", "primary", "Tambah faktor karbon", False, "", "addCarbonFactor") }}
       {{ modal_add("", "addCarbonFactor", "Tambah faktor karbon", dt, data) }}
     {% elif data['menu']['goals'] %}
-      {{ button("modal", "primary", "Tambah target emisi", False, "", "addGoal") }}
-      {{ modal_add("", "addGoal", "Tambah target emisi", dt, data) }}
+      {% if data['role'] == "admin" %}
+      <span class="badge text-dark border-4 border-start border-info text-bg-info bg-opacity-50 rounded-3 p-2">
+        Total keseluruhan goals : <span class="text-dark">{{ data['datas']['total_goals'] }} kg CO₂</span class="fs-6">
+      </span>
+      {% endif %}
     {% elif data['menu']['offsets'] %}
-      {{ button("modal", "primary", "Tambah offset", False, "", "addOffsets") }}
-      {{ modal_add("", "addOffsets", "Tambah offset", dt, data) }}
+    {% if data['role'] == "admin" %}
+      <span class="badge text-dark border-4 border-start border-info text-bg-info bg-opacity-50 rounded-3 p-2">
+        Total keseluruhan offset : <span class="text-dark">{{ data['datas']['total_offsets'] }} kg CO₂</span class="fs-6">
+      </span>
+    {% endif %}
     {% elif data['menu']['reports'] %} 
-      {{ button("modal", "primary", "Tambah laporan", False, "", "addReport") }}
-      {{ modal_add("", "addReport", "Tambah laporan", dt, data) }}
+      {% if data['role'] != "admin" %}
+        {{ button("modal", "primary", "Tambah laporan", False, "", "addReport") }}
+        {{ modal_add("", "addReport", "Tambah laporan", dt, data) }}
+      {% endif %}
+      {% if data['role'] == "admin" %}
+        <span class="badge text-dark border-4 border-start border-info text-bg-info bg-opacity-50 rounded-3 p-2">
+        Total keseluruhan emisi : <span class="text-dark">{{ data['datas']['total_emissions'] }} kg CO₂</span class="fs-6">
+      {% endif %}
+      </span>
     {% endif %}
       
   </div>
@@ -96,7 +125,6 @@
           <th scope="col">Jumlah emisi</th>
           <th scope="col">Tanggal emisi</th>
           <th scope="col">Tanggal laporan</th>
-          <!-- <th scope="col">Action</th> -->
         </tr>
       <!-- header sources -->
       {% elif data['menu']['sources'] %}
@@ -127,7 +155,9 @@
           <th scope="col">Batas waktu</th>
           <th scope="col">Status</th>
           <th scope="col">Dibuat pada</th>
-          <th scope="col">Action</th>
+          {% if data['role'] != "admin" %}
+            <th scope="col">Action</th>
+          {% endif %}
         </tr>
       <!-- header offsets -->
       {% elif data['menu']['offsets'] %}
@@ -140,7 +170,9 @@
           <th scope="col">Jumlah offset</th>
           <th scope="col">Tanggal offset</th>
           <th scope="col">Dibuat pada</th>
+          {% if data['role'] != "admin" %}
           <th scope="col">Action</th>
+          {% endif %}
         </tr>
       <!-- header reports -->
       {% elif data['menu']['reports'] %}
@@ -153,7 +185,9 @@
           <th scope="col">Tanggal akhir</th>
           <th scope="col">Total emisi</th>
           <th scope="col">Laporan dibuat pada</th>
+          {% if data['role'] != "admin" %}
           <th scope="col">Action</th>
+          {% endif %}
         </tr>
       {% endif %}
       </thead>
@@ -344,12 +378,14 @@
               <td>Terlewat</td>
               {% endif %}
               <td>{{ dt.created_at }}</td>
-              <td>
-                {{ button("modal", "info", "Edit", False, "", "editGoal"~"-"~dt.goal_id) }}
-                {{ button("modal", "danger", "Delete", False, "", "deleteGoal"~"-"~dt.goal_id) }}
-              </td> 
-              {{ modal_edit(dt.goal_id, "editGoal", dt.goal_id ~ " - Edit target emisi", dt, data) }}
-              {{ modal_delete(dt.goal_id, "deleteGoal", dt.goal_id ~ " - Delete target emisi", dt, data) }}
+              {% if data['role'] != "admin" %}
+                <td>
+                  {{ button("modal", "info", "Edit", False, "", "editGoal"~"-"~dt.goal_id) }}
+                  {{ button("modal", "danger", "Delete", False, "", "deleteGoal"~"-"~dt.goal_id) }}
+                </td> 
+                {{ modal_edit(dt.goal_id, "editGoal", dt.goal_id ~ " - Edit target emisi", dt, data) }}
+                {{ modal_delete(dt.goal_id, "deleteGoal", dt.goal_id ~ " - Delete target emisi", dt, data) }}
+              {% endif %}
             </tr>
             {% endfor %}
           {% else %}
@@ -376,12 +412,14 @@
               <td>{{ dt.offset_amount }}</td>
               <td>{{ dt.offset_date }}</td>
               <td>{{ dt.created_at }}</td>
-              <td>
-                {{ button("modal", "info", "Edit", False, "", "editOffset"~"-"~dt.offset_id) }}
-                {{ button("modal", "danger", "Delete", False, "", "deleteOffset"~"-"~dt.offset_id) }}
-              </td> 
-              {{ modal_edit(dt.offset_id, "editOffset", dt.offset_id ~ " - Edit offset emisi", dt, data) }}
-              {{ modal_delete(dt.offset_id, "deleteOffset", dt.offset_id ~ " - Delete offset emisi", dt, data) }}
+              {% if data['role'] != "admin" %}
+                <td>
+                  {{ button("modal", "info", "Edit", False, "", "editOffset"~"-"~dt.offset_id) }}
+                  {{ button("modal", "danger", "Delete", False, "", "deleteOffset"~"-"~dt.offset_id) }}
+                </td> 
+                {{ modal_edit(dt.offset_id, "editOffset", dt.offset_id ~ " - Edit offset emisi", dt, data) }}
+                {{ modal_delete(dt.offset_id, "deleteOffset", dt.offset_id ~ " - Delete offset emisi", dt, data) }}
+              {% endif %}
             </tr>
             {% endfor %}
           {% else %}
@@ -409,11 +447,15 @@
               <td>{{ dt.total_emission }}</td>
               <td>{{ dt.report_generated_at }}</td>
               <td>
-                {{ button("modal", "info", "Edit", False, "", "editLaporan"~"-"~dt.report_id) }}
-                {{ button("modal", "danger", "Delete", False, "", "deleteLaporan"~"-"~dt.report_id) }}
+                {% if data['role'] != "admin" %}
+                  {{ button("modal", "info", "Edit", False, "", "editLaporan"~"-"~dt.report_id) }}
+                  {{ button("modal", "danger", "Delete", False, "", "deleteLaporan"~"-"~dt.report_id) }}
+                {% endif %}
               </td> 
-              {{ modal_edit(dt.report_id, "editLaporan", dt.offset_id ~ " - Edit offset emisi", dt, data) }}
-              {{ modal_delete(dt.report_id, "deleteLaporan", dt.offset_id ~ " - Delete offset emisi", dt, data) }}
+              {% if data['role'] != "admin" %}
+                {{ modal_edit(dt.report_id, "editLaporan", dt.offset_id ~ " - Edit offset emisi", dt, data) }}
+                {{ modal_delete(dt.report_id, "deleteLaporan", dt.offset_id ~ " - Delete offset emisi", dt, data) }}
+              {% endif %}
             </tr>
             {% endfor %}
           {% else %}

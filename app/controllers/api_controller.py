@@ -758,7 +758,7 @@ def goals(goals_id):
                 "status" : 200,
                 "message" : "Get all goals",
                 "goals" : goals,
-                "total_goal_emissions" : totalGoalEmissions
+                "total_goals" : totalGoalEmissions
             }), 200
        except IntegrityError as err:
            return jsonify({
@@ -883,21 +883,28 @@ def offsets(offsets_id):
     # Get all the offset data
    if methods == "GET" and offsetID is None:
        try:
+            # Total Offsets
+            totalOffsets = 0.0
             token = decode_token(request.headers.get('Authorization').split(" ")[1])
             if token and token['role'] == "admin":
                 offset = Offsets.query.all()
                 offsets = [offset.to_dict() for offset in offset]
                 if not offsets:
                     return jsonify({"status": 404, "message": "Offset data not found !"}), 404
+                for offset in offsets:
+                    totalOffsets += float(offset['offset_amount'])
             else:
                 offset = Offsets.query.filter_by(user_id = token['sub'])
                 offsets = [offset.to_dict() for offset in offset]
                 if not offsets:
                     return jsonify({"status": 404, "message": "Offset data not found !"}), 404
+                for offset in offsets:
+                    totalOffsets += float(offset['offset_amount'])
             return jsonify({
                 "status" : 200,
                 "message" : "Get all offsets",
-                "offsets" : offsets
+                "offsets" : offsets,
+                "total_offsets" : totalOffsets
             }), 200
        except IntegrityError as err:
            return jsonify({
@@ -1025,6 +1032,8 @@ def reports(reports_id):
     # Get all the report data
    if methods == "GET" and reportID is None:
        try:
+            # Total Report Emissions
+            totalReportEmissions = 0.0
             token = decode_token(request.headers.get('Authorization').split(" ")[1])
             if token and token['role'] == "admin":
                 # get data report
@@ -1032,42 +1041,63 @@ def reports(reports_id):
                 dts = [dt.to_dict() for dt in dt]
                 if not dt:
                     return jsonify({"status": 404, "message": "Report data not found !"}),404
-                # get data emission
-                emission = Emissions.query.all()
-                emissions = [emission.to_dict() for emission in emission]
-                # get data offset
-                offset = Offsets.query.all()
-                offsets = [offset.to_dict() for offset in offset]
+            # Get Data report for amount the emissions
+                dataReports = dt
+                dataReportAll = [dataReports.to_dict() for dataReports in dataReports]
+                # Calculate all amount total emission
+                for dtR in dataReportAll:
+                    amountEmission = dtR['total_emission']
+                    totalReportEmissions += float(amountEmission)
+                
             else:
                 # get data report
-                dt = Reports.query.filter(Reports.user_id == token['sub']).all()
+                dt = Reports.query.filter(Emissions.user_id == token['sub']).all()
                 dts = [dt.to_dict() for dt in dt]
                 if not dt:
                     return jsonify({"status": 404, "message": "Report data not found !"}),404
-                # get data emission
-                emission = Emissions.query.filter(Emissions.user_id == token['sub']).all()
-                emissions = [emission.to_dict() for emission in emission]
-                # get data offset
-                offset = Offsets.query.filter(Offsets.user_id == token['sub']).all()
-                offsets = [offset.to_dict() for offset in offset]
-            # Total emission & Offsets calculation
-            totalEmissions = 0.0
-            totalOffsets = 0.0
-            for emission in emissions:
-                amountEmission = emission['amount']
-                totalEmissions += float(amountEmission)
-            for offset in offsets:
-                amountOffset  = offset['offset_amount']
-                totalOffsets += float(amountOffset)
-            totalReportEmissions = float(totalEmissions) - float(totalOffsets)
-            if totalReportEmissions <= 0 :
-                totalReportEmissions = 0
+                for data in dts:
+                    # Get Data Report
+                    dataReport = Reports.query.filter(Reports.start_date <= data['end_date'], Reports.end_date >= data['start_date'], Reports.user_id == token['sub'])
+                    
+                    start_date = datetime.strptime(str(data['start_date']), '%Y-%m-%d').date()
+                    end_date = datetime.strptime(str(data['end_date']), '%Y-%m-%d').date()
+
+                    # get data emission
+                    emission = Emissions.query.filter(Emissions.emission_date >= data['start_date'], Emissions.emission_date <= data['end_date'], Emissions.user_id == token['sub']).all()
+                    emissions = [emission.to_dict() for emission in emission]
+
+                    # get data offset
+                    offset = Offsets.query.filter(Offsets.offset_date >= data['start_date'], Offsets.offset_date <= data['end_date'], Offsets.user_id == token['sub']).all()
+                    offsets = [offset.to_dict() for offset in offset]
+
+                    # Total emission & Offsets calculation
+                    totalEmissions = 0.0
+                    totalOffsets = 0.0
+                    # Calculate all amount emission
+                    for emission in emissions:
+                        amountEmission = emission['amount']
+                        totalEmissions += float(amountEmission)
+                    # Calculate all amount offset
+                    for offset in offsets:
+                        amountOffset  = offset['offset_amount']
+                        totalOffsets += float(amountOffset)
+                    # Calculate total emission - total offset
+                    totalReportEmission = float(totalEmissions) - float(totalOffsets)
+                    # Make sure the value is not minus
+                    if totalReportEmission <= 0 :
+                        totalReportEmission = 0
                         
-            # Update total emission report value
-            for data in dt:
-                data.total_emission = totalReportEmissions
-                db.session.commit()
-            
+                    for data in dataReport:
+                        data.total_emission = totalReportEmission
+                        db.session.commit()
+                        
+                # Get Data report for amount the emissions
+                dataReports = Reports.query.filter(Reports.user_id == token['sub'])
+                dataReportAll = [dataReports.to_dict() for dataReports in dataReports]
+                # Calculate all amount total emission
+                for dtR in dataReportAll:
+                    amountEmission = dtR['total_emission']
+                    totalReportEmissions += float(amountEmission)
             if token and token['role'] == "admin":
                 # get data report
                 end_dt = Reports.query.all()

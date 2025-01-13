@@ -532,6 +532,7 @@ def emissions_get(url = "", title = ""):
     # sources data
     response_source = requests.get(url=f"{url_api}/sources", headers=headers)
     sourceData = response_source.json() 
+    # carbonFactors data
     response_factors = requests.get(url=f"{url_api}/carbon_factors", headers=headers)
     factorsData = response_factors.json() 
     # users data
