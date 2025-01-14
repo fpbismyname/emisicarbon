@@ -49,16 +49,16 @@
   <div class="nav gap-2 align-middle justify-content-center">
     {{ button("/", "white", "Dashboard", menu.dashboard) }}
     {{button("/activities", "white", "Aktivitas", menu.activities) }} 
+    {{button("/emissions", "white", "Emisi", menu.emissions) }} 
+    {{button("/offsets", "white", "Offset Emisi", menu.offsets) }} 
+    {{button("/goals", "white", "Target Emisi", menu.goals) }} 
+    {{button("/reports", "white", "Laporan Emisi", menu.reports) }}
     {% if role == "admin" %}
       {{button("/sources", "white", "Sumber Emisi", menu.sources) }} 
     {% endif %}
-    {{button("/emissions", "white", "Emisi", menu.emissions) }} 
     {% if role == "admin" %}
     {{button("/carbon_factors", "white", "Faktor Karbon", menu.carbon_factors) }}
     {% endif %}
-    {{button("/goals", "white", "Target Emisi", menu.goals) }} 
-    {{button("/offsets", "white", "Offset Emisi", menu.offsets) }} 
-    {{button("/reports", "white", "Laporan Emisi", menu.reports) }}
     {% if role == "admin" %}
     {{button("/users", "white", "Kelola user", menu.users) }}
     {% endif %}

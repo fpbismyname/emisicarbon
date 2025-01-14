@@ -40,6 +40,12 @@
           Total keseluruhan goals : <span class="text-dark">{{ data['datas']['total_emissions'] }} kg CO₂</span class="fs-6">
         </span>
         {% endif %}
+      {% elif data['menu']['activities'] %}
+        {% if data['role'] != "admin" %}
+        <span class="badge text-dark border-4 border-start border-info text-bg-info bg-opacity-50 rounded-3 p-2">
+          Total keseluruhan emisi aktivitas : <span class="text-dark">{{ data['datas']['total_activities'] }} emisi</span class="fs-6">
+        </span>
+        {% endif %}
       {% endif %}
   </div>
   <div class="col-auto">
@@ -47,14 +53,20 @@
       {{ button("modal", "primary", "Tambah user", False, "", "addUser") }}
       {{ modal_add("", "addUser", "Tambah user", dt, data) }}
     {% elif data['menu']['activities'] %}
-      {{ button("modal", "primary", "Tambah aktivitas", False, "", "addActivity") }}
-      {{ modal_add("", "addActivity", "Tambah aktivitas", dt, data) }}
+      {% if data['role'] == "admin" %}
+        <span class="badge text-dark border-4 border-start border-info text-bg-info bg-opacity-50 rounded-3 p-2">
+          Total keseluruhan emisi aktivitas : <span class="text-dark">{{ data['datas']['total_activities'] }} emisi</span class="fs-6">
+        </span>
+      {% else %}
+        {{ button("modal", "primary", "Tambah aktivitas", False, "", "addActivity") }}
+        {{ modal_add("", "addActivity", "Tambah aktivitas", dt, data) }}
+      {% endif %}
     {% elif data['menu']['sources'] %}  
       {{ button("modal", "primary", "Tambah sumber emisi", False, "", "addSource") }}
       {{ modal_add("", "addSource", "Tambah sumber emisi", dt, data) }}
     {% elif data['menu']['emissions'] %}
       <span class="badge text-dark border-4 border-start border-info text-bg-info bg-opacity-50 rounded-3 p-2">
-        Total keseluruhan emisi : <u>{{ data['datas']['total_emission'] }} kg CO₂</u>
+        Total keseluruhan emisi : <u>{{ data['datas']['total_emissions'] }} kg CO₂</u>
       </span>
     {% elif data['menu']['carbon_factors'] %}
       {{ button("modal", "primary", "Tambah faktor karbon", False, "", "addCarbonFactor") }}
@@ -64,12 +76,18 @@
       <span class="badge text-dark border-4 border-start border-info text-bg-info bg-opacity-50 rounded-3 p-2">
         Total keseluruhan goals : <span class="text-dark">{{ data['datas']['total_goals'] }} kg CO₂</span class="fs-6">
       </span>
+      {% else %}
+      {{ button("modal", "primary", "Tambah target", False, "", "addGoals") }}
+      {{ modal_add("", "addGoals", "Tambah target emisi", dt, data) }}
       {% endif %}
     {% elif data['menu']['offsets'] %}
     {% if data['role'] == "admin" %}
       <span class="badge text-dark border-4 border-start border-info text-bg-info bg-opacity-50 rounded-3 p-2">
         Total keseluruhan offset : <span class="text-dark">{{ data['datas']['total_offsets'] }} kg CO₂</span class="fs-6">
       </span>
+    {% else %}
+      {{ button("modal", "primary", "Tambah offset", False, "", "addOffsets") }}
+      {{ modal_add("", "addOffsets", "Tambah offset emisi", dt, data) }}
     {% endif %}
     {% elif data['menu']['reports'] %} 
       {% if data['role'] != "admin" %}
@@ -112,7 +130,9 @@
           <th scope="col">Jumlah emisi</th>
           <th scope="col">Tanggal Aktivitas</th>
           <th scope="col">Tanggal Laporan</th>
-          <th scope="col">Action</th>
+          {% if data['role'] != "admin" %}
+            <th scope="col">Action</th>
+          {% endif %}
         </tr>
       <!-- header emission -->
       {% elif data['menu']['emissions'] %}
@@ -254,12 +274,14 @@
               </td> 
               <td>{{ dt.activity_date }}</td> 
               <td>{{ dt.report_date }}</td>
+              {% if data['role'] != "admin" %}
               <td>
                 {{ button("modal", "info", "Edit", False, "", "editActivity"~"-"~dt.activity_id) }}
                 {{ button("modal", "danger", "Delete", False, "", "deleteActivity"~"-"~dt.activity_id) }}
               </td> 
               {{ modal_edit(dt.activity_id, "editActivity", dt.factor_id ~ " - Edit Users", dt, data) }}
               {{ modal_delete(dt.activity_id, "deleteActivity", dt.factor_id ~ " - Delete Users", dt, data) }}
+              {% endif %}
             </tr>
             {% endfor %}
           {% else %}

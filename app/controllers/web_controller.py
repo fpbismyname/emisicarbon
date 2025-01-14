@@ -164,8 +164,18 @@ def dashboard_page(method_url, title=""):
                 'Content-Type': 'application/json',
                 'Authorization' : f"Bearer {session.get('access_token_cookie')}"
             }
+    # offsets
+    response_offsets = requests.get(url=f"{url_api}/offsets", headers=headers)
+    allOffsets = response_offsets.json()
+    # emissions
     response = requests.get(url=f"{url_api}/emissions", headers=headers)
     allEmission = response.json()
+    allEmissions = float(allEmission['total_emissions']) - float(allOffsets['total_offsets'])
+    if allEmissions < 0:
+        allEmissions = 0
+    # goals
+    response_goals = requests.get(url=f"{url_api}/goals", headers=headers)
+    allGoals = response_goals.json()
     # endregion   
     # region data dashboard
     data = {
@@ -173,7 +183,12 @@ def dashboard_page(method_url, title=""):
         "username" : session.get('username'),
         "role" : session.get('role'),
         "menu" : json.loads(menuBar(method=method)),
-        "totalEmisi" : allEmission
+        "totalEmisi" : allEmission,
+        "emissionData" : {
+                "total_emissions" : allEmissions,
+                "total_offsets" : allOffsets['total_offsets'],
+                "total_goals" : allGoals['total_goals']
+            },
     }
     # endregion
     return render_template("page/dashboard.html", data = data)

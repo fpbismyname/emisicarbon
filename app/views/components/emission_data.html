@@ -1,0 +1,22 @@
+{% macro EmissionData(dataEmission = []) %}
+<div class="row justify-content-between">
+    <div class="col">
+        <div class="bg-danger bg-opacity-50 p-4 border-4 border-start border-danger rounded-4">
+            <h5 class="fs-5fw-bolder">Total Seluruh Emisi</h5>
+            <p class="badge text-bg-danger fs-4">{{ dataEmission.total_emissions }} kg CO<sub>2</sub></p>
+        </div>
+    </div>
+    <div class="col">
+        <div class="bg-success bg-opacity-50 p-4 border-4 border-start border-success rounded-4">
+            <h5 class="fs-5fw-bolder">Total Seluruh Offset</h5>
+            <p class="badge text-bg-success fs-4">{{ dataEmission.total_offsets }} kg CO<sub>2</sub></p>
+        </div>
+    </div>
+    <div class="col">
+        <div class="bg-primary bg-opacity-50 p-4 border-4 border-start border-primary rounded-4">
+            <h5 class="fs-5fw-bolder">Total Seluruh Target Emisi</h5>
+            <p class="badge text-bg-primary fs-4">{{ dataEmission.total_goals }} kg CO<sub>2</sub></p>
+        </div>
+    </div>
+</div>
+{% endmacro %}
