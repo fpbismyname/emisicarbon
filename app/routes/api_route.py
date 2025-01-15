@@ -39,8 +39,8 @@ def sources(id):
     return api_controller.sources(source_id = id)
 
 # Route for CRUD Emisions
-@api.route(f"{URL}/emissions", defaults={'id' : None }, methods=[ 'GET', 'POST'])
-@api.route(f"{URL}/emissions/<int:id>", methods=['GET','PUT','DELETE'])
+@api.route(f"{URL}/emissions", defaults={'id' : None }, methods=[ 'GET'])
+@api.route(f"{URL}/emissions/<int:id>", methods=['GET'])
 @jwt_required()
 def emissions(id):
     return api_controller.emissions(emission_id= id)

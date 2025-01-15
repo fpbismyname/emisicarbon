@@ -1,58 +1,84 @@
 from app.extensions import *
-from app import db
-from app.database.models.Users import Users 
-from app.database.models.Activities import Activities
-from app.database.models.Carbonfactors import CarbonFactors
-from app.database.models.Emissions import Emissions
-from app.database.models.Goals import Goals
-from app.database.models.Offsets import Offsets
-from app.database.models.Reports import Reports
-from app.database.models.Sources import Sources
-def seed():
+
+def seed():    
+    # List of data for seeding
+    # users data
+    usersData = [{
+        "username" : "Admin Emisi Karbon",
+        "email" : "admin@gmail.com",
+        "password_hash" : generate_password('111'),
+        "role" : "admin",
+        "created_at" : datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+    },{
+        "username" : "Garuda Company",
+        "email" : "garudacompany@business.com",
+        "password_hash" : generate_password('garuda256'),
+        "role" : "company",
+        "created_at" : datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+    },{
+        "username" : "Steven Beam",
+        "email" : "steven@gmail.com",
+        "password_hash" : generate_password('steven256'),
+        "role" : "user",
+        "created_at" : datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+    }]
+    # sources data
+    sourcesData = [{
+        "source_id" : 1,
+        "source_name" : "Pertanian",
+        "description" : "Emisi yang ditimbulkan dari aktivitas pertanian tertentu",
+        "created_at" : datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+    },{
+        "source_id" : 2,
+        "source_name" : "Pabrik",
+        "description" : "Emisi yang ditimbulkan dari aktivitas pabrik tertentu",
+        "created_at" : datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+    },{
+        "source_id" : 3,
+        "source_name" : "Transportasi",
+        "description" : "Emisi yang ditimbulkan dari aktivitas transportasi",
+        "created_at" : datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+    }]
+    # carbon factor data
+    carbonFactorsData = [{
+        "source_id" : 1,
+        "description" : "1.2 Liter per kg CO2",
+        "conversion_factor" : 1.2,
+        "unit" : "Liter per kg CO2",
+    },{
+        "source_id" : 2,
+        "description" : "12 Kwh per kg CO2",
+        "conversion_factor" : 12,
+        "unit" : "Kwh per kg CO2",
+    },{
+        "source_id" : 3,
+        "description" : "20 km/h per kg CO2",
+        "conversion_factor" : 20,
+        "unit" : "km/h per kg CO2",
+    }]
     
-    # Users seeder
-    def users():
-        if not Users.query.first():
-            data = Users(email='admin@gmail.com', username='Admin Emisi', role='admin')
-            data.set_password(password='admin256')
-            data2 = Users(email='garudacompany@gmail.com', username='Garuda Company', role='company')
-            data2.set_password(password='garuda256')
-            data3 = Users(email='steven@gmail.com', username='Steven Beam', role='user')
-            data3.set_password(password='steven256')
-            db.session.add(data)
-            db.session.add(data2)
-            db.session.add(data3)
-            db.session.commit()
-            
-    # Sources seeder
-    def sources():
-        if not Sources.query.first():
-            data = Sources(source_name="Pabrik", description="Emisi pabrik")
-            data2 = Sources(source_name="Kendaraan", description="Emisi kendaraan")
-            db.session.add(data)
-            db.session.add(data2)
-            db.session.commit()
-        
-    # Carbon factor seeder
-    def carbonFactor():
-        if not CarbonFactors.query.first():
-            data = CarbonFactors(
-                    source_id=1,
-                    description="0.5 Liter",
-                    conversion_factor=0.5,
-                    unit="Liter"
-                )
-            data2 = CarbonFactors(
-                    source_id=2,
-                    description="0.8 Liter",
-                    conversion_factor=0.8,
-                    unit="Km/h"
-                )
-            db.session.add(data)
-            db.session.add(data2)
-            db.session.commit()
+    # List of table database for seeding process
+    listSeed = json.dumps([{
+        "users" : usersData,
+        "sources" : sourcesData,
+        "carbon_factors" : carbonFactorsData,
+    }])
     
-    # Call all seeder
-    users()
-    sources()
-    carbonFactor()
+    # Seeding process
+    listData = json.loads(listSeed)
+    for table_name, table_value in listData[0].items():
+        try:
+            if table_name == "Users":
+                from app.database.models.Users import Users
+                data = Users(username=table_value.username, email=table_value.email)
+                data.password_hash = table_value.password_hash
+                db.session.add(data)
+                db.session.commit()
+            else:
+                metadata = MetaData()
+                table = Table(table_name, metadata, autoload_with=db.engine)
+                db.session.execute(table.insert().values(table_value))
+        except IntegrityError:
+            click.echo(f" > Duplicated detected data entry '{table_name}'")
+            db.session.rollback()
+    db.session.commit()

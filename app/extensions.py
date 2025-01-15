@@ -1,4 +1,7 @@
+import importlib
 import json
+import click
+import os
 import requests
 from decimal import Decimal
 import flask_jwt_extended as flask_jwt
@@ -8,7 +11,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, upgrade, migrate
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
-from sqlalchemy import text, func
+from sqlalchemy import text, func, Table, MetaData
 from sqlalchemy.exc import IntegrityError
 from functools import wraps
 from enum import Enum
@@ -20,3 +23,7 @@ migrate_app = Migrate()
 bcrypt = Bcrypt()
 corsOrigin = CORS()
 jwt = JWTManager()
+
+def generate_password(password):
+    password = bcrypt.generate_password_hash(password).decode('utf-8')
+    return password

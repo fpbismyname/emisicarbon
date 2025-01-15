@@ -5,8 +5,6 @@ from app.routes.api_route import api
 from app.routes.web_route import web
 from config import Environment, DevelopmentConfig, ProductionConfig
 from app.database import models
-import click
-import os
 
 def create_app(config = Environment):
     app = Flask(__name__, template_folder="views")
@@ -24,7 +22,7 @@ def create_app(config = Environment):
     corsOrigin.init_app(app=app)
     
     @app.cli.command("db-refresh")
-    def db__refresh():
+    def db_refresh():
         # Remove Versions
         path = "migrations\\versions\\*.*"
         os.system(f"del /f /q {path}")
@@ -34,8 +32,6 @@ def create_app(config = Environment):
         with db.engine.connect() as connection:
             connection.execute(text("DROP TABLE IF EXISTS alembic_version"))
             connection.commit()
-        # Recreate Table
-        # db.create_all()
         click.echo(" > Recreating All Database's...")
         migrate()
         upgrade()
