@@ -1,12 +1,3 @@
-# Enter the Environment Python Dev Folder
-command : .\venv\Scripts\activate
-
-# Running App with debug mode
-command : flask --app run run --debug
-
-# Running App without debug mode
-command : flask --app run run
-
 # Git Push History
 template command : git add .; git commit -m "update <version> : <message>"; git push -u origin main
 - git add .; git commit -m "update 1.0.1 : <Backend> Structuring Flask Framework Development"; git push -u origin main
