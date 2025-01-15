@@ -9,12 +9,12 @@ command : flask --app run run
 
 # Git Push History
 template command : git add .; git commit -m "update <version> : <message>"; git push -u origin main
-- git add .; git commit -m "update 1.0.1 : Structuring Flask Framework Development"; git push -u origin main
-- git add .; git commit -m "update 1.0.2 : Create secure login & register API"; git push -u origin main
-- git add .; git commit -m "update 1.0.3 : Create secure login & register API v2 & Improve Development web environtment on Database Models and Controller"; git push -u origin main
-- git add .; git commit -m "update 1.0.4 : Create CRUD for SOURCE table v1"; git push -u origin main
-- git add .; git commit -m "update 1.0.5 : Create CRUD API v1"; git push -u origin main
-- git add .; git commit -m "update 1.0.6 : Create CRUD API v2 Finished"; git push -u origin main
+- git add .; git commit -m "update 1.0.1 : <Backend> Structuring Flask Framework Development"; git push -u origin main
+- git add .; git commit -m "update 1.0.2 : <Backend> Create secure login & register API"; git push -u origin main
+- git add .; git commit -m "update 1.0.3 : <Backend> Create secure login & register API v2 & Improve Development web environtment on Database Models and Controller"; git push -u origin main
+- git add .; git commit -m "update 1.0.4 : <Backend> Create CRUD for SOURCE table v1"; git push -u origin main
+- git add .; git commit -m "update 1.0.5 : <Backend> Create CRUD API v1"; git push -u origin main
+- git add .; git commit -m "update 1.0.6 : <Backend> Create CRUD API v2 Finished"; git push -u origin main
 - git add .; git commit -m "update 1.0.7 : <Frontend> Create Portal Login and Register v1"; git push -u origin main
 - git add .; git commit -m "update 1.0.8 : <Frontend> Create overview dashboard v1.0.0"; git push -u origin main
 - git add .; git commit -m "update 1.0.9 : 1. <Backend> Fix user manage API v1.0.0, 2. <Frontend> Finishing Dashboard ui v1.0.1"; git push -u origin main
@@ -24,4 +24,4 @@ template command : git add .; git commit -m "update <version> : <message>"; git 
 - git add .; git commit -m "update 1.0.13 : 1. <Backend> Fix manage API v1.0.6, 2. <Frontend> memperbaiki Logika Aktivitas menu, Emisi menu v1.0.2"; git push -u origin main
 - git add .; git commit -m "update 1.0.14 : 1. <Backend> Fix manage API v1.0.7, 2. <Frontend> memperbaiki Logika report menu v1.z0.3"; git push -u origin main
 - git add .; git commit -m "update 1.0.15 : 1. <Backend> Fix manage API v1.0.8, 2. <Frontend> memperbaiki Logika report menu v1.0.4"; git push -u origin main
-- 
+- git add .; git commit -m "update 1.0.16 : 1. <Backend> Fix manage API v1.0.10, 2. <Frontend> Fix minor bugs"; git push -u origin main
