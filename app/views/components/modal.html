@@ -35,9 +35,6 @@
             {% if data['menu']['sources'] %}
             {{ url_for('router-web.sources') }}
             {% endif %}
-            {% if data['menu']['emissions'] %}
-            {{ url_for('router-web.emissions') }}
-            {% endif %}
             {% if data['menu']['carbon_factors'] %}
             {{ url_for('router-web.carbon_factors') }}
             {% endif %}
@@ -155,44 +152,6 @@
                   name="description"
                   placeholder="Deskripsi sumber emisi baru"
                 />
-              </div>
-            </div>
-            <!-- add emissions -->
-            {% elif data['menu']['emissions'] %}
-            <div class="emissions">
-              <div class="col-12 mb-2">
-                <input
-                  class="form-control"
-                  type="hidden"
-                  name="user_id"
-                  value="{{ data['user_id'] }}"
-                />
-              </div>
-              <div class="col-12 mb-2 input-group">
-                <label class="input-group-text">Sumber</label>
-                <select name="source_id" id="" class="form-select">
-                {% for dt_sc in data['sources']['sources'] %}
-                    <option value="{{ dt_sc.source_id }}">{{ dt_sc['source_name'] }}</option>
-                {% endfor %}
-                </select>
-              </div>
-              <div class="col-12 mb-2">
-                <input
-                  class="form-control"
-                  type="text"
-                  name="amount"
-                  placeholder="Jumlah emisi"
-                />
-              </div>
-              <div class="col-12 mb-2 input-group">
-                <label for="" class="input-group-text">Tanggal emisi</label>
-                  <input
-                    class="form-control"
-                    type="date"
-                    name="emission_date"
-                    placeholder="Tanggal emisi"
-                    required
-                  />
               </div>
             </div>
             <!-- add carbon_factors -->
@@ -370,9 +329,6 @@
             {% if data['menu']['sources'] %}
             Edit sumber emisi
             {% endif %}
-            {% if data['menu']['emissions'] %}
-            Edit emisi
-            {% endif %}
             {% if data['menu']['carbon_factors'] %}
             Edit faktor karbon
             {% endif %}
@@ -402,8 +358,6 @@
             {{ url_for('router-web.activities', id= id) }}
             {% elif data['menu']['sources'] %}
             {{ url_for('router-web.sources', id= id) }}
-            {% elif data['menu']['emissions'] %}
-            {{ url_for('router-web.emissions', id= id) }}
             {% elif data['menu']['carbon_factors'] %}
             {{ url_for('router-web.carbon_factors', id= id) }}
             {% elif data['menu']['goals'] %}
@@ -516,37 +470,6 @@
                 />
               </div>
             </div>
-            <!-- edit emissions -->
-            {% elif data['menu']['emissions'] %}
-            <div class="emissions">
-              <div class="col-12 mb-2 input-group">
-                <label class="input-group-text">Sumber</label>
-                <select name="source_id" id="" class="form-select">
-                {% for dt_sc in data['sources']['sources'] %}
-                    <option value="{{ dt_sc.source_id }}">{{ dt_sc['source_name'] }}</option>
-                {% endfor %}
-                </select>
-              </div>
-              <div class="col-12 mb-2">
-                <input
-                  class="form-control"
-                  type="text"
-                  name="amount"
-                  placeholder="Jumlah emisi"
-                  value="{{ dt['amount'] }}"
-                />
-              </div>
-              <div class="col-12 mb-2 input-group">
-                <label for="" class="input-group-text">Tanggal emisi</label>
-                  <input
-                    class="form-control"
-                    type="date"
-                    name="emission_date"
-                    placeholder="Tanggal emisi"
-                    required
-                  />
-              </div>
-            </div>
             <!-- edit carbon_factors -->
             {% elif data['menu']['carbon_factors'] %}
             <div class="carbon_factors">
@@ -606,6 +529,7 @@
                 <input
                   class="form-control"
                   type="date"
+                  value="{{ dt.deadline }}"
                   name="deadline"
                   required
                 />
@@ -639,6 +563,7 @@
                   type="date"
                   name="offset_date"
                   placeholder="Tanggal offset"
+                  value="{{ dt['offset_date'] }}"
                   required
                 />
               </div>
@@ -653,17 +578,19 @@
                 type="date"
                 name="start_date"
                 placeholder="Tanggal awal"
+                value="{{ dt.start_date }}"
                 required
                 />
               </div>
               <div class="col-12 mb-2 input-group">
                 <label class="input-group-text">Tanggal Akhir</label>
                 <input
-                  class="form-control"
-                  type="date"
-                  name="end_date"
-                  placeholder="Tanggal Akhir"
-                  required
+                class="form-control"
+                type="date"
+                name="end_date"
+                value="{{ dt.end_date }}"
+                placeholder="Tanggal Akhir"
+                required
                 />
               </div>
             </div>
@@ -711,9 +638,6 @@
             {% if data['menu']['sources'] %}
             Delete sumber emisi
             {% endif %}
-            {% if data['menu']['emissions'] %}
-            Delete emisi
-            {% endif %}
             {% if data['menu']['carbon_factors'] %}
             Delete faktor karbon
             {% endif %}
@@ -743,8 +667,6 @@
             {{ url_for('router-web.activities', id= id) }}
             {% elif data['menu']['sources'] %}
             {{ url_for('router-web.sources', id= id) }}
-            {% elif data['menu']['emissions'] %}
-            {{ url_for('router-web.emissions', id= id) }}
             {% elif data['menu']['carbon_factors'] %}
             {{ url_for('router-web.carbon_factors', id= id) }}
             {% elif data['menu']['goals'] %}
@@ -775,17 +697,11 @@
                 <p class="fs-4">Apakah anda yakin ingin menghapus</p>
                 <div class="rounded-4 fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">{{ dt['source_name'] }}</div>
               </div>
-              <!-- delete emission -->
-            {% elif data['menu']['emissions'] %}
-              <div class="col-12">
-                <p class="fs-4">Apakah anda yakin ingin menghapus</p>
-                <div class="rounded-4 fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">{{ dt['emission_id'] }}</div>
-              </div>
               <!-- delete carbon_factors -->
             {% elif data['menu']['carbon_factors'] %}
               <div class="col-12">
                 <p class="fs-4">Apakah anda yakin ingin menghapus</p>
-                <div class="rounded-4 fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">{{ dt['factor_id'] }}</div>
+                <div class="rounded-4 fs-6 border-start border-2 border-danger p-2 bg-danger bg-opacity-25">{{ dt['description'] }}</div>
               </div>
               <!-- delete goals -->
             {% elif data['menu']['goals'] %}

@@ -90,6 +90,7 @@ def payload(method_url):
 
 # region LoginPage
 def login_page():
+    session.clear()
     if request.method == "POST" :
         try:
             headers = {
@@ -122,6 +123,7 @@ def login_page():
 
 # region RegisterPage
 def register_page():
+    session.clear()
     if request.method == "POST" :
         try:
             headers = {
@@ -171,8 +173,8 @@ def dashboard_page(method_url, title=""):
     response = requests.get(url=f"{url_api}/emissions", headers=headers)
     allEmission = response.json()
     allEmissions = float(allEmission['total_emissions']) - float(allOffsets['total_offsets'])
-    if allEmissions < 0:
-        allEmissions = 0
+    # calculate emission - offset
+    allOffsetIndicator = -allOffsets['total_offsets']
     # goals
     response_goals = requests.get(url=f"{url_api}/goals", headers=headers)
     allGoals = response_goals.json()
@@ -187,7 +189,8 @@ def dashboard_page(method_url, title=""):
         "emissionData" : {
                 "total_emissions" : allEmissions,
                 "total_offsets" : allOffsets['total_offsets'],
-                "total_goals" : allGoals['total_goals']
+                "total_offsets_indicator" : allOffsetIndicator,
+                "total_goals" : allGoals['total_goals'],
             },
     }
     # endregion

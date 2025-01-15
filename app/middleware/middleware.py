@@ -1,6 +1,6 @@
 from app.extensions import *
 from app import jwt as Jwt
-from app.database.models.Users import Users
+from app.database.models.Users_ import Users
 
 # Custom token expired redirect
 @Jwt.invalid_token_loader

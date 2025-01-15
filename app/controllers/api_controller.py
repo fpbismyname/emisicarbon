@@ -1,8 +1,8 @@
 from app.extensions import *
 from app import db, flask_jwt, IntegrityError
 from flask import Blueprint, jsonify, request
-from app.database.models.Users import Users
-from app.database.models.Sources import Sources
+from app.database.models.Users_ import Users
+from app.database.models.Sources_ import Sources
 from app.database.models.Emissions import Emissions
 from app.database.models.Activities import Activities
 from app.database.models.CarbonFactors import CarbonFactors
@@ -985,9 +985,6 @@ def reports(reports_id):
                         totalOffsets += float(amountOffset)
                     # Calculate total emission - total offset
                     totalReportEmission = float(totalEmissions) - float(totalOffsets)
-                    # Make sure the value is not minus
-                    if totalReportEmission <= 0 :
-                        totalReportEmission = 0
                         
                     for data in dataReport:
                         data.total_emission = totalReportEmission
@@ -1083,9 +1080,6 @@ def reports(reports_id):
             
             # Calculate Emission - Offset
             total_emission = totalEmissions - totalOffsets
-            # Checking value to dont < from 0
-            if total_emission < 0:
-                total_emission = 0.0
             
             addReport = Reports(
                 user_id=token['sub'],
@@ -1144,9 +1138,6 @@ def reports(reports_id):
             
             # Calculate Emission - Offset
             total_emission = float(totalEmissions) - float(totalOffsets)
-            # Checking value to dont < from 0
-            if total_emission < 0:  
-                total_emission = 0.0
             
             report.start_date= data['start_date']
             report.end_date= data['end_date']

@@ -6,7 +6,7 @@ def seed():
     usersData = [{
         "username" : "Admin Emisi Karbon",
         "email" : "admin@gmail.com",
-        "password_hash" : generate_password('111'),
+        "password_hash" : generate_password('admin256'),
         "role" : "admin",
         "created_at" : datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
     },{
@@ -69,7 +69,7 @@ def seed():
     for table_name, table_value in listData[0].items():
         try:
             if table_name == "Users":
-                from app.database.models.Users import Users
+                from app.database.models.Users_ import Users
                 data = Users(username=table_value.username, email=table_value.email)
                 data.password_hash = table_value.password_hash
                 db.session.add(data)
