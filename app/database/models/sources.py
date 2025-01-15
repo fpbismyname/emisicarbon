@@ -6,7 +6,7 @@ class Sources(db.Model):
     source_name = db.Column(db.String(50), nullable = False)
     description = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-
+ 
     emissions = db.relationship('Emissions', backref='source_emission', lazy='joined')
     carbon_factors = db.relationship('CarbonFactors', backref='source_factor', lazy='joined', passive_deletes=True)
     
